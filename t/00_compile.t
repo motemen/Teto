@@ -1,4 +1,7 @@
 use strict;
-use Test::More tests => 1;
+use Test::More;
+use File::Find::Rule;
 
-BEGIN { use_ok 'Teto' }
+require_ok $_ for File::Find::Rule->file->name('*.pm')->in('lib');
+
+done_testing;
