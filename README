@@ -1,0 +1,27 @@
+This is Perl module Teto.
+
+INSTALLATION
+
+Teto installation is straightforward. If your CPAN shell is set up,
+you should just be able to do
+
+    % cpan Teto
+
+Download it, unpack it, then build it as per the usual:
+
+    % perl Makefile.PL
+    % make && make test
+
+Then install it:
+
+    % make install
+
+DOCUMENTATION
+
+Teto documentation is available as in POD. So you can do:
+
+    % perldoc Teto
+
+to read the documentation online with your favorite pager.
+
+motemen
