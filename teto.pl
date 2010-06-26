@@ -11,7 +11,7 @@ my @urls = @ARGV;
 $logger->add_logger(screen => { min_level => 'debug' });
 
 my $server = Teto::Server->new;
-$server->queue->push(@urls) if @urls;
+$server->enqueue(@urls) if @urls;
 $server->queue->start_async;
 
 my $w; $w = AE::io *STDIN, 0, sub {

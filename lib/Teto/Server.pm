@@ -8,12 +8,19 @@ use Encode;
 
 use Teto::Server::Queue;
 use Teto::Logger qw($logger);
+use Teto::Feeder;
 
 use constant META_INTERVAL => 16_000;
 
 has 'queue', (
     is  => 'rw',
     isa => 'Teto::Server::Queue',
+    lazy_build => 1,
+);
+
+has 'feeder', (
+    is  => 'rw',
+    isa => 'Teto::Feeder',
     lazy_build => 1,
 );
 
@@ -81,7 +88,7 @@ sub setup_callbacks {
         '/add'    => sub {
             my ($server, $req) = @_;
             $server->stop_request;
-            $self->queue->push(
+            $self->enqueue(
                 map { split /\n/, $_ } @{ $req->{parm}->{url}->[0] || [] }
             );
             $req->respond({ redirect => '/' });
@@ -157,6 +164,16 @@ sub push_buffer {
     }
     $self->buffer .= $data;
     $self->interval -= length($data);
+}
+
+sub enqueue {
+    my $self = shift;
+    $self->feeder->feed($_) for @_;
+}
+
+sub _build_feeder {
+    my $self = shift;
+    return Teto::Feeder->new(queue => $self->queue);
 }
 
 1;

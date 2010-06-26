@@ -53,6 +53,11 @@ sub next {
     return $next;
 }
 
+sub remaining {
+    my $self = shift;
+    return scalar @{ $self->queue } - $self->index;
+}
+
 sub start {
     my $self = shift;
 
