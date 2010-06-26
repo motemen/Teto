@@ -63,10 +63,21 @@ sub start {
 
     return if $self->guard;
 
-    my $g = Guard::guard { $logger->log(debug => 'unguarded'); $self->start };
+    my $g = Guard::guard {
+        $logger->log(debug => 'unguarded');
+        if ($self->server->buffer_is_full) {
+            $logger->log(debug => 'buffer is full');
+            return;
+        }
+        $self->start;
+    };
     $self->guard($g);
 
-    my $next = $self->next or do { $g->cancel; $self->unguard; return };
+    my $next = $self->next or do {
+        $g->cancel;
+        $self->unguard;
+        return;
+    };
     $logger->log(info => "#$self->{index}: $next");
 
     my $cv = $self->writer->write($next);

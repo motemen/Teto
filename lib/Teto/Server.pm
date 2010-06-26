@@ -128,7 +128,7 @@ sub stream_handler {
                     return;
                 }
 
-                if ($self->buffer_length >= 1 * 1024 * 1024) {
+                unless ($self->buffer_underrun) {
                     $data_cb->($eat_buffer_chunk->());
                     return;
                 }
@@ -149,6 +149,14 @@ sub stream_handler {
 
 sub buffer_length {
     length(shift->buffer);
+}
+
+sub buffer_is_full {
+    shift->buffer_length > 8 * 1024 * 1024;
+}
+
+sub buffer_underrun {
+    shift->buffer_length < 1 * 1024 * 1024
 }
 
 sub push_buffer {

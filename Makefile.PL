@@ -13,6 +13,7 @@ requires 'AnyEvent::HTTPD';
 requires 'Guard';
 
 requires 'Log::Dispatch';
+requires 'Exporter::Lite';
 
 requires 'WWW::NicoVideo::Download';
 requires 'HTML::TreeBuilder::XPath';

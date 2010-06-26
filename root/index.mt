@@ -80,5 +80,11 @@ textarea.url {
 
     </ul>
 
+    <h2>Server</h2>
+    <dl>
+    <dt>buffer_length</dt>
+    <dd><?= $_{server}->buffer_length ?></dd>
+    </dl>
+
   </body>
 </html>

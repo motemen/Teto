@@ -12,7 +12,7 @@ has 'dispatcher', (
 
 __PACKAGE__->meta->make_immutable;
 
-use Exporter;
+use Exporter::Lite;
 our @EXPORT_OK = qw($logger);
 
 our $logger = __PACKAGE__->new;
