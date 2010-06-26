@@ -7,6 +7,7 @@ use POSIX;
 use Encode;
 
 use Teto::Server::Queue;
+use Teto::Logger qw($logger);
 
 use constant META_INTERVAL => 16_000;
 
@@ -57,7 +58,7 @@ sub update_status {
     no warnings 'uninitialized';
     Encode::_utf8_off $status{title} if Encode::is_utf8 $status{title};
     if ($self->status->{title} ne $status{title}) {
-        warn "title: $self->{status}->{title} -> $status{title}";
+        $logger->log(info => "status title: $self->{status}->{title} -> $status{title}");
     }
     $self->status(+{ %status });
 }
@@ -115,19 +116,22 @@ sub stream_handler {
                 'Icy-Url'      => $req->url,
             }, sub {
                 my ($data_cb) = @_;
-                warn 'client disconnected' and return unless $data_cb;
+                unless ($data_cb) {
+                    $logger->log(info => 'client disconnected');
+                    return;
+                }
 
                 if ($self->buffer_length >= 1 * 1024 * 1024) {
                     $data_cb->($eat_buffer_chunk->());
                     return;
                 }
 
-                warn 'underrun';
-                # TODO idle で回すんじゃなくて guard で外から叩くようにする
-                my $w; $w = AE::idle sub {
+                $logger->log(debug => 'buffer underrun');
+                # TODO guard で外から叩くようにする
+                my $w; $w = AE::timer 0, 1, sub {
                     $self->queue->start;
                     return unless $self->buffer_length;
-                    warn 'idle; write';
+                    $logger->log(debug => 'timer; write');
                     $data_cb->($eat_buffer_chunk->());
                     undef $w;
                 };

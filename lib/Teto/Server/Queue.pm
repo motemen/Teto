@@ -35,10 +35,11 @@ __PACKAGE__->meta->make_immutable;
 use AnyEvent;
 use Guard ();
 use Teto::Writer;
+use Teto::Logger qw($logger);
 
 sub push {
     my $self = shift;
-    warn "push: @_";
+    $logger->log(debug => "<< $_") for @_;
     CORE::push @{$self->queue}, @_;
 }
 
@@ -57,11 +58,11 @@ sub start {
 
     return if $self->guard;
 
-    my $g = Guard::guard { warn 'unguarded'; $self->start };
+    my $g = Guard::guard { $logger->log(debug => 'unguarded'); $self->start };
     $self->guard($g);
 
     my $next = $self->next or do { $g->cancel; $self->unguard; return };
-    warn $next;
+    $logger->log(info => "#$self->{index}: $next");
 
     my $cv = $self->writer->write($next);
     $cv->cb(sub { $self->unguard });

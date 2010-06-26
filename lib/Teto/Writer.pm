@@ -25,6 +25,8 @@ __PACKAGE__->meta->make_immutable;
 use AnyEvent::HTTP;
 use AnyEvent::Util;
 
+use Teto::Logger qw($logger);
+
 use WWW::NicoVideo::Download;
 use HTML::TreeBuilder::XPath;
 use HTTP::Request::Common;
@@ -32,8 +34,9 @@ use Config::Pit;
 
 sub transcode {
     my ($self, $file, $cb) = @_;
-    return run_cmd [ qw(ffmpeg -i), $file, qw(-ab 192k -acodec libmp3lame -f mp3 -) ], # TODO config
-                   '>', $cb;
+    my @command = (qw(ffmpeg -i), $file, qw(-ab 192k -acodec libmp3lame -f mp3 -)); # TODO config
+    $logger->log(debug => qq(running '@command'));
+    return run_cmd \@command, '>', $cb, '2>', sub { 'blackhole' };
 }
 
 sub write {
@@ -99,9 +102,8 @@ sub write {
     $headers{'User-Agent'} = $client->user_agent->agent;
     $req->headers->scan(sub { $headers{$_[0]} = $_[1] });
 
-    warn $title;
-    my $file = $self->cache_dir->file($video_id, "$video_id.$ext");
-    warn $self->cache_dir->file($video_id, "$title.$video_id.$ext");
+    my $file = $self->cache_dir->file($video_id, "$title.$video_id.$ext");
+    $logger->log(info => ">> $file");
 
     $file->dir->mkpath;
     my $fh = $file->openw;
