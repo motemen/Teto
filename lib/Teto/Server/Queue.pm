@@ -58,6 +58,14 @@ sub remaining {
     return scalar @{ $self->queue } - $self->index;
 }
 
+sub remove {
+    my ($self, $i) = @_;
+    if ($self->index < $i) {
+        $self->{index}--;
+    }
+    splice @{ $self->queue }, $i, 1;
+}
+
 sub start {
     my $self = shift;
 

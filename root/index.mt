@@ -67,6 +67,7 @@ textarea.url {
       <span class="indicator">&raquo;</span>
       <img src="http://favicon.hatena.ne.jp/?url=<?= $url ?>" width="16" height="16" /><a href="<?= $url ?>"><?= $url ?></a>
       <a href="/add?url=<?= $url ?>"><img src="http://www.hatena.ne.jp/images/icon-add.gif"></a>
+      <a href="/remove?i=<?= $_ ?>"><img src="http://b.hatena.ne.jp/images/delete.gif"></a>
     </li>
 ? }
 

@@ -92,12 +92,18 @@ sub setup_callbacks {
 
     $self->httpd->reg_cb(
         '/stream' => $self->stream_handler,
-        '/add'    => sub {
+        '/add' => sub {
             my ($server, $req) = @_;
             $server->stop_request;
             $self->enqueue(
                 map { split /\n/, $_ } @{ $req->{parm}->{url}->[0] || [] }
             );
+            $req->respond({ redirect => '/' });
+        },
+        '/remove' => sub {
+            my ($server, $req) = @_;
+            $server->stop_request;
+            $self->queue->remove(int $req->parm('i'));
             $req->respond({ redirect => '/' });
         },
         '/' => sub {
