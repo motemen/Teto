@@ -16,10 +16,17 @@ my $the_cv;
     sub write {
         return $cv[$i++] = AE::cv;
     }
+
+    package t::server;
+    use base 'Teto::Server';
+
+    sub BUILDALL {}
+    sub buffer_is_full {}
 }
 
 my $writer = t::worker->new;
-my $q = new_ok 'Teto::Server::Queue', [ writer => $writer ];
+my $server = t::server->new;
+my $q = new_ok 'Teto::Server::Queue', [ writer => $writer, server => $server ];
 
 is $q->index, 0;
 $q->push('a', 'b');
