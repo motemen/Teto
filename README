@@ -1,27 +1,13 @@
-This is Perl module Teto.
+Teto
+====
 
-INSTALLATION
+音声を聴くためのニコニコ動画ストリームプロキシです。
+メディアファイルをローカルに保存しつつ、トランスコーディングしてストリームプレーヤーで再生できます。
 
-Teto installation is straightforward. If your CPAN shell is set up,
-you should just be able to do
+以下のようにして起動し、
 
-    % cpan Teto
+	./teto.pl 'http://www.nicovideo.jp/tag/サンドキャニオン?sort=v'
 
-Download it, unpack it, then build it as per the usual:
+http://yourhost:9090/stream にプレーヤでアクセスすると連続して音声を聴けます。
 
-    % perl Makefile.PL
-    % make && make test
-
-Then install it:
-
-    % make install
-
-DOCUMENTATION
-
-Teto documentation is available as in POD. So you can do:
-
-    % perldoc Teto
-
-to read the documentation online with your favorite pager.
-
-motemen
+http://yourhost:9090/ をブラウザで開くといろいろ見られます。
