@@ -49,7 +49,7 @@ textarea.url {
 ? foreach (reverse @{$_{server}->playlist->entries}) {
     <li>
     <img src="<?= $_->{image_url} ?>"/>
-    <?= Encode::encode_utf8 $_->{title} ?>
+    <?= $_->{title} ?>
     <dl class="info">
       <dt>source</dt><dd><a href="<?= $_->{source_url} ?>"><?= $_->{source_url} ?></a></dd>
       <dt>media</dt> <dd><a href="<?= $_->{url} ?>"><?= $_->{url} ?></a></dd>
@@ -82,6 +82,8 @@ textarea.url {
     <dl>
     <dt>buffer_length</dt>
     <dd><?= $_{server}->buffer_length ?></dd>
+    <dt>status</dt>
+    <dd><? require Data::Dumper; ?><?= Data::Dumper->new([ $_{server}->status ])->Terse(1)->Dump ?></dd>
     </dl>
 
   </body>

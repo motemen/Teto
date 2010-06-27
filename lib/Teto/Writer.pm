@@ -49,10 +49,19 @@ sub write {
     # from cache
     if (-d (my $dir = $self->cache_dir->subdir($video_id))) {
         if (my $file = ($dir->children)[0]) {
+            my ($title) = $file->basename =~ /^(.+?)\.$video_id.\w+$/; # XXX
+
+            $self->server->playlist->add_entry(
+                title      => $title,
+                source_url => $url,
+                url        => "file://$file",
+                image_url  => 'http://tn-skr1.smilevideo.jp/smile?i=' . do { $video_id =~ /(\d+)/; $1 },
+            );
+
             return $self->transcode("$file", sub {
                 my $data = shift;
                 return unless defined $data;
-                $self->server->update_status(title => $video_id); # TODO
+                $self->server->update_status(title => $title);
                 $self->server->push_buffer($data);
             });
         }
