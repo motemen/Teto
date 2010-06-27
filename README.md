@@ -15,7 +15,14 @@ Synopsis
 
  * http://yourhost:9090/stream にプレーヤでアクセスすると連続して音声を聴けます。
  * http://yourhost:9090/ をブラウザで開くといろいろ見られます。
- * script/setup-pit.pl でログイン情報を設定します。
+ * 初回時には script/setup-pit.pl を実行して、ログイン情報を設定する必要があります。
+
+TODO
+----
+ * リンク抽出するときにタイトルも抽出する
+ * 403 になると何もできなくなる
+ * ニコ動以外のサイト
+ * AutoPagerize
 
 Screenshot
 ----------
