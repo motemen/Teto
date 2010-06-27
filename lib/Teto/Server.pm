@@ -9,6 +9,7 @@ use Encode;
 use Teto::Server::Queue;
 use Teto::Logger qw($logger);
 use Teto::Feeder;
+use Teto::Playlist;
 
 use constant META_INTERVAL => 16_000;
 
@@ -24,10 +25,16 @@ has 'feeder', (
     lazy_build => 1,
 );
 
-has 'server', (
+has 'httpd', (
     is  => 'rw',
     isa => 'AnyEvent::HTTPD',
     lazy_build => 1,
+);
+
+has 'playlist', (
+    is  => 'rw',
+    isa => 'Teto::Playlist',
+    default => sub { Teto::Playlist->new },
 );
 
 has 'mt', (
@@ -75,7 +82,7 @@ sub _build_queue {
     return Teto::Server::Queue->new(server => $self);
 }
 
-sub _build_server {
+sub _build_httpd {
     my $self = shift;
     return AnyEvent::HTTPD->new(port => 9090); # TODO config
 }
@@ -83,7 +90,7 @@ sub _build_server {
 sub setup_callbacks {
     my $self = shift;
 
-    $self->server->reg_cb(
+    $self->httpd->reg_cb(
         '/stream' => $self->stream_handler,
         '/add'    => sub {
             my ($server, $req) = @_;
@@ -152,7 +159,7 @@ sub buffer_length {
 }
 
 sub buffer_is_full {
-    shift->buffer_length > 8 * 1024 * 1024;
+    shift->buffer_length > 4 * 1024 * 1024;
 }
 
 sub buffer_underrun {

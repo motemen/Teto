@@ -44,13 +44,12 @@ textarea.url {
     <h1>teto</h1>
     <p><a href="/stream">stream</a></p>
 
-? if (0) {
     <h2>Playlist</h2>
     <ul id="playlist">
 ? foreach (reverse @{$_{server}->playlist->entries}) {
     <li>
     <img src="<?= $_->{image_url} ?>"/>
-    <?= $_->{title} ?>
+    <?= Encode::encode_utf8 $_->{title} ?>
     <dl class="info">
       <dt>source</dt><dd><a href="<?= $_->{source_url} ?>"><?= $_->{source_url} ?></a></dd>
       <dt>media</dt> <dd><a href="<?= $_->{url} ?>"><?= $_->{url} ?></a></dd>
@@ -58,7 +57,6 @@ textarea.url {
     </li>
 ? }
     </ul>
-? }
 
     <h2>Queue</h2>
     <ul id="queue">

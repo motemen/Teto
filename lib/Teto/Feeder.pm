@@ -14,6 +14,8 @@ has 'ua', (
 
 __PACKAGE__->meta->make_immutable;
 
+use Teto::Logger qw($logger);
+
 use LWP::UserAgent;
 use HTML::TreeBuilder::XPath;
 use XML::Feed;
@@ -35,6 +37,8 @@ sub feed {
     return if $res->is_error;
 
     if ($res->content_type =~ /html/) {
+        $logger->log(debug => "$url seems like an HTML");
+
         my $tree = HTML::TreeBuilder::XPath->new;
         $tree->parse($res->content);
 
@@ -44,15 +48,20 @@ sub feed {
             my $url = $_->string_value;
             not $seen{$url}++ and $url;
         } $tree->findnodes('//a/@href');
+        $logger->log(debug => "@links");
 
         foreach my $link (@links) {
+            $link =~ s"^/*"http://www.nicovideo.jp/" unless $link =~ /^https?:/;
             if (_url_is_like_nicovideo $link) {
                 $found++;
+                $logger->log(debug => "found $link");
                 $self->queue->push($link);
             }
         }
         return $found;
     } elsif ($res->content_type =~ /rss|atom|xml/) {
+        $logger->log(debug => "$url seems like a feed");
+
         my $feed = XML::Feed->parse(\$res->content)
             or warn XML::Feed->errstr and return;
         my $found;
@@ -60,6 +69,7 @@ sub feed {
             my $link = $entry->link;
             if (_url_is_like_nicovideo $link) {
                 $found++;
+                $logger->log(debug => "found $link");
                 $self->queue->push($link);
             }
         }

@@ -87,12 +87,12 @@ sub write {
     my $ext = (split '/', $media_res->header('Content-Type'))[1] || 'flv';
     $ext = 'swf' if $ext =~ /flash/;
 
-#   my $entry = {
-#       title      => $title,
-#       url        => $media_url,
-#       source_url => $url,
-#       image_url  => 'http://tn-skr1.smilevideo.jp/smile?i=' . do { $video_id =~ /(\d+)/; $1 },
-#   };
+    $self->server->playlist->add_entry(
+        title      => $title,
+        url        => $media_url,
+        source_url => $url,
+        image_url  => 'http://tn-skr1.smilevideo.jp/smile?i=' . do { $video_id =~ /(\d+)/; $1 },
+    );
 
     my $req = GET $media_url;
     $client->user_agent->cookie_jar->add_cookie_header($req);
