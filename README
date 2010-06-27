@@ -8,6 +8,6 @@ Teto
 
 	./teto.pl 'http://www.nicovideo.jp/tag/サンドキャニオン?sort=v'
 
-http://yourhost:9090/stream にプレーヤでアクセスすると連続して音声を聴けます。
-
-http://yourhost:9090/ をブラウザで開くといろいろ見られます。
+ * http://yourhost:9090/stream にプレーヤでアクセスすると連続して音声を聴けます。
+ * http://yourhost:9090/ をブラウザで開くといろいろ見られます。
+ * script/setup-pit.pl でログイン情報を設定します。

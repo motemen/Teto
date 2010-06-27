@@ -49,7 +49,7 @@ sub next {
         return undef;
     }
     my $next = $self->queue->[ $self->index ];
-    $self->index($self->index + 1);
+    $self->{index}++;
     return $next;
 }
 

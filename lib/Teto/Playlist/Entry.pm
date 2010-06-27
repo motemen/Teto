@@ -3,22 +3,22 @@ use Any::Moose;
 
 has 'title', (
     is  => 'rw',
-    isa => 'Str',
+    isa => 'Maybe[Str]',
 );
 
 has 'url', (
     is  => 'rw',
-    isa => 'Str', # XXX URI
+    isa => 'Maybe[Str]', # XXX URI
 );
 
 has 'source_url', (
     is  => 'rw',
-    isa => 'Str',
+    isa => 'Maybe[Str]',
 );
 
 has 'image_url', (
     is  => 'rw',
-    isa => 'Str',
+    isa => 'Maybe[Str]',
 );
 
 __PACKAGE__->meta->make_immutable;
