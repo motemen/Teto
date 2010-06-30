@@ -49,6 +49,19 @@ has 'status', (
     default => sub { +{} },
 );
 
+has 'bytes_sent', (
+    is  => 'rw',
+    isa => 'Int',
+    default => sub { 0 },
+);
+
+has 'bytes_timeline', (
+    is  => 'rw',
+    isa => 'ArrayRef[Int]',
+    default => sub { +[] },
+
+);
+
 sub buffer : lvalue {
     shift->{buffer};
 }
@@ -67,16 +80,6 @@ sub BUILD {
 
 __PACKAGE__->meta->make_immutable;
 
-sub update_status {
-    my ($self, %status) = @_;
-    no warnings 'uninitialized';
-    Encode::_utf8_off $status{title} if Encode::is_utf8 $status{title};
-    if ($self->status->{title} ne $status{title}) {
-        $logger->log(info => "status title: $self->{status}->{title} -> $status{title}");
-    }
-    $self->status(+{ %status });
-}
-
 sub _build_queue {
     my $self = shift;
     return Teto::Server::Queue->new(server => $self);
@@ -85,6 +88,21 @@ sub _build_queue {
 sub _build_httpd {
     my $self = shift;
     return AnyEvent::HTTPD->new(port => 9090); # TODO config
+}
+
+sub _build_feeder {
+    my $self = shift;
+    return Teto::Feeder->new(queue => $self->queue);
+}
+
+sub update_status {
+    my ($self, %status) = @_;
+    no warnings 'uninitialized';
+    Encode::_utf8_off $status{title} if Encode::is_utf8 $status{title};
+    if ($self->status->{title} ne $status{title}) {
+        $logger->log(info => "status title: $self->{status}->{title} -> $status{title}");
+    }
+    $self->status(+{ %status });
 }
 
 sub setup_callbacks {
@@ -124,10 +142,6 @@ sub stream_handler {
 
         $server->stop_request;
 
-        my $eat_buffer_chunk = sub {
-            my $data = substr $self->{buffer}, 0, 256 * 1024, '';
-        };
-
         $req->respond([
             200, 'OK', {
                 'Content-Type' => 'audio/mpeg',
@@ -141,8 +155,14 @@ sub stream_handler {
                     return;
                 }
 
+                my $send = sub {
+                    my $data = substr $self->{buffer}, 0, 256 * 1024, '';
+                    $data_cb->($data);
+                    $self->incremenet_bytes_sent(length $data);
+                };
+
                 unless ($self->buffer_underrun) {
-                    $data_cb->($eat_buffer_chunk->());
+                    $send->();
                     return;
                 }
 
@@ -152,7 +172,7 @@ sub stream_handler {
                     $self->queue->start;
                     return unless $self->buffer_length;
                     $logger->log(debug => 'timer; write');
-                    $data_cb->($eat_buffer_chunk->());
+                    $send->();
                     undef $w;
                 };
             }
@@ -187,14 +207,34 @@ sub push_buffer {
     $self->interval -= length($data);
 }
 
+sub incremenet_bytes_sent {
+    my ($self, $delta) = @_;
+    $self->bytes_sent($self->bytes_sent + $delta);
+}
+
+sub wrote_one_track {
+    my $self = shift;
+    push @{ $self->bytes_timeline }, $self->bytes_sent + $self->buffer_length;
+}
+
+sub current_track_number {
+    my $self = shift;
+    for (0 .. $#{ $self->bytes_timeline }) {
+        if ($self->bytes_sent < $self->bytes_timeline->[$_]) {
+            return $_ + 1;
+        }
+    }
+    return scalar @{ $self->bytes_timeline } + 1;
+}
+
+sub remaining_tracks {
+    my $self = shift;
+    scalar @{ $self->bytes_timeline } - $self->current_track_number;
+}
+
 sub enqueue {
     my $self = shift;
     $self->feeder->feed($_) for @_;
-}
-
-sub _build_feeder {
-    my $self = shift;
-    return Teto::Feeder->new(queue => $self->queue);
 }
 
 1;

@@ -38,7 +38,7 @@ sub transcode {
     $file = Encode::encode_utf8 $file if Encode::is_utf8 $file;
     my @command = (qw(ffmpeg -i), $file, qw(-ab 192k -acodec libmp3lame -f mp3 -)); # TODO config
     $logger->log(debug => qq(running '@command'));
-    return run_cmd \@command, '>', $cb, '2>', sub { 'blackhole' };
+    run_cmd \@command, '>', $cb, '2>', sub { 'blackhole' };
 }
 
 sub write {

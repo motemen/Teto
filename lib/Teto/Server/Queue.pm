@@ -53,11 +53,6 @@ sub next {
     return $next;
 }
 
-sub remaining {
-    my $self = shift;
-    return scalar @{ $self->queue } - $self->index;
-}
-
 sub remove {
     my ($self, $i) = @_;
     if ($self->index < $i) {
@@ -77,6 +72,10 @@ sub start {
             $logger->log(debug => 'buffer is full');
             return;
         }
+        if ($self->server->remaining_tracks > 1) {
+            $logger->log(debug => 'too many remaining tracks');
+            return;
+        }
         $self->start;
     };
     $self->guard($g);
@@ -86,10 +85,18 @@ sub start {
         $self->unguard;
         return;
     };
-    $logger->log(info => "#$self->{index}: $next");
+    $logger->log(notice => "#$self->{index}: $next");
 
-    my $cv = $self->writer->write($next);
-    $cv->cb(sub { $self->unguard });
+    my $cv = $self->writer->write($next)
+        or do {
+            $logger->log(info => 'writer did not write');
+            $self->unguard;
+            return;
+        };
+    $cv->cb(sub {
+        $self->server->wrote_one_track;
+        $self->unguard;
+    });
 }
 
 sub start_async {

@@ -87,8 +87,14 @@ textarea.url {
     <dl>
     <dt>buffer_length</dt>
     <dd><?= $_{server}->buffer_length ?></dd>
+    <dt>bytes_sent</dt>
+    <dd><?= $_{server}->bytes_sent ?></dd>
     <dt>status</dt>
     <dd><? require Data::Dumper; ?><?= Data::Dumper->new([ $_{server}->status ])->Terse(1)->Dump ?></dd>
+    <dt>bytes_timeline</dt>
+    <dd><? require Data::Dumper; ?><?= Data::Dumper->new([ $_{server}->bytes_timeline ])->Terse(1)->Dump ?></dd>
+    <dt>current_track_number</dt>
+    <dd><?= $_{server}->current_track_number ?></dd>
     <dt>queue index</dt>
     <dd><?= $_{server}->queue->index ?></dd>
     </dl>
