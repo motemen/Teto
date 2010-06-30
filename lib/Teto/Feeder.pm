@@ -59,7 +59,8 @@ sub feed {
             }
         }
         return $found;
-    } elsif ($res->content_type =~ /rss|atom|xml/) {
+    }
+    elsif ($res->content_type =~ /rss|atom|xml/) {
         $logger->log(debug => "$url seems like a feed");
 
         my $feed = XML::Feed->parse(\$res->content)
@@ -69,8 +70,12 @@ sub feed {
             my $link = $entry->link;
             if (_url_is_like_nicovideo $link) {
                 $found++;
-                $logger->log(debug => "found $link");
-                $self->queue->push($link);
+                my $title = $entry->title;
+                $logger->log(debug => "found $title <$link>");
+                $self->queue->push({
+                    title => $title,
+                    url   => $link,
+                });
             }
         }
         return $found;

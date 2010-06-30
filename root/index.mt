@@ -65,11 +65,13 @@ textarea.url {
     <h2>Queue</h2>
     <ul id="queue">
 ? foreach (0 .. $#{$_{server}->queue->queue}) {
-?   my $url = $_{server}->queue->queue->[$_];
+?   my $entry = $_{server}->queue->queue->[$_];
+?   my $url   = ref $entry eq 'HASH' ? $entry->{url}   : $entry;
+?   my $title = ref $entry eq 'HASH' ? $entry->{title} : $entry;
 ?   my $selected = $_ == $_{server}->queue->index;
     <li <? if ($selected) { ?>class="selected"<? } ?>>
       <span class="indicator">&raquo;</span>
-      <img src="http://favicon.hatena.ne.jp/?url=<?= $url ?>" width="16" height="16" /><a href="<?= $url ?>"><?= $url ?></a>
+      <img src="http://favicon.hatena.ne.jp/?url=<?= $url ?>" width="16" height="16" /><a href="<?= $url ?>"><?= $u->($title) ?></a>
       <a href="/add?url=<?= $url ?>"><img src="http://www.hatena.ne.jp/images/icon-add.gif"></a>
       <a href="/remove?i=<?= $_ ?>"><img src="http://b.hatena.ne.jp/images/delete.gif"></a>
     </li>

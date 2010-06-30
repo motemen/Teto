@@ -67,6 +67,7 @@ sub start {
     return if $self->guard;
 
     my $g = Guard::guard {
+        return unless $self->server;
         $logger->log(debug => 'unguarded');
         if ($self->server->buffer_is_full) {
             $logger->log(debug => 'buffer is full');
@@ -85,9 +86,16 @@ sub start {
         $self->unguard;
         return;
     };
-    $logger->log(notice => "#$self->{index}: $next");
+    my $url;
+    if (ref $next eq 'HASH') {
+        $url = $next->{url};
+        $logger->log(notice => "#$self->{index}: $next->{title} <$url>");
+    } else {
+        $url = $next;
+        $logger->log(notice => "#$self->{index}: $url");
+    }
 
-    my $cv = $self->writer->write($next)
+    my $cv = $self->writer->write($url)
         or do {
             $logger->log(info => 'writer did not write');
             $self->unguard;
