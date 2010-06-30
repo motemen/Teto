@@ -31,9 +31,11 @@ use WWW::NicoVideo::Download;
 use HTML::TreeBuilder::XPath;
 use HTTP::Request::Common;
 use Config::Pit;
+use Encode;
 
 sub transcode {
     my ($self, $file, $cb) = @_;
+    $file = Encode::encode_utf8 $file if Encode::is_utf8 $file;
     my @command = (qw(ffmpeg -i), $file, qw(-ab 192k -acodec libmp3lame -f mp3 -)); # TODO config
     $logger->log(debug => qq(running '@command'));
     return run_cmd \@command, '>', $cb, '2>', sub { 'blackhole' };
@@ -45,6 +47,7 @@ sub write {
     $url =~ m<^http://www\.nicovideo\.jp/watch/(s\w+\d+)> or return;
 
     my $video_id = $1;
+    Encode::_utf8_off($video_id) if Encode::is_utf8 $video_id;
 
     # from cache
     if (-d (my $dir = $self->cache_dir->subdir($video_id))) {
@@ -83,6 +86,12 @@ sub write {
 
     my $res = $client->user_agent->get($url); # TODO AnyEvent 化…
     unless ($res->is_success) {
+        $logger->log(info => "$url: " . $res->message);
+        if ($res->code == 403) {
+            # XXX そもそもこれが出ないようにするべき
+            $logger->log(notice => 'Got 403, sleep 30s');
+            sleep 30;
+        }
         my $cv = AE::cv;
         $cv->send;
         return $cv;
