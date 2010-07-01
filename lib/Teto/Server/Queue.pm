@@ -45,11 +45,20 @@ sub push {
 
 sub next {
     my $self = shift;
+
     if ($self->index >= @{ $self->queue }) {
         return undef;
     }
+
     my $next = $self->queue->[ $self->index ];
     $self->{index}++;
+
+    if (ref $next eq 'CODE') {
+        my @res = $next->();
+        splice @{$self->queue}, $self->index, 0, @res;
+        return $self->next;
+    }
+
     return $next;
 }
 
@@ -86,6 +95,7 @@ sub start {
         $self->unguard;
         return;
     };
+
     my $url;
     if (ref $next eq 'HASH') {
         $url = $next->{url};

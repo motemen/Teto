@@ -23,6 +23,8 @@ requires 'Config::Pit';
 
 requires 'Text::MicroTemplate';
 
+requires 'XML::Feed';
+
 test_requires 'Test::More';
 test_requires 'File::Find::Rule';
 

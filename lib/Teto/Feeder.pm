@@ -58,6 +58,7 @@ sub feed {
                 $self->queue->push($link);
             }
         }
+
         return $found;
     }
     elsif ($res->content_type =~ /rss|atom|xml/) {
