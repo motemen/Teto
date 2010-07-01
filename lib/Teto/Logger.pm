@@ -3,6 +3,7 @@ use Any::Moose;
 
 use Log::Dispatch;
 use UNIVERSAL::require;
+use Encode qw(encode_utf8 is_utf8);
 
 has 'dispatcher', (
     is  => 'rw',
@@ -22,6 +23,7 @@ sub log {
     my $pkg = caller;
     $pkg =~ s/^Teto:://;
     $message .= "\n" unless $message =~ /[\n\r]$/;
+    $message = encode_utf8 $message if is_utf8 $message;
     $self->dispatcher->log(
         level   => $level,
         message => "[$level] $pkg $message",
