@@ -63,19 +63,15 @@ has 'bytes_timeline', (
 );
 
 sub buffer : lvalue {
-    shift->{buffer};
+    my $self = shift;
+    $self->{buffer} = '' unless defined $self->{buffer};
+    $self->{buffer};
 }
 
 sub interval : lvalue {
     my $self = shift;
     $self->{interval} ||= META_INTERVAL;
     $self->{interval};
-}
-
-sub BUILD {
-    my $self = shift;
-    $self->buffer = '';
-    $self->setup_callbacks;
 }
 
 __PACKAGE__->meta->make_immutable;

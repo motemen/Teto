@@ -11,12 +11,13 @@ my @urls = @ARGV;
 $logger->add_logger(screen => { min_level => 'debug' });
 
 my $server = Teto::Server->new;
+$server->setup_callbacks;
 $server->enqueue(@urls) if @urls;
 $server->queue->start_async;
 
 my $w; $w = AE::io *STDIN, 0, sub {
     chomp (my $url = <STDIN>);
-    $server->queue->push($url);
+    $server->queue->push($url) if $url;
 };
 
 if (eval { require AnyEvent::Monitor::CPU }) {
