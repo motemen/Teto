@@ -51,7 +51,7 @@ sub write {
 
     # from cache
     if (-d (my $dir = $self->cache_dir->subdir($video_id))) {
-        if (my $file = ($dir->children)[0]) {
+        if (my $file = (grep { -f $_ } $dir->children)[0]) {
             my ($title) = $file->basename =~ /^(.+?)\.$video_id.\w+$/; # XXX
 
             $self->server->playlist->add_entry(

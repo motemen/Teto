@@ -9,14 +9,20 @@ has 'queue', (
 has 'ua', (
     is  => 'rw',
     isa => 'LWP::UserAgent',
-    default => sub { LWP::UserAgent->new },
+    default => sub {
+        my $ua = WWW::Mechanize->new;
+        eval { $ua->autopager->load_siteinfo };
+        warn $@ if $@;
+        return $ua;
+    },
 );
 
 __PACKAGE__->meta->make_immutable;
 
 use Teto::Logger qw($logger);
 
-use LWP::UserAgent;
+use WWW::Mechanize;
+use WWW::Mechanize::AutoPager;
 use HTML::TreeBuilder::XPath;
 use XML::Feed;
 
@@ -40,7 +46,7 @@ sub feed {
         $logger->log(debug => "$url seems like an HTML");
 
         my $tree = HTML::TreeBuilder::XPath->new;
-        $tree->parse($res->content);
+        $tree->parse($res->decoded_content);
 
         my $found;
         my %seen;
@@ -48,7 +54,7 @@ sub feed {
             my $url = $_->string_value;
             not $seen{$url}++ and $url;
         } $tree->findnodes('//a/@href');
-        $logger->log(debug => "@links");
+        $logger->log(debug => "@links") if @links;
 
         foreach my $link (@links) {
             $link =~ s"^/*"http://www.nicovideo.jp/" unless $link =~ /^https?:/;
@@ -56,6 +62,16 @@ sub feed {
                 $found++;
                 $logger->log(debug => "found $link");
                 $self->queue->push($link);
+            }
+        }
+
+        if ($found) {
+            if (my $url = $self->ua->next_link) {
+                $logger->log(debug => "autopager link found: $url");
+                $self->queue->push(sub {
+                    $self->feed($url);
+                    return;
+                });
             }
         }
 
