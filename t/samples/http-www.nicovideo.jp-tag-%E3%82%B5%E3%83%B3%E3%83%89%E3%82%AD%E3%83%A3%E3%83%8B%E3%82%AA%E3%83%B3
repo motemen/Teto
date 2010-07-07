@@ -1,0 +1,1923 @@
+HTTP/1.1 200 OK
+Date: Wed, 07 Jul 2010 16:51:05 GMT
+Server: Apache
+x-niconico-authflag: 0
+Vary: Accept-Encoding
+Connection: close
+Content-Type: text/html
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<meta name="copyright" content="&copy; niwango, inc.">
+
+<!---->
+<meta name="keywords" content="ニコニコ動画,サンドキャニオン">
+
+<link rel="alternate" charset="utf-8" type="application/rss+xml" title="タグ サンドキャニオン" href="/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=f&rss=2.0">
+<link rel="alternate" media="handheld" type="application/xhtml+xml" href="http://nicomoba.jp/tag.php?key=%83T%83%93%83h%83L%83%83%83j%83I%83%93">
+<link rel="start" href="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3" title="最初のページ">
+		<link rel="next" href="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?page=2" title="次のページ"><title>タグで動画検索 サンドキャニオン‐ニコニコ動画(9)</title>
+<base href="http://www.nicovideo.jp/">
+<link rel="shortcut icon" href="http://res.nimg.jp/img/favicon.ico">
+
+<link rel="stylesheet" type="text/css" charset="utf-8" href="http://res.nimg.jp/css/common.css?100604">
+
+
+<link rel="stylesheet" type="text/css" charset="utf-8" href="http://res.nimg.jp/css/tag.css?100604">
+<script type="text/javascript" src="http://res.nimg.jp/js/lib/prototype.js?1.5.1.1_2"></script>
+<script type="text/javascript" src="http://res.nimg.jp/js/common.js?090905"></script>
+<script type="text/javascript" src="http://res.nimg.jp/js/swfobject.js?4"></script>
+<script type="text/javascript" src="http://res.nimg.jp/js/nicolib.js?100531"></script>
+<script type="text/javascript" src="http://res.nimg.jp/js/ads.js?100611"></script>
+<script type="text/javascript" src="http://res.nimg.jp/js/__utm.js?080117"></script>
+
+<script type="text/javascript"><!--
+
+var User = { id: false, age: false, isPremium: false, isOver18: !!document.cookie.match(/nicoadult\s*=\s*1/), isMan: null };
+var q = "サンドキャニオン".unescapeHTML().replace(/&#([0-9]+);/g, function ($0, $1) { return String.fromCharCode($1); });
+var country = "jp";
+
+
+
+
+
+--></script>
+</head>
+
+<body id="PAGETOP" class="mode_2">
+<div id="PAGEHEADMENU">
+<!---->
+<div class="bg_headmenu" onmouseout="hideOBJ('headmenu_g1'); hideOBJ('headmenu_g2'); return false;"><div class="headmenu_width">
+
+<table height="28" cellpadding="0" cellspacing="4" summary="" class="headmenu" style="float:left;">
+<tr>
+<td><strong style="color:#FFF;">ニコニコ</strong> -
+<a href="http://www.nicovideo.jp/">動画</a> | <a href="http://seiga.nicovideo.jp/">静画</a> | <a href="http://live.nicovideo.jp/">生放送</a> | <a href="http://ch.nicovideo.jp/">チャンネル</a> …</td>
+<td nowrap onmouseover="showOBJ('headmenu_g1');"><span style="color:#CCC; text-decoration:underline;">その他▼</span>
+<div id="headmenu_g1" style="position:relative; display:none;" onmouseover="showOBJ('headmenu_g1'); return false;">
+	<div class="headmenu_g" onmouseout="hideOBJ('headmenu_g1'); return false;">
+	<table cellpadding="0" cellspacing="0">
+	<tr valign="top">
+	<td>
+	<a href="http://dic.nicovideo.jp/">大百科</a>
+	<a href="http://uad.nicovideo.jp/">ニコニ広告</a>
+	<a href="http://www.niconicommons.jp/">コモンズ</a>
+	<a href="http://dvd.nicovideo.jp/">ニコニコDVD</a>
+	<a href="http://park.nicovideo.jp/">遊園地</a>
+	</td>
+	<td>
+	<a href="http://ichiba.nicovideo.jp/">市場</a>
+	<a href="http://jk.nicovideo.jp/">実況</a>
+	<a href="http://com.nicovideo.jp/">コミュ二ティ</a>
+	<a href="http://chokuhan.nicovideo.jp/">ニコニコ直販</a>
+	</td>
+	</tr>
+	</table>
+	</div>
+</div>
+</td>
+</tr>
+</table>
+
+<table height="28" cellpadding="0" cellspacing="4" summary="" class="headmenu" style="float:right;">
+<tr>
+<td><span style="color:#CCC;">
+ようこそ ゲスト さん</span>
+ - <a href="https://secure.nicovideo.jp/secure/login_form" style="color:#F30;">ログイン</a> | <a href="my/top">マイページ</a>
+| <a href="http://www.smilevideo.jp/" target="_blank">動画を投稿</a>
+| <a href="/ranking" id="menu-ranking">ランキング</a> …</td>
+<td nowrap onmouseover="showOBJ('headmenu_g2');"><span style="color:#CCC; text-decoration:underline;">メニュー▼</span>
+<div id="headmenu_g2" style="position:relative; display:none;" onmouseover="showOBJ('headmenu_g2'); return false;">
+	<div class="headmenu_g" onmouseout="hideOBJ('headmenu_g2'); return false;" style="right:0;">
+	<a href="my/mylist">マイリスト</a>
+	<a href="my/watchlist">ウオッチリスト</a>
+	<a href="my/video">投稿動画</a>
+	<a href="history">視聴履歴</a>
+	<a href="https://secure.nicovideo.jp/secure/">アカウント設定</a>
+	<a href="http://help.nicovideo.jp/">ヘルプ</a>
+		</div>
+</div>
+</td>
+<td id="menu_switch">
+<a href="#" title="追従(クリックで固定)" id="menu_switch_fixed"  onclick="$(document.body).removeClassName('mode_2').addClassName('mode_1'); Cookie.set('nofix', 1, 1000*60*60*24*365, '.nicovideo.jp', '/'); return false;"><img src="http://res.nimg.jp/img/base/headmenu/mode_2.png" alt="追従"></a>
+<a href="#" title="固定(クリックで追従)" id="menu_switch_scroll" onclick="$(document.body).removeClassName('mode_1').addClassName('mode_2'); Cookie.remove('nofix', '.nicovideo.jp', '/'); return false;"><img src="http://res.nimg.jp/img/base/headmenu/mode_1.png" alt="固定"></a>
+</td>
+</tr>
+</table>
+
+<div style="clear:both;"></div>
+
+</div></div><!---->
+</div>
+
+<div id="PAGECONTAINER">
+	<div id="PAGEMAIN" class="body_984">
+		<div id="PAGEHEADER">
+		<table width="984" cellspacing="0" cellpadding="4" summary="" style="clear:both;">
+<tr>
+<td>
+
+<!--↓通常↓--><a href="related_tag/%E3%83%89%E3%83%AA%E3%83%AB"><img alt="ドリル" src="http://res.nimg.jp/img/base/head/icon/nico/667.gif"></a><!--↑通常↑-->
+</td>
+<td><a href="/" target="_top"><img src="http://res.nimg.jp/img/base/head/logo/nine.png" alt="ニコニコ動画"></a></td>
+<td width="100%">
+<form id="head_search_form" action="/tag" method="get" onsubmit="submitSearch(this.action, false); return false;"><input type="hidden" name="ref"><p><a href="#" class="head_ssw_0" onclick="submitSearch('/search', this); return false;"><img src="http://res.nimg.jp/img/_.gif" style="width:57px; height:22px;" alt="キーワード"></a><a href="#" class="head_ssw_1" onclick="submitSearch('/tag', this); return false;"><img src="http://res.nimg.jp/img/_.gif" style="width:31px; height:22px; background-position:-57px 0; margin:0 4px;" alt="タグ"></a><a href="#" class="head_ssw_0" onclick="submitSearch('/mylist_search', this); return false;"><img src="http://res.nimg.jp/img/_.gif" style="width:55px; height:22px; background-position:-88px 0;" alt="マイリスト"></a></p>
+<table cellpadding="0" cellspacing="0" summary="" style="border:solid 1px #C9CFCF;">
+<tr>
+<td><input type="text" name="s" id="bar_search" value="サンドキャニオン" style="width:192px; height:16px; font-size:16px; border:solid 2px #393F3F; margin:0; padding:2px;"></td>
+<td><input name="submit" type="image" src="http://res.nimg.jp/img/base/head/search/submit.png" alt="検索"></td>
+</tr>
+</table>
+</form>
+<script type="text/javascript"><!--
+function submitSearch(p, e) {
+	var f = $('head_search_form'), s = String.interpret(f.s.value).strip().replace(/%20/g, '+');
+	if (s != '') location.href = p + "/" + encodeURIComponent(s);
+	else if (e) { f.down('a.head_ssw_1').className = 'head_ssw_0'; e.className = 'head_ssw_1'; f.action = p; f.s.focus(); }
+}
+--></script>
+</td>
+<td><div class="ads_468"><!--↓表示してもよい↓-->
+
+<div id="web_pc_top"></div>
+<script type="text/javascript"><!--
+
+getAds('web_pc_top');
+
+
+--></script>
+
+<!--↑表示してもよい↑-->
+
+</div></td>
+</tr>
+</table>		</div>
+		<div id="PAGEBODY">
+		<!--↓タイトル↓-->
+<div class="mb8p4">
+<h1>タグ <span class="search_word" style="font-size:32px;" id="search_words"><span class="search_word">サンドキャニオン</span> </span> を含む動画の検索結果</h1>
+<p class="font12">登録数：<strong class="search_total">983件</strong> <span style="color:#CCC;">…</span>
+<a href="related_tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3">キーワード <strong><span class="search_word">サンドキャニオン</span> </strong> を含むタグを検索</a></p>
+</div>
+<!--↑タイトル↑-->
+
+
+<!--↓ニコニ広告↓-->
+<div id="nicoads">
+	<div id="uad_container">
+		<div class="mb8p4"><p class="font12" style="color:#666;">【読込中】ニコニ広告を読み込んでいます…</p></div>
+	</div>
+	<script type="text/javascript" charset="utf-8" src="http://res.nimg.jp/js/uad_embed.js"></script>
+	<script type="text/javascript"><!--
+	new UadEmbed({
+		url: "http://uad-api.nicovideo.jp/UadsBannerService/deliveryJsonp",
+		keyword: "サンドキャニオン",
+		element: "uad_container",
+		dictionary: {
+			uadURL: "http://uad.nicovideo.jp/",
+			resURL: "http://res.nimg.jp/"
+		}
+	});
+	--></script>
+</div>
+<!--↑ニコニ広告↑-->
+
+
+<div class="content_672">
+<!--↓左列↓-->
+
+	
+
+<!--↓動画該当あり↓-->
+
+<table width="100%" cellpadding="4" cellspacing="0">
+<tr>
+<td><form name="sort"><select name="sort" onChange="jumpMENU('parent',this,0)">
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3" selected>コメントが新しい順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?order=a">コメントが古い順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=v">再生数が多い順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=v&amp;order=a">再生数が少ない順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=r">コメント数が多い順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=r&amp;order=a">コメント数が少ない順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=m">マイリスト数が多い順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=m&amp;order=a">マイリスト数が少ない順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=f">投稿日時が新しい順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=f&amp;order=a">投稿日時が古い順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=l">再生時間が長い順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=l&amp;order=a">再生時間が短い順</option>
+</select></form></td>
+<td nowrap><style><!--
+.thumb_cols img { width:35px; height:18px; background:url('/img/common/thumb_cols/col_1.png'); border:0;}
+.thumb_cols a:link img , .thumb_cols a:visited img { background:url('/img/common/thumb_cols/col_0.png');}
+.thumb_cols a:hover img , .thumb_cols a:active img { background:url('/img/common/thumb_cols/col_1.png');}
+--></style>
+
+<p class="thumb_cols"><nobr><img src="http://res.nimg.jp/img/x.gif" alt="1列"><a href="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3" onclick="Cookie.set('col', '2', 1000*60*60*24*365, '.nicovideo.jp', '/')"><img src="http://res.nimg.jp/img/x.gif" alt="2列" style="background-position:-35px;"></a><a href="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3" onclick="Cookie.set('col', '4', 1000*60*60*24*365, '.nicovideo.jp', '/')"><img src="http://res.nimg.jp/img/x.gif" alt="4列" style="background-position:-70px;"></a></nobr></p>
+
+<!--p class="font12" align="right">現在の値＝</p--></td>
+<td width="100%" align="right"><table cellpadding="0" cellspacing="4" summary="" class="pager"><tr><td><span class="here">1</span><a href="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?page=2">2</a><a href="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?page=3">3</a><a href="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?page=4">4</a><a href="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?page=2">次へ</a></td></tr></table></td>
+</tr>
+</table>
+
+
+<table cellpadding="0" cellspacing="0" summary="videos">
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm8755361" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item1" style="display:none;">
+	<div id="thumb_uad_msg_sm8755361" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item1_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item1_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm8755361" onMouseover="showOBJ('thumb_uad_msg_sm8755361')" onMouseout="hideOBJ('thumb_uad_msg_sm8755361')"><img src="http://tn-skr2.smilevideo.jp/smile?i=8755361" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>1:12</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">378,511</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">4,307</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm8755361" style="color:#393F3F;"><strong class="vinfo_mylist">12,279</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm8755361" style="color:#393F3F;"><strong id="item1_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2009年11月09日 05:36</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm8755361" class="vinfo_title" title="変態先進国 黒子キャニオン【とある科学の超電磁砲】">変態先進国 黒子キャニオン【とある科学の超電磁砲】</a></nobr></p>
+<p class="font12" title="■骨ぇ鯖ェ・・・">■骨ぇ鯖ェ・・・</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm9908973" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item2" style="display:none;">
+	<div id="thumb_uad_msg_sm9908973" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item2_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item2_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm9908973" onMouseover="showOBJ('thumb_uad_msg_sm9908973')" onMouseout="hideOBJ('thumb_uad_msg_sm9908973')"><img src="http://tn-skr2.smilevideo.jp/smile?i=9908973" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>0:38</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">1,401</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">54</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm9908973" style="color:#393F3F;"><strong class="vinfo_mylist">38</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm9908973" style="color:#393F3F;"><strong id="item2_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2010年03月04日 17:14</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm9908973" class="vinfo_title" title="【カイジ】黒服先進国　別室行きだ！キャニオン【サンドキャニオン】">【カイジ】黒服先進国　別室行きだ！キャニオン【サンドキャニオン】</a></nobr></p>
+<p class="font12" title="母親「作り終えたなら、無条件で勉強部屋行きだ！」　ＵＰ主「ざわ・・ざわ・・」　　この動画を作るキッカ...">母親「作り終えたなら、無条件で勉強部屋行きだ！」　ＵＰ主「ざわ・・ざわ・・」　　この動画を作るキッカ...</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm7893444" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item3" style="display:none;">
+	<div id="thumb_uad_msg_sm7893444" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item3_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item3_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm7893444" onMouseover="showOBJ('thumb_uad_msg_sm7893444')" onMouseout="hideOBJ('thumb_uad_msg_sm7893444')"><img src="http://tn-skr1.smilevideo.jp/smile?i=7893444" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>25:40</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">292,627</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">71,035</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm7893444" style="color:#393F3F;"><strong class="vinfo_mylist">16,520</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm7893444" style="color:#393F3F;"><strong id="item3_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2009年08月10日 12:30</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm7893444" class="vinfo_title" title="星のカービィメドレー「☆ Speed Star DeluXe ☆ - THE MEDLEY OF KIRBY SSDX2 -」">星のカービィメドレー「☆ Speed Star DeluXe ☆ - THE MEDLEY OF KIRBY S...</a></nobr></p>
+<p class="font12" title="超高速で駆け抜ける24分間カービィシリーズメドレーです。このワープスターは緩やかに加速し、...">超高速で駆け抜ける24分間カービィシリーズメドレーです。このワープスターは緩やかに加速し、...</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm6578030" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item4" style="display:none;">
+	<div id="thumb_uad_msg_sm6578030" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item4_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item4_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm6578030" onMouseover="showOBJ('thumb_uad_msg_sm6578030')" onMouseout="hideOBJ('thumb_uad_msg_sm6578030')"><img src="http://tn-skr3.smilevideo.jp/smile?i=6578030" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>0:36</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">953,175</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">14,911</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm6578030" style="color:#393F3F;"><strong class="vinfo_mylist">19,117</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm6578030" style="color:#393F3F;"><strong id="item4_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2009年03月29日 01:34</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm6578030" class="vinfo_title" title="ビリデレ先進国　御坂【禁書×サンドキャニオン】">ビリデレ先進国　御坂【禁書×サンドキャニオン】</a></nobr></p>
+<p class="font12" title="ビリビリかわいいよビリビリ！⇒###このうぷ主はそげぶされました###２期が放送予定。">ビリビリかわいいよビリビリ！⇒###このうぷ主はそげぶされました###２期が放送予定。</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm10054072" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item5" style="display:none;">
+	<div id="thumb_uad_msg_sm10054072" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item5_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item5_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm10054072" onMouseover="showOBJ('thumb_uad_msg_sm10054072')" onMouseout="hideOBJ('thumb_uad_msg_sm10054072')"><img src="http://tn-skr1.smilevideo.jp/smile?i=10054072" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>0:51</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">6,199</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">98</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm10054072" style="color:#393F3F;"><strong class="vinfo_mylist">177</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm10054072" style="color:#393F3F;"><strong id="item5_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2010年03月17日 00:32</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm10054072" class="vinfo_title" title="ドラマCDより">ドラマCDより</a></nobr></p>
+<p class="font12" title="シリアスかと思いきやどっぷりギャグじゃないですか！やられた・・・。絶対買うぜ！来週まで待ちきれず作っ...">シリアスかと思いきやどっぷりギャグじゃないですか！やられた・・・。絶対買うぜ！来週まで待ちきれず作っ...</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm7376489" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item6" style="display:none;">
+	<div id="thumb_uad_msg_sm7376489" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item6_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item6_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm7376489" onMouseover="showOBJ('thumb_uad_msg_sm7376489')" onMouseout="hideOBJ('thumb_uad_msg_sm7376489')"><img src="http://tn-skr2.smilevideo.jp/smile?i=7376489" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>11:29</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">187,667</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">17,255</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm7376489" style="color:#393F3F;"><strong class="vinfo_mylist">4,481</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm7376489" style="color:#393F3F;"><strong id="item6_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2009年06月18日 11:03</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm7376489" class="vinfo_title" title="【ミラー】七色のニコニコ動画を元の曲で再現してみたver.D">【ミラー】七色のニコニコ動画を元の曲で再現してみたver.D</a></nobr></p>
+<p class="font12" title="突然の弾幕で気が付いたら塩だった！？何のことかな、糞ジャップ共！（ゲイツネタをご存知無い方は“幼少期...">突然の弾幕で気が付いたら塩だった！？何のことかな、糞ジャップ共！（ゲイツネタをご存知無い方は“幼少期...</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm5700479" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item7" style="display:none;">
+	<div id="thumb_uad_msg_sm5700479" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item7_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item7_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm5700479" onMouseover="showOBJ('thumb_uad_msg_sm5700479')" onMouseout="hideOBJ('thumb_uad_msg_sm5700479')"><img src="http://tn-skr4.smilevideo.jp/smile?i=5700479" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>0:48</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">254,219</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">25,102</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm5700479" style="color:#393F3F;"><strong class="vinfo_mylist">4,826</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm5700479" style="color:#393F3F;"><strong id="item7_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2008年12月30日 07:23</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm5700479" class="vinfo_title" title="【東方】 お酒入ってないぞキャニオン 【夢想夏郷MAD】">【東方】 お酒入ってないぞキャニオン 【夢想夏郷MAD】</a></nobr></p>
+<p class="font12" title="おぉ→さぁ↑けぇ↓　もこたーん　まつたけロボ～　// サブ垢MAD一覧 ･･･ mylist/10286090　// 歌っちゃった人...">おぉ→さぁ↑けぇ↓　もこたーん　まつたけロボ～　// サブ垢MAD一覧 ･･･ mylist/10286090　// 歌っちゃった人...</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm5191970" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item8" style="display:none;">
+	<div id="thumb_uad_msg_sm5191970" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item8_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item8_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm5191970" onMouseover="showOBJ('thumb_uad_msg_sm5191970')" onMouseout="hideOBJ('thumb_uad_msg_sm5191970')"><img src="http://tn-skr3.smilevideo.jp/smile?i=5191970" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>1:13</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">13,002</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">537</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm5191970" style="color:#393F3F;"><strong class="vinfo_mylist">277</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm5191970" style="color:#393F3F;"><strong id="item8_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2008年11月09日 07:00</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm5191970" class="vinfo_title" title="【ササヅカービィ3】メガネ先生国タッテロテロ【苺ましまろ】">【ササヅカービィ3】メガネ先生国タッテロテロ【苺ましまろ】</a></nobr></p>
+<p class="font12" title="　　　　　　　　">　　　　　　　　</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm8433218" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item9" style="display:none;">
+	<div id="thumb_uad_msg_sm8433218" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item9_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item9_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm8433218" onMouseover="showOBJ('thumb_uad_msg_sm8433218')" onMouseout="hideOBJ('thumb_uad_msg_sm8433218')"><img src="http://tn-skr3.smilevideo.jp/smile?i=8433218" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>0:36</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">160,372</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">3,980</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm8433218" style="color:#393F3F;"><strong class="vinfo_mylist">4,929</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm8433218" style="color:#393F3F;"><strong id="item9_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2009年10月06日 02:56</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm8433218" class="vinfo_title" title="桜野先進国ペッタンコー！（生徒会の一存×サンドキャニオン）">桜野先進国ペッタンコー！（生徒会の一存×サンドキャニオン）</a></nobr></p>
+<p class="font12" title="貧乳はステータスDA！希少価値DA！　mylist/12090528">貧乳はステータスDA！希少価値DA！　mylist/12090528</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm5068651" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item10" style="display:none;">
+	<div id="thumb_uad_msg_sm5068651" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item10_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item10_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm5068651" onMouseover="showOBJ('thumb_uad_msg_sm5068651')" onMouseout="hideOBJ('thumb_uad_msg_sm5068651')"><img src="http://tn-skr4.smilevideo.jp/smile?i=5068651" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>1:18</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">138,942</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">5,265</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm5068651" style="color:#393F3F;"><strong class="vinfo_mylist">2,169</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm5068651" style="color:#393F3F;"><strong id="item10_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2008年10月27日 20:54</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm5068651" class="vinfo_title" title="【星のカービィ】　ドナルド先進国らんらんるー♪　【ドナルド】">【星のカービィ】　ドナルド先進国らんらんるー♪　【ドナルド】</a></nobr></p>
+<p class="font12" title="■ドナルド×サンドキャニオンです。　■sm4915305に洗脳されて作ったのは言うまでもない　◇うｐしたもの→myli...">■ドナルド×サンドキャニオンです。　■sm4915305に洗脳されて作ったのは言うまでもない　◇うｐしたもの→myli...</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm4965375" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item11" style="display:none;">
+	<div id="thumb_uad_msg_sm4965375" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item11_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item11_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm4965375" onMouseover="showOBJ('thumb_uad_msg_sm4965375')" onMouseout="hideOBJ('thumb_uad_msg_sm4965375')"><img src="http://tn-skr4.smilevideo.jp/smile?i=4965375" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>1:13</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">95,017</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">3,108</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm4965375" style="color:#393F3F;"><strong class="vinfo_mylist">2,157</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm4965375" style="color:#393F3F;"><strong id="item11_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2008年10月18日 01:28</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm4965375" class="vinfo_title" title="重音テト　で　「サンドキャニオン」">重音テト　で　「サンドキャニオン」</a></nobr></p>
+<p class="font12" title="星のカービィのBGMです。どうしてもこの曲が頭から離れなくなったんで、切れ味のいいテト姉に頼んでもらい...">星のカービィのBGMです。どうしてもこの曲が頭から離れなくなったんで、切れ味のいいテト姉に頼んでもらい...</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm9176069" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item12" style="display:none;">
+	<div id="thumb_uad_msg_sm9176069" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item12_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item12_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm9176069" onMouseover="showOBJ('thumb_uad_msg_sm9176069')" onMouseout="hideOBJ('thumb_uad_msg_sm9176069')"><img src="http://tn-skr2.smilevideo.jp/smile?i=9176069" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>3:37</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">38,590</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">2,510</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm9176069" style="color:#393F3F;"><strong class="vinfo_mylist">1,760</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm9176069" style="color:#393F3F;"><strong id="item12_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2009年12月24日 00:04</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm9176069" class="vinfo_title" title="フタエノキワミでサンドキャニオン【合作】">フタエノキワミでサンドキャニオン【合作】</a></nobr></p>
+<p class="font12" title="4月2日はキワミ3周年！！ 七色合作もうｐ予定です、お楽しみ...">4月2日はキワミ3周年！！ 七色合作もうｐ予定です、お楽しみ...</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm11299556" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item13" style="display:none;">
+	<div id="thumb_uad_msg_sm11299556" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item13_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item13_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm11299556" onMouseover="showOBJ('thumb_uad_msg_sm11299556')" onMouseout="hideOBJ('thumb_uad_msg_sm11299556')"><img src="http://tn-skr1.smilevideo.jp/smile?i=11299556" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>0:36</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">381</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">21</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm11299556" style="color:#393F3F;"><strong class="vinfo_mylist">10</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm11299556" style="color:#393F3F;"><strong id="item13_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2010年07月06日 20:10</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm11299556" class="vinfo_title" title="【MAD】36秒で分かるすぎるの「孤児MOTHER3 その7」キャニオン">【MAD】36秒で分かるすぎるの「孤児MOTHER3 その7」キャニオン</a></nobr></p>
+<p class="font12" title="サルおかわいいよサルお　　　すぎるの孤児マザー3◆mylist/18916729前→sm11269499　　　次→　...">サルおかわいいよサルお　　　すぎるの孤児マザー3◆mylist/18916729前→sm11269499　　　次→　...</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm11304488" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item14" style="display:none;">
+	<div id="thumb_uad_msg_sm11304488" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item14_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item14_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm11304488" onMouseover="showOBJ('thumb_uad_msg_sm11304488')" onMouseout="hideOBJ('thumb_uad_msg_sm11304488')"><img src="http://tn-skr1.smilevideo.jp/smile?i=11304488" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>0:36</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">492</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">45</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm11304488" style="color:#393F3F;"><strong class="vinfo_mylist">16</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm11304488" style="color:#393F3F;"><strong id="item14_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2010年07月07日 07:51</strong> 投稿
+
+<span style="color:#C00;">17時間前</span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm11304488" class="vinfo_title" title="【遊戯王5D's】プラシドの究極体サンドキャニオン">【遊戯王5D&#039;s】プラシドの究極体サンドキャニオン</a></nobr></p>
+<p class="font12" title="プラシドは早く修理から戻ってくるといい。・・・と思ってたら、ようやくお戻りになられましたかｗｗｗｗ　...">プラシドは早く修理から戻ってくるといい。・・・と思ってたら、ようやくお戻りになられましたかｗｗｗｗ　...</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm5119569" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item15" style="display:none;">
+	<div id="thumb_uad_msg_sm5119569" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item15_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item15_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm5119569" onMouseover="showOBJ('thumb_uad_msg_sm5119569')" onMouseout="hideOBJ('thumb_uad_msg_sm5119569')"><img src="http://tn-skr2.smilevideo.jp/smile?i=5119569" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>0:36</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">365,564</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">4,534</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm5119569" style="color:#393F3F;"><strong class="vinfo_mylist">2,865</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm5119569" style="color:#393F3F;"><strong id="item15_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2008年11月02日 02:15</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm5119569" class="vinfo_title" title="エロアニメ先進国ニッポンポン【サンドキャニオン】">エロアニメ先進国ニッポンポン【サンドキャニオン】</a></nobr></p>
+<p class="font12" title="すっぽんすっぽんすっぽんぽん＼（＾o＾）／感染源sm4915305　先代様sm5105247">すっぽんすっぽんすっぽんぽん＼（＾o＾）／感染源sm4915305　先代様sm5105247</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm11287694" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item16" style="display:none;">
+	<div id="thumb_uad_msg_sm11287694" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item16_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item16_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm11287694" onMouseover="showOBJ('thumb_uad_msg_sm11287694')" onMouseout="hideOBJ('thumb_uad_msg_sm11287694')"><img src="http://tn-skr3.smilevideo.jp/smile?i=11287694" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>1:14</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">165</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">5</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm11287694" style="color:#393F3F;"><strong class="vinfo_mylist">2</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm11287694" style="color:#393F3F;"><strong id="item16_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2010年07月05日 16:42</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm11287694" class="vinfo_title" title="ブブゼラキャニオン">ブブゼラキャニオン</a></nobr></p>
+<p class="font12" title="手抜きな緑遊です。投稿スピードだけを重視しまブブヴェェェェェエェェェェェェエエェエェェェエェェェブェ...">手抜きな緑遊です。投稿スピードだけを重視しまブブヴェェェェェエェェェェェェエエェエェェェエェェェブェ...</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm8194415" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item17" style="display:none;">
+	<div id="thumb_uad_msg_sm8194415" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item17_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item17_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm8194415" onMouseover="showOBJ('thumb_uad_msg_sm8194415')" onMouseout="hideOBJ('thumb_uad_msg_sm8194415')"><img src="http://tn-skr4.smilevideo.jp/smile?i=8194415" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>1:12</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">15,424</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">622</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm8194415" style="color:#393F3F;"><strong class="vinfo_mylist">821</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm8194415" style="color:#393F3F;"><strong id="item17_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2009年09月11日 05:51</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm8194415" class="vinfo_title" title="赤ずきんと健康でサンドキャニオン">赤ずきんと健康でサンドキャニオン</a></nobr></p>
+<p class="font12" title="■（俺の頭は）もうだめだ・・・おしまいだぁ・・・ ■マイリス＞＞mylist/13125685">■（俺の頭は）もうだめだ・・・おしまいだぁ・・・ ■マイリス＞＞mylist/13125685</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm11204387" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item18" style="display:none;">
+	<div id="thumb_uad_msg_sm11204387" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item18_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item18_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm11204387" onMouseover="showOBJ('thumb_uad_msg_sm11204387')" onMouseout="hideOBJ('thumb_uad_msg_sm11204387')"><img src="http://tn-skr4.smilevideo.jp/smile?i=11204387" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>0:36</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">1,198</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">33</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm11204387" style="color:#393F3F;"><strong class="vinfo_mylist">10</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm11204387" style="color:#393F3F;"><strong id="item18_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2010年06月27日 17:43</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm11204387" class="vinfo_title" title="【MAD】36秒で分かるすぎるの「孤児MOTHER3 その4」キャニオン">【MAD】36秒で分かるすぎるの「孤児MOTHER3 その4」キャニオン</a></nobr></p>
+<p class="font12" title="てっててー♪・・・じゃない・・だと!?　※動画ラスト6秒は事故ではありません。　　　すぎるの孤児マザー3◆m...">てっててー♪・・・じゃない・・だと!?　※動画ラスト6秒は事故ではありません。　　　すぎるの孤児マザー3◆m...</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm11091953" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item19" style="display:none;">
+	<div id="thumb_uad_msg_sm11091953" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item19_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item19_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm11091953" onMouseover="showOBJ('thumb_uad_msg_sm11091953')" onMouseout="hideOBJ('thumb_uad_msg_sm11091953')"><img src="http://tn-skr2.smilevideo.jp/smile?i=11091953" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>0:36</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">3,836</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">127</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm11091953" style="color:#393F3F;"><strong class="vinfo_mylist">107</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm11091953" style="color:#393F3F;"><strong id="item19_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2010年06月17日 15:48</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm11091953" class="vinfo_title" title="【MAD】36秒で分かるすぎるの「孤児MOTHER3 その1」キャニオン">【MAD】36秒で分かるすぎるの「孤児MOTHER3 その1」キャニオン</a></nobr></p>
+<p class="font12" title="36秒シリーズをすぎるが実況するMOTHER3でやってみた。シリーズ化するかは未定だけどした際はよろし...">36秒シリーズをすぎるが実況するMOTHER3でやってみた。シリーズ化するかは未定だけどした際はよろし...</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm6378852" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item20" style="display:none;">
+	<div id="thumb_uad_msg_sm6378852" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item20_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item20_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm6378852" onMouseover="showOBJ('thumb_uad_msg_sm6378852')" onMouseout="hideOBJ('thumb_uad_msg_sm6378852')"><img src="http://tn-skr1.smilevideo.jp/smile?i=6378852" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>2:06</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">734,126</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">48,728</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm6378852" style="color:#393F3F;"><strong class="vinfo_mylist">27,205</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm6378852" style="color:#393F3F;"><strong id="item20_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2009年03月09日 05:41</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm6378852" class="vinfo_title" title="【遊戯王MAD】ツンデレキャニオン">【遊戯王MAD】ツンデレキャニオン</a></nobr></p>
+<p class="font12" title="社長他大勢にサンドキャニオンうたわせてみました。 　 　　　　　　　　　　　　　　　　　　　　　　　　...">社長他大勢にサンドキャニオンうたわせてみました。 　 　　　　　　　　　　　　　　　　　　　　　　　　...</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm5581420" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item21" style="display:none;">
+	<div id="thumb_uad_msg_sm5581420" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item21_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item21_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm5581420" onMouseover="showOBJ('thumb_uad_msg_sm5581420')" onMouseout="hideOBJ('thumb_uad_msg_sm5581420')"><img src="http://tn-skr1.smilevideo.jp/smile?i=5581420" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>0:36</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">282,873</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">5,680</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm5581420" style="color:#393F3F;"><strong class="vinfo_mylist">6,645</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm5581420" style="color:#393F3F;"><strong id="item21_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2008年12月18日 04:56</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm5581420" class="vinfo_title" title="うるちゃい先進国シャナたん　【シャナドキャニオン】">うるちゃい先進国シャナたん　【シャナドキャニオン】</a></nobr></p>
+<p class="font12" title="めろんパーンヽ(≧▽≦)ﾉ　■mylist/13054128　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　...">めろんパーンヽ(≧▽≦)ﾉ　■mylist/13054128　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　...</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="nm11310176" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item22" style="display:none;">
+	<div id="thumb_uad_msg_nm11310176" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item22_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item22_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/nm11310176" onMouseover="showOBJ('thumb_uad_msg_nm11310176')" onMouseout="hideOBJ('thumb_uad_msg_nm11310176')"><img src="http://tn-skr1.smilevideo.jp/smile?i=11310176" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>0:36</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">62</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">1</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/nm11310176" style="color:#393F3F;"><strong class="vinfo_mylist">4</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=nm11310176" style="color:#393F3F;"><strong id="item22_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2010年07月07日 20:35</strong> 投稿
+
+<span style="color:#C00;">5時間前</span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/nm11310176" class="vinfo_title" title="【音MAD】離せってんだよ!!×サンドキャニオン">【音MAD】離せってんだよ!!×サンドキャニオン</a></nobr></p>
+<p class="font12" title="ちょろっと思いついたので１時間でやった。反省はしていない。公開はしている。">ちょろっと思いついたので１時間でやった。反省はしていない。公開はしている。</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm6079558" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item23" style="display:none;">
+	<div id="thumb_uad_msg_sm6079558" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item23_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item23_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm6079558" onMouseover="showOBJ('thumb_uad_msg_sm6079558')" onMouseout="hideOBJ('thumb_uad_msg_sm6079558')"><img src="http://tn-skr3.smilevideo.jp/smile?i=6079558" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>0:36</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">502,422</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">9,357</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm6079558" style="color:#393F3F;"><strong class="vinfo_mylist">13,895</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm6079558" style="color:#393F3F;"><strong id="item23_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2009年02月08日 05:38</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm6079558" class="vinfo_title" title="ねこみみ先進国シャロン 【QMA×サンドキャニオン】">ねこみみ先進国シャロン 【QMA×サンドキャニオン】</a></nobr></p>
+<p class="font12" title="(´･ω･｀)ｼｬﾛｰﾝ■mylist/13054128　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　...">(´･ω･｀)ｼｬﾛｰﾝ■mylist/13054128　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　...</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm7749794" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item24" style="display:none;">
+	<div id="thumb_uad_msg_sm7749794" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item24_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item24_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm7749794" onMouseover="showOBJ('thumb_uad_msg_sm7749794')" onMouseout="hideOBJ('thumb_uad_msg_sm7749794')"><img src="http://tn-skr3.smilevideo.jp/smile?i=7749794" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>1:53</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">4,138</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">143</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm7749794" style="color:#393F3F;"><strong class="vinfo_mylist">28</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm7749794" style="color:#393F3F;"><strong id="item24_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2009年07月26日 16:56</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm7749794" class="vinfo_title" title="ゴマちゃんのテンションがダンス中にかなり上がったようです【MAD】">ゴマちゃんのテンションがダンス中にかなり上がったようです【MAD】</a></nobr></p>
+<p class="font12" title="少年アシベのゴマちゃんがダンスのオーディション中に覚醒したようです。それを一番早く発見したのは意外に...">少年アシベのゴマちゃんがダンスのオーディション中に覚醒したようです。それを一番早く発見したのは意外に...</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm7582131" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item25" style="display:none;">
+	<div id="thumb_uad_msg_sm7582131" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item25_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item25_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm7582131" onMouseover="showOBJ('thumb_uad_msg_sm7582131')" onMouseout="hideOBJ('thumb_uad_msg_sm7582131')"><img src="http://tn-skr4.smilevideo.jp/smile?i=7582131" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>0:37</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">23,783</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">384</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm7582131" style="color:#393F3F;"><strong class="vinfo_mylist">542</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm7582131" style="color:#393F3F;"><strong id="item25_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2009年07月09日 15:22</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm7582131" class="vinfo_title" title="ロリ百合先進国　かなめもみもみ【サンドキャニオン×かなめも】">ロリ百合先進国　かなめもみもみ【サンドキャニオン×かなめも】</a></nobr></p>
+<p class="font12" title="タイトル的な意味で、ひどいアニメだったｗ もみもみー。◆公開作品一覧→mylist/8236764◆">タイトル的な意味で、ひどいアニメだったｗ もみもみー。◆公開作品一覧→mylist/8236764◆</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm6210499" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item26" style="display:none;">
+	<div id="thumb_uad_msg_sm6210499" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item26_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item26_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm6210499" onMouseover="showOBJ('thumb_uad_msg_sm6210499')" onMouseout="hideOBJ('thumb_uad_msg_sm6210499')"><img src="http://tn-skr4.smilevideo.jp/smile?i=6210499" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>0:36</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">24,344</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">1,537</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm6210499" style="color:#393F3F;"><strong class="vinfo_mylist">943</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm6210499" style="color:#393F3F;"><strong id="item26_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2009年02月21日 00:00</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm6210499" class="vinfo_title" title="ムリダナ先進国エイラーニャ【ストライクウィッチーズ】">ムリダナ先進国エイラーニャ【ストライクウィッチーズ】</a></nobr></p>
+<p class="font12" title="2月21日はエイラの誕生日！ ストライクウィッチーズよりエイラ・イルマタル・ユーティライネンさん×...">2月21日はエイラの誕生日！ ストライクウィッチーズよりエイラ・イルマタル・ユーティライネンさん×...</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm5863771" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item27" style="display:none;">
+	<div id="thumb_uad_msg_sm5863771" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item27_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item27_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm5863771" onMouseover="showOBJ('thumb_uad_msg_sm5863771')" onMouseout="hideOBJ('thumb_uad_msg_sm5863771')"><img src="http://tn-skr4.smilevideo.jp/smile?i=5863771" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>38:19</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">10,032</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">1,131</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm5863771" style="color:#393F3F;"><strong class="vinfo_mylist">157</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm5863771" style="color:#393F3F;"><strong id="item27_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2009年01月17日 05:51</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm5863771" class="vinfo_title" title="【ニコニコ先進国】サンドキャニオンメドレー【ニッポンポン】">【ニコニコ先進国】サンドキャニオンメドレー【ニッポンポン】</a></nobr></p>
+<p class="font12" title="○○先進国で有名なサンドキャニオンのMAD作品があまりにも自然な無限ループだったので繋げてみた。全44曲な...">○○先進国で有名なサンドキャニオンのMAD作品があまりにも自然な無限ループだったので繋げてみた。全44曲な...</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm5261707" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item28" style="display:none;">
+	<div id="thumb_uad_msg_sm5261707" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item28_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item28_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm5261707" onMouseover="showOBJ('thumb_uad_msg_sm5261707')" onMouseout="hideOBJ('thumb_uad_msg_sm5261707')"><img src="http://tn-skr4.smilevideo.jp/smile?i=5261707" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>0:38</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">315,953</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">24,428</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm5261707" style="color:#393F3F;"><strong class="vinfo_mylist">6,452</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm5261707" style="color:#393F3F;"><strong id="item28_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2008年11月16日 12:49</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm5261707" class="vinfo_title" title="【遊戯王5D's MAD】満足するしかねぇ！鬼柳京介のサンドキャニオン">【遊戯王5D&#039;s MAD】満足するしかねぇ！鬼柳京介のサンドキャニオン</a></nobr></p>
+<p class="font12" title="＼(｀д´)ゝデュエッ！　　【mylist/2529756】">＼(｀д´)ゝデュエッ！　　【mylist/2529756】</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm8886393" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item29" style="display:none;">
+	<div id="thumb_uad_msg_sm8886393" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item29_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item29_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm8886393" onMouseover="showOBJ('thumb_uad_msg_sm8886393')" onMouseout="hideOBJ('thumb_uad_msg_sm8886393')"><img src="http://tn-skr2.smilevideo.jp/smile?i=8886393" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>0:40</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">13,206</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">389</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm8886393" style="color:#393F3F;"><strong class="vinfo_mylist">554</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm8886393" style="color:#393F3F;"><strong id="item29_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2009年11月23日 02:01</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm8886393" class="vinfo_title" title="【イナズマMAD】鬼道さんのトゥントゥクサンドキャニオン">【イナズマMAD】鬼道さんのトゥントゥクサンドキャニオン</a></nobr></p>
+<p class="font12" title="鬼道さんのトゥントゥクまみれになりたくて、動画はじめてつくってみました。何回作り直しても超次元な低画...">鬼道さんのトゥントゥクまみれになりたくて、動画はじめてつくってみました。何回作り直しても超次元な低画...</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm11290652" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item30" style="display:none;">
+	<div id="thumb_uad_msg_sm11290652" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item30_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item30_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm11290652" onMouseover="showOBJ('thumb_uad_msg_sm11290652')" onMouseout="hideOBJ('thumb_uad_msg_sm11290652')"><img src="http://tn-skr1.smilevideo.jp/smile?i=11290652" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>1:30</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">124</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">12</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm11290652" style="color:#393F3F;"><strong class="vinfo_mylist">6</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm11290652" style="color:#393F3F;"><strong id="item30_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2010年07月05日 21:27</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm11290652" class="vinfo_title" title="ｷｬﾆｵﾝ日和メドレー【ギャグマンガ日和×ｻﾝﾄﾞｷｬﾆｵﾝ】">ｷｬﾆｵﾝ日和メドレー【ギャグマンガ日和×ｻﾝﾄﾞｷｬﾆｵﾝ】</a></nobr></p>
+<p class="font12" title="歌ってみろ。（mylist/18791594）過去作（http://nikonikosean.blog13.fc2.com/）過疎で泣きそうなブログ">歌ってみろ。（mylist/18791594）過去作（http://nikonikosean.blog13.fc2.com/）過疎で泣きそうなブログ</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm11307812" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item31" style="display:none;">
+	<div id="thumb_uad_msg_sm11307812" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item31_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item31_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm11307812" onMouseover="showOBJ('thumb_uad_msg_sm11307812')" onMouseout="hideOBJ('thumb_uad_msg_sm11307812')"><img src="http://tn-skr1.smilevideo.jp/smile?i=11307812" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>0:36</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">125</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">5</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm11307812" style="color:#393F3F;"><strong class="vinfo_mylist">7</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm11307812" style="color:#393F3F;"><strong id="item31_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2010年07月07日 16:52</strong> 投稿
+
+<span style="color:#C00;">8時間前</span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm11307812" class="vinfo_title" title="ちくび先進国ミツドキャニオン">ちくび先進国ミツドキャニオン</a></nobr></p>
+<p class="font12" title="ちくび回 圧縮　mylist/12622621">ちくび回 圧縮　mylist/12622621</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+<tr valign="top">
+<td>
+
+
+
+<!---->
+<table width="640" cellpadding="0" cellspacing="4" summary="sm5296951" style="margin:0 0 8px;">
+<tr valign="top">
+<td><div id="item32" style="display:none;">
+	<div id="thumb_uad_msg_sm5296951" style="position:absolute; display:none;">
+		<div class="uad_comment">
+		<p class="font12" id="item32_uad_comment"><span style="color:#666;">-</span></p>
+		</div>
+	</div>
+</div>
+<div id="item32_thumb" class="uad_thumbfrm">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<p><a href="watch/sm5296951" onMouseover="showOBJ('thumb_uad_msg_sm5296951')" onMouseout="hideOBJ('thumb_uad_msg_sm5296951')"><img src="http://tn-skr4.smilevideo.jp/smile?i=5296951" alt="" class="img_std96"></a></p>
+<p class="vinfo_length"><span>1:18</span></p>
+</td>
+	<td class="font10" align="right"><div style="width:92px; overflow:hidden; padding-left:4px;"><nobr>再生：<strong class="vinfo_view">2,381</strong><br></nobr>
+<nobr>コメ：<strong class="vinfo_res">100</strong><br></nobr>
+<nobr>マイ：<a href="mylistcomment/video/sm5296951" style="color:#393F3F;"><strong class="vinfo_mylist">43</strong></a><br></nobr>
+<nobr>宣伝：<a href="http://uad.nicovideo.jp/ads/?vid=sm5296951" style="color:#393F3F;"><strong id="item32_uad_point_number" class="vinfo_uadp">0</strong></a><br></nobr>
+</div></td>
+	</tr>
+</table>
+	</div>
+</td>
+<td><div style="width:416px; overflow:hidden;">
+<p class="font12 thumb_num"><strong>2008年11月20日 01:08</strong> 投稿
+
+<span style="color:#C00;"></span>
+</p>
+<p class="font14" style="margin:2px 0;"><nobr><a href="watch/sm5296951" class="vinfo_title" title="【吉幾三】先進村になれる訳無ェ！！【サンドキャニオン】">【吉幾三】先進村になれる訳無ェ！！【サンドキャニオン】</a></nobr></p>
+<p class="font12" title="なんとかIKZO降臨祭の動画を出すことができました！しかし、バイトで生放送見れ無ェ／(＾o＾)＼">なんとかIKZO降臨祭の動画を出すことができました！しかし、バイトで生放送見れ無ェ／(＾o＾)＼</p>
+</div></td>
+</tr>
+</table>
+<!---->
+</td>
+</tr>
+</table>
+<!--↑動画該当あり↑-->
+
+<!--↓1ページ目:静画表示↓-->
+<!--↑1ページ目:静画表示↑-->
+
+
+<table width="100%" cellpadding="4" cellspacing="0">
+<tr>
+<td><form name="sort"><select name="sort" onChange="jumpMENU('parent',this,0)">
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3" selected>コメントが新しい順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?order=a">コメントが古い順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=v">再生数が多い順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=v&amp;order=a">再生数が少ない順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=r">コメント数が多い順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=r&amp;order=a">コメント数が少ない順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=m">マイリスト数が多い順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=m&amp;order=a">マイリスト数が少ない順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=f">投稿日時が新しい順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=f&amp;order=a">投稿日時が古い順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=l">再生時間が長い順</option>
+<option value="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?sort=l&amp;order=a">再生時間が短い順</option>
+</select></form></td>
+<td nowrap><style><!--
+.thumb_cols img { width:35px; height:18px; background:url('/img/common/thumb_cols/col_1.png'); border:0;}
+.thumb_cols a:link img , .thumb_cols a:visited img { background:url('/img/common/thumb_cols/col_0.png');}
+.thumb_cols a:hover img , .thumb_cols a:active img { background:url('/img/common/thumb_cols/col_1.png');}
+--></style>
+
+<p class="thumb_cols"><nobr><img src="http://res.nimg.jp/img/x.gif" alt="1列"><a href="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3" onclick="Cookie.set('col', '2', 1000*60*60*24*365, '.nicovideo.jp', '/')"><img src="http://res.nimg.jp/img/x.gif" alt="2列" style="background-position:-35px;"></a><a href="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3" onclick="Cookie.set('col', '4', 1000*60*60*24*365, '.nicovideo.jp', '/')"><img src="http://res.nimg.jp/img/x.gif" alt="4列" style="background-position:-70px;"></a></nobr></p>
+
+<!--p class="font12" align="right">現在の値＝</p--></td>
+<td width="100%" align="right"><table cellpadding="0" cellspacing="4" summary="" class="pager"><tr><td><span class="here">1</span><a href="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?page=2">2</a><a href="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?page=3">3</a><a href="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?page=4">4</a><a href="http://www.nicovideo.jp/tag/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3?page=2">次へ</a></td></tr></table></td>
+</tr>
+</table>
+
+
+
+
+
+<!--↑左列↑-->
+</div>
+<div class="content_312">
+<!--↓右列↓-->
+
+<div class="mb8p4">
+<p id="web_pc_prime"></p>
+</div>
+
+<script type="text/javascript"><!--
+	getAds('web_pc_prime');
+//--></script>
+
+<div class="mb8p4">
+<p><a href="http://dic.nicovideo.jp/" target="_blank"><img src="http://res.nimg.jp/img/common/related/pedia_frm_top.png" alt="ニコニコ大百科"></a></p>
+<div id="related_nicopedia">
+
+<table width="288" border="0" cellpadding="0" cellspacing="4">
+<tr><td class="font12">
+<strong>サンドキャニオン</strong> に関する記事：
+</td></tr>
+<tr><td><div id="related_nicopedia_body">
+<p class="font12" style="padding:4px;">読み込み中です…<noscript><br>JavaScript を有効にしてください。</noscript></p>
+</div></td></tr>
+<tr><td><div id="related_nicopedia_footer">
+<a target="_blank" href="http://dic.nicovideo.jp/a/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3">【続きを読む】</a>
+</div></td></tr>
+</table>
+
+</div>
+<p><img src="http://res.nimg.jp/img/common/related/pedia_frm_btm.png" alt=""></p>
+</div>
+
+<!--↓記事表示の本文(件数分繰返)↓-->
+<textarea style="display:none;" id="related_nicopedia_body_tpl">
+<div style="margin:4px;">
+<p class="font12">#summary#...</p>
+</div>
+</textarea>
+<!--↑記事表示の本文(件事数分繰返)↑-->
+
+<!--↓記事が見つからない＞本文↓-->
+<textarea style="display:none;" id="related_nicopedia_no_article_body_tpl">
+<p class="font12" style="padding:4px;">該当する記事は見つかりませんでした。<br>記事を書いてみませんか？</p>
+</textarea>
+<!--↑記事が見つからない＞本文↑-->
+
+<!--↓記事が見つからない＞フッター↓-->
+<textarea style="display:none;" id="related_nicopedia_no_article_footer_tpl">
+<a target="_blank" href="http://dic.nicovideo.jp/p/a/%E3%82%B5%E3%83%B3%E3%83%89%E3%82%AD%E3%83%A3%E3%83%8B%E3%82%AA%E3%83%B3">【記事を書く】</a>
+</textarea>
+<!--↑記事が見つからない＞フッター↑-->
+
+<script type="text/javascript" src="http://res.nimg.jp/js/nicopedia.js?20081001" charset="utf-8"></script>
+<script type="text/javascript">
+var pedia = new Nicopedia("サンドキャニオン").loadSummary();
+pedia.writtenOnly().withArticles(function (articles) {
+	var tpl = new Template($F("related_nicopedia_body_tpl"), /(^|.|\r|\n)(#(\w+)#)/);
+	var htmls = articles.map(function (article) {
+		article.summary = (article.summary || "").escapeHTML();
+		article.shortSummary = article.summary.length > 64
+			? article.summary.substring(0, 64) + "..." : article.summary;
+		article.url = article.getURL();
+		return tpl.evaluate(article);
+	});
+	if (htmls.length == 0) {
+		$("related_nicopedia_body").update($F("related_nicopedia_no_article_body_tpl"));
+		$("related_nicopedia_footer").update($F("related_nicopedia_no_article_footer_tpl"));
+	} else {
+		$("related_nicopedia_body").update(htmls.join(""));
+	}
+	var el = $("related_nicopedia_total");
+	if (el) el.update(pedia.total || "0");
+});
+pedia.execute();
+</script>
+
+<!---->
+
+
+<table width="100%" border="0" cellpadding="0" cellspacing="4" summary="" style="margin:0 0 8px;">
+<tr><td colspan="2" style="background:url('http://res.nimg.jp/img/ads/line_uneune.gif') repeat-x;"><img alt="" src="http://res.nimg.jp/img/_.gif" width="4" height="4"></td></tr>
+
+<tr id="web_pc_megatext"></tr>
+<tr><td colspan="2" style="background:url('http://res.nimg.jp/img/ads/line_uneune.gif') repeat-x;"><img alt="" src="http://res.nimg.jp/img/_.gif" width="4" height="4"></td></tr>
+
+</table>
+<textarea style="display:none;" id="web_pc_megatext_tpl">
+<td><a href="#url#" target="_blank"><img src="#image#" class="web_pc_megatext"></a></td>
+<td width="100%">
+<p style="margin:0 0 2px;"><img src="http://res.nimg.jp/img/ads/pr_flag.gif" alt="PR"></p>
+<p class="font12"><a href="#url#" target="_blank">#text#</a></p>
+</td>
+</textarea>
+
+<script type="text/javascript"><!--
+
+getAds("web_pc_megatext", {
+	template: function (data) {
+		data.text = data.text.replace(/\r?\n/g, "<br>");
+		var tpl = new Template($F("web_pc_megatext_tpl"), /(^|.|\r|\n)(#(\w+)#)/);
+		return tpl.evaluate(data);
+	}
+});
+
+--></script>
+	
+
+
+
+<!--↓DBに接続できた↓-->
+<!--↓該当なし↓-->
+<div class="mb8p4">
+<p><img src="http://res.nimg.jp/img/common/related/chcom_frm_top.png" alt=""></p>
+<p class="rel_chcom_msg">関連するチャンネルはありません。<br>
+<a href="http://ch.nicovideo.jp/" style="color:#FFF;">他のチャンネルを探してみませんか？</a>
+</p>
+<p><img src="http://res.nimg.jp/img/common/related/chcom_frm_btm.png" alt=""></p>
+</div>
+<!--↑該当なし↑-->
+<!--↑DBに接続できた↑-->
+
+
+
+<!--↓DBに接続できた↓-->
+<!--↓該当なし↓-->
+<div class="mb8p4">
+<p><img src="http://res.nimg.jp/img/common/related/chcom_frm_top.png" alt=""></p>
+<p class="rel_chcom_msg">関連するコミュニティはありません。<br>
+<a href="http://com.nicovideo.jp/create" style="color:#FFF;">コミュニティを開設してみませんか？</a>
+</p>
+<p><img src="http://res.nimg.jp/img/common/related/chcom_frm_btm.png" alt=""></p>
+</div>
+<!--↑該当なし↑-->
+<!--↑DBに接続できた↑-->
+
+<!--↑右列↑-->
+</div>
+
+<script type="text/javascript"><!--
+var searchInfo = {
+	page: 'tag',
+	query: q,
+	words: q.split(" "),
+	total: 983,
+	offset: 1,
+	length: 32,
+	result: [
+{id:"sm8755361",title:"変態先進国 黒子キャニオン【とある科学の超電磁砲】",image:"http://tn-skr2.smilevideo.jp/smile?i=8755361"},
+{id:"sm9908973",title:"【カイジ】黒服先進国　別室行きだ！キャニオン【サンドキャニオン】",image:"http://tn-skr2.smilevideo.jp/smile?i=9908973"},
+{id:"sm7893444",title:"星のカービィメドレー「☆ Speed Star DeluXe ☆ - THE MEDLEY OF KIRBY SSDX2 -」",image:"http://tn-skr1.smilevideo.jp/smile?i=7893444"},
+{id:"sm6578030",title:"ビリデレ先進国　御坂【禁書×サンドキャニオン】",image:"http://tn-skr3.smilevideo.jp/smile?i=6578030"},
+{id:"sm10054072",title:"ドラマCDより",image:"http://tn-skr1.smilevideo.jp/smile?i=10054072"},
+{id:"sm7376489",title:"【ミラー】七色のニコニコ動画を元の曲で再現してみたver.D",image:"http://tn-skr2.smilevideo.jp/smile?i=7376489"},
+{id:"sm5700479",title:"【東方】 お酒入ってないぞキャニオン 【夢想夏郷MAD】",image:"http://tn-skr4.smilevideo.jp/smile?i=5700479"},
+{id:"sm5191970",title:"【ササヅカービィ3】メガネ先生国タッテロテロ【苺ましまろ】",image:"http://tn-skr3.smilevideo.jp/smile?i=5191970"},
+{id:"sm8433218",title:"桜野先進国ペッタンコー！（生徒会の一存×サンドキャニオン）",image:"http://tn-skr3.smilevideo.jp/smile?i=8433218"},
+{id:"sm5068651",title:"【星のカービィ】　ドナルド先進国らんらんるー♪　【ドナルド】",image:"http://tn-skr4.smilevideo.jp/smile?i=5068651"},
+{id:"sm4965375",title:"重音テト　で　「サンドキャニオン」",image:"http://tn-skr4.smilevideo.jp/smile?i=4965375"},
+{id:"sm9176069",title:"フタエノキワミでサンドキャニオン【合作】",image:"http://tn-skr2.smilevideo.jp/smile?i=9176069"},
+{id:"sm11299556",title:"【MAD】36秒で分かるすぎるの「孤児MOTHER3 その7」キャニオン",image:"http://tn-skr1.smilevideo.jp/smile?i=11299556"},
+{id:"sm11304488",title:"【遊戯王5D\'s】プラシドの究極体サンドキャニオン",image:"http://tn-skr1.smilevideo.jp/smile?i=11304488"},
+{id:"sm5119569",title:"エロアニメ先進国ニッポンポン【サンドキャニオン】",image:"http://tn-skr2.smilevideo.jp/smile?i=5119569"},
+{id:"sm11287694",title:"ブブゼラキャニオン",image:"http://tn-skr3.smilevideo.jp/smile?i=11287694"},
+{id:"sm8194415",title:"赤ずきんと健康でサンドキャニオン",image:"http://tn-skr4.smilevideo.jp/smile?i=8194415"},
+{id:"sm11204387",title:"【MAD】36秒で分かるすぎるの「孤児MOTHER3 その4」キャニオン",image:"http://tn-skr4.smilevideo.jp/smile?i=11204387"},
+{id:"sm11091953",title:"【MAD】36秒で分かるすぎるの「孤児MOTHER3 その1」キャニオン",image:"http://tn-skr2.smilevideo.jp/smile?i=11091953"},
+{id:"sm6378852",title:"【遊戯王MAD】ツンデレキャニオン",image:"http://tn-skr1.smilevideo.jp/smile?i=6378852"},
+{id:"sm5581420",title:"うるちゃい先進国シャナたん　【シャナドキャニオン】",image:"http://tn-skr1.smilevideo.jp/smile?i=5581420"},
+{id:"nm11310176",title:"【音MAD】離せってんだよ!!×サンドキャニオン",image:"http://tn-skr1.smilevideo.jp/smile?i=11310176"},
+{id:"sm6079558",title:"ねこみみ先進国シャロン 【QMA×サンドキャニオン】",image:"http://tn-skr3.smilevideo.jp/smile?i=6079558"},
+{id:"sm7749794",title:"ゴマちゃんのテンションがダンス中にかなり上がったようです【MAD】",image:"http://tn-skr3.smilevideo.jp/smile?i=7749794"},
+{id:"sm7582131",title:"ロリ百合先進国　かなめもみもみ【サンドキャニオン×かなめも】",image:"http://tn-skr4.smilevideo.jp/smile?i=7582131"},
+{id:"sm6210499",title:"ムリダナ先進国エイラーニャ【ストライクウィッチーズ】",image:"http://tn-skr4.smilevideo.jp/smile?i=6210499"},
+{id:"sm5863771",title:"【ニコニコ先進国】サンドキャニオンメドレー【ニッポンポン】",image:"http://tn-skr4.smilevideo.jp/smile?i=5863771"},
+{id:"sm5261707",title:"【遊戯王5D\'s MAD】満足するしかねぇ！鬼柳京介のサンドキャニオン",image:"http://tn-skr4.smilevideo.jp/smile?i=5261707"},
+{id:"sm8886393",title:"【イナズマMAD】鬼道さんのトゥントゥクサンドキャニオン",image:"http://tn-skr2.smilevideo.jp/smile?i=8886393"},
+{id:"sm11290652",title:"ｷｬﾆｵﾝ日和メドレー【ギャグマンガ日和×ｻﾝﾄﾞｷｬﾆｵﾝ】",image:"http://tn-skr1.smilevideo.jp/smile?i=11290652"},
+{id:"sm11307812",title:"ちくび先進国ミツドキャニオン",image:"http://tn-skr1.smilevideo.jp/smile?i=11307812"},
+{id:"sm5296951",title:"【吉幾三】先進村になれる訳無ェ！！【サンドキャニオン】",image:"http://tn-skr4.smilevideo.jp/smile?i=5296951"}
+	]
+};
+
+Nico.onReady(function () {
+	var uad = new UserAdvertisement();
+	searchInfo.result.each(function (item, index) {
+		uad.addTarget(item.id, "item" + (index+1));
+	});
+	uad.load();
+});
+--></script>		</div>
+		<div id="PAGEFOOTER">
+		<div class="foot_pagetop">
+<p><a href="JavaScript:ANCHOR('PAGETOP')"><img src="http://res.nimg.jp/img/base/foot/pagetop_7.gif" alt="ページトップ"></a></p>
+<noscript><p class="font12" style="color:#C00; margin-top:4px;">Javascriptが無効になっていると、サイト内の一部機能がご利用いただけません</p></noscript>
+</div>
+
+<table width="976" cellpadding="0" cellspacing="0" summary="" style="font-size:12px; color:#9AA; margin:4px 4px 0;">
+<tr valign="bottom">
+<td width="100%">
+<a href="http://www.nicovideo.jp/">トップ</a> …
+<a target="_blank" href="http://info.nicovideo.jp/base/phishing.html" style="color:#C00;">フィッシング詐欺にご注意！</a> |
+<a target="_blank" href="http://info.nicovideo.jp/base/rule.html">利用規約</a> |
+<a target="_blank" href="http://info.nicovideo.jp/base/declaration.html">宣言</a> |
+<a target="_blank" href="http://info.nicovideo.jp/base/award.html">受賞</a> |
+<a target="_blank" href="/rss">RSS</a> |
+<a target="_blank" href="http://bbs.nicovideo.jp/">掲示板</a> |
+<a target="_blank" href="http://help.nicovideo.jp/">ヘルプ</a> |
+<a target="_blank" href="http://info.nicovideo.jp/smile/handbook/">動画投稿ハンドブック</a>
+</td>
+<td style="padding-left:4px;"><img src="http://res.nimg.jp/img/base/foot/www.png" alt="WWW" usemap="#WORLDWIDE"></td>
+</tr>
+</table>
+
+<map name="WORLDWIDE">
+<area shape="rect" coords="0,0,18,15"  href="http://www.nicovideo.jp/" alt="Japan">
+<area shape="rect" coords="20,0,38,15" href="http://tw.nicovideo.jp/" alt="Taiwan">
+<area shape="rect" coords="40,0,58,15" href="http://es.nicovideo.jp/" alt="Spain">
+<area shape="rect" coords="60,0,78,15" href="http://de.nicovideo.jp/" alt="German">
+</map>
+
+<table width="984" cellpadding="0" cellspacing="4">
+<tr><td class="foot_bg" height="28">
+<div style="float:left;">動画：<strong>4,391,638</strong>／再生：<strong>18,053,277,070</strong>／コメント：<strong>2,577,005,456</strong></div>
+<div style="float:right; padding-left:8px;"><a style="color:#FFF;" href="https://secure.nicovideo.jp/secure/ads_form">広告出稿に関するお問い合わせ</a></div>
+</td></tr>
+<tr><td class="font12" style="color:#666;">
+<strong style="color:#222;">推奨環境…</strong>
+<nobr style="color:#444;">OS：</nobr>Windows XP, Vista, 7 &amp; Mac OS X Leopard, Snow Leopard ／
+<nobr style="color:#444;">ブラウザ：</nobr>Internet Explorer, Firefox, Safari(Mac版のみ), 各最新版 ／
+<nobr style="color:#444;">プラグイン：</nobr>Adobe Flash Player 10以降 ／
+<nobr style="color:#444;">その他：</nobr>クッキー( cookie )制限をしている場合は nicovideo.jp を許可
+</td></tr>
+</table>
+
+<div style="padding:4px;"><p class="dot_1"><img src="http://res.nimg.jp/img/_.gif" alt=""></p></div>
+
+<p style="padding:4px; text-align:center;"><a href="http://niwango.jp/" target="_blank"><img src="http://res.nimg.jp/img/base/foot/incorporated.gif" alt="&copy; niwango, Inc."></a></p>
+		</div>
+	</div>
+</div>
+
+
+
+
+</body>
+</html>

@@ -59,19 +59,27 @@ sub _feed_by_html {
     $tree->parse($res->decoded_content);
 
     my $found;
-    my %seen;
-    my @links = grep $_, map {
-        my $url = $_->string_value;
-        not $seen{$url}++ and $url;
-    } $tree->findnodes('//a/@href');
-    $logger->log(debug => "@links") if @links;
 
-    foreach my $link (@links) {
-        $link =~ s"^/*"http://www.nicovideo.jp/" unless $link =~ /^https?:/;
-        if (_url_is_like_nicovideo $link) {
+    my @entries;
+    my %url_to_entry;
+    foreach ($tree->findnodes('//a[@href]')) {
+        my $url = $_->attr('href');
+        if ($url_to_entry{$url}) {
+            $url_to_entry{$url}{title} ||= $_->as_text;
+        } else {
+            push @entries, $url_to_entry{$url} = {
+                title => $_->as_text,
+                url   => $url,
+            };
+        }
+    }
+
+    foreach my $entry (@entries) {
+        $entry->{url} =~ s"^/*"http://www.nicovideo.jp/" unless $entry->{url} =~ /^https?:/;
+        if (_url_is_like_nicovideo $entry->{url}) {
             $found++;
-            $logger->log(debug => "found $link");
-            $self->queue->push($link);
+            $logger->log(debug => "found $entry->{url}");
+            $self->queue->push($entry);
         }
     }
 

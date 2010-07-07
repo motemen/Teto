@@ -20,9 +20,12 @@ Synopsis
 TODO
 ----
  * リンク抽出するときにタイトルも抽出する
- * 403 になると何もできなくなる
+ * 403 になると何もできなくなる → キューを辿る条件をきつくした
  * ニコ動以外のサイト
- * AutoPagerize
+ * <del>AutoPagerize</del>
+ * Twitter
+ * nm\d+ って再生できるのか
+ * マイリストは JS が必要らしい…
 
 Screenshot
 ----------
