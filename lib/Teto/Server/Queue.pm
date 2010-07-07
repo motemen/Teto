@@ -62,6 +62,10 @@ sub next {
     return $next;
 }
 
+sub size {
+    return scalar @{shift->queue};
+}
+
 sub remove {
     my ($self, $i) = @_;
     if ($self->index < $i) {

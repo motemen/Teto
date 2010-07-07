@@ -44,59 +44,71 @@ sub feed {
 
     if ($res->content_type =~ /html/) {
         $logger->log(debug => "$url seems like an HTML");
-
-        my $tree = HTML::TreeBuilder::XPath->new;
-        $tree->parse($res->decoded_content);
-
-        my $found;
-        my %seen;
-        my @links = grep $_, map {
-            my $url = $_->string_value;
-            not $seen{$url}++ and $url;
-        } $tree->findnodes('//a/@href');
-        $logger->log(debug => "@links") if @links;
-
-        foreach my $link (@links) {
-            $link =~ s"^/*"http://www.nicovideo.jp/" unless $link =~ /^https?:/;
-            if (_url_is_like_nicovideo $link) {
-                $found++;
-                $logger->log(debug => "found $link");
-                $self->queue->push($link);
-            }
-        }
-
-        if ($found) {
-            if (my $url = $self->ua->next_link) {
-                $logger->log(debug => "autopager link found: $url");
-                $self->queue->push(sub {
-                    $self->feed($url);
-                    return;
-                });
-            }
-        }
-
-        return $found;
+        return $self->_feed_by_html($res);
     }
     elsif ($res->content_type =~ /rss|atom|xml/) {
         $logger->log(debug => "$url seems like a feed");
-
-        my $feed = XML::Feed->parse(\$res->content)
-            or warn XML::Feed->errstr and return;
-        my $found;
-        foreach my $entry ($feed->entries) {
-            my $link = $entry->link;
-            if (_url_is_like_nicovideo $link) {
-                $found++;
-                my $title = $entry->title;
-                $logger->log(debug => "found $title <$link>");
-                $self->queue->push({
-                    title => $title,
-                    url   => $link,
-                });
-            }
-        }
-        return $found;
+        return $self->_feed_by_feed($res);
     }
+}
+
+sub _feed_by_html {
+    my ($self, $res) = @_;
+
+    my $tree = HTML::TreeBuilder::XPath->new;
+    $tree->parse($res->decoded_content);
+
+    my $found;
+    my %seen;
+    my @links = grep $_, map {
+        my $url = $_->string_value;
+        not $seen{$url}++ and $url;
+    } $tree->findnodes('//a/@href');
+    $logger->log(debug => "@links") if @links;
+
+    foreach my $link (@links) {
+        $link =~ s"^/*"http://www.nicovideo.jp/" unless $link =~ /^https?:/;
+        if (_url_is_like_nicovideo $link) {
+            $found++;
+            $logger->log(debug => "found $link");
+            $self->queue->push($link);
+        }
+    }
+
+    if ($found) {
+        if (my $url = $self->ua->next_link) {
+            $logger->log(debug => "autopager link found: $url");
+            $self->queue->push(sub {
+                $self->feed($url);
+                return ();
+            });
+        }
+    }
+
+    return $found;
+}
+
+sub _feed_by_feed {
+    my ($self, $res) = @_;
+
+    my $feed = XML::Feed->parse(\$res->content)
+        or warn XML::Feed->errstr and return;
+
+    my $found;
+    foreach my $entry ($feed->entries) {
+        my $link = $entry->link;
+        if (_url_is_like_nicovideo $link) {
+            $found++;
+            my $title = $entry->title;
+            $logger->log(debug => "found $title <$link>");
+            $self->queue->push({
+                title => $title,
+                url   => $link,
+            });
+        }
+    }
+
+    return $found;
 }
 
 1;
