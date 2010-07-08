@@ -14,8 +14,11 @@ Synopsis
 	./teto.pl 'http://www.nicovideo.jp/tag/サンドキャニオン?sort=v'
 
  * http://yourhost:9090/stream にプレーヤでアクセスすると連続して音声を聴けます。
+   * 動的なタイトルの更新に対応しているプレーヤー (iTunes, foobar2000 など) で聴く必要があります.
  * http://yourhost:9090/ をブラウザで開くといろいろ見られます。
  * 初回時には script/setup-pit.pl を実行して、ログイン情報を設定する必要があります。
+
+アイコンは [Mini Pixel Icons](http://icondock.com/free/mini-pixel-icons) のものを使用しました。
 
 TODO
 ----
@@ -26,7 +29,8 @@ TODO
  * Twitter
  * nm\d+ って再生できるのか
  * マイリストは JS が必要らしい…
+ * ICY 対応してないのも
 
 Screenshot
 ----------
-[![http://f.hatena.ne.jp/motemen/20100628065201](http://img.f.hatena.ne.jp/images/fotolife/m/motemen/20100628/20100628065201.png)](http://f.hatena.ne.jp/motemen/20100628065201)
+[![http://f.hatena.ne.jp/motemen/20100708224728](http://img.f.hatena.ne.jp/images/fotolife/m/motemen/20100708/20100708224728.png)](http://f.hatena.ne.jp/motemen/20100708224728)

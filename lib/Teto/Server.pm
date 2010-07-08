@@ -120,6 +120,23 @@ sub setup_callbacks {
             $self->queue->remove(int $req->parm('i'));
             $req->respond({ redirect => '/' });
         },
+        '/static' => sub {
+            my ($server, $req) = @_;
+            $server->stop_request;
+
+            my $path = $req->url->path;
+            $path =~ s<^/+><>;
+            open my $fh, '<', $path or do {
+                warn "$path: $!";
+                $req->respond([
+                    404, 'Not Found', { 'Content-Type' => 'text/html' }, '404 Not Found'
+                ]);
+                return;
+            };
+            $req->respond({
+                content => [ 'image/gif', do { local $/; <$fh> } ]
+            })
+        },
         '/' => sub {
             my ($server, $req) = @_;
             $req->respond([
