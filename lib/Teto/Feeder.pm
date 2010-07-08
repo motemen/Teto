@@ -99,7 +99,7 @@ sub _feed_by_html {
 sub _feed_by_feed {
     my ($self, $res) = @_;
 
-    my $feed = XML::Feed->parse(\$res->content)
+    my $feed = XML::Feed->parse(\$res->decoded_content)
         or warn XML::Feed->errstr and return;
 
     my $found;
