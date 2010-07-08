@@ -17,7 +17,7 @@ $server->queue->start_async;
 
 my $w; $w = AE::io *STDIN, 0, sub {
     chomp (my $url = <STDIN>);
-    $server->queue->push($url) if $url;
+    $server->enqueue($url) if $url;
 };
 
 if (eval { require AnyEvent::Monitor::CPU }) {
