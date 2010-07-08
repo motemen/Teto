@@ -30,6 +30,8 @@ TODO
  * nm\d+ って再生できるのか
  * マイリストは JS が必要らしい…
  * ICY 対応してないのも
+ * Queue ちゃんと表示
+ * HTTP GET で固まる/進行状況
 
 Screenshot
 ----------
