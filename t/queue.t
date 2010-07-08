@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More;
+use Test::More tests => 13;
 use Teto::Server;
 
 use_ok 'Teto::Server::Queue';

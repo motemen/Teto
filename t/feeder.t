@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More;
+use Test::More tests => 4;
 use Teto::Server::Queue;
 
 use_ok 'Teto::Feeder';
