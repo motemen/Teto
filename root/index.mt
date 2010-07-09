@@ -21,10 +21,10 @@ h1 a {
     text-decoration: none;
 }
 h2 {
-     margin-top: 0.2em;
+    margin-top: 0.2em;
     font-family: Georgia;
     position: absolute;
-    left: 5%;
+    right: 88%;
     color: #385D66;
 }
 div#container {

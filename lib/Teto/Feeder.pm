@@ -25,6 +25,7 @@ use WWW::Mechanize;
 use WWW::Mechanize::AutoPager;
 use HTML::TreeBuilder::XPath;
 use XML::Feed;
+use JSON::XS qw(decode_json);
 
 sub _url_is_like_nicovideo {
     my $url = shift;
@@ -42,7 +43,10 @@ sub feed {
     my $res = $self->ua->get($url);
     return if $res->is_error;
 
-    if ($res->content_type =~ /html/) {
+    if ($url =~ m<^http://www\.nicovideo\.jp/mylist/\d+>) {
+        $logger->log(debug => "$url seems like a nicovideo mylist");
+        return $self->_feed_by_nicovideo_mylist($res);
+    } elsif ($res->content_type =~ /html/) {
         $logger->log(debug => "$url seems like an HTML");
         return $self->_feed_by_html($res);
     }
@@ -116,6 +120,29 @@ sub _feed_by_feed {
         }
     }
 
+    return $found;
+}
+
+sub _feed_by_nicovideo_mylist {
+    my ($self, $res) = @_;
+
+    my ($json) = $res->decoded_content =~ /\bMylist\.preload\(\d+,(.+?)\);/ or return;
+    my $list = decode_json $json;
+
+    use YAML;
+    warn YAML::Dump [ map $_->{item_data}->{title}, @$list ];
+
+    my $found;
+    foreach (@$list) {
+        my $url   = 'http://www.nicovideo.jp/watch/' . ($_->{item_data}->{video_id} || next);
+        my $title = $_->{item_data}->{title};
+        $found++;
+        $logger->log(debug => "found $title <$url>");
+        $self->queue->push({
+            title => $title,
+            url   => $url,
+        });
+    }
     return $found;
 }
 

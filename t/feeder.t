@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 4;
+use Test::More tests => 5;
 use Teto::Server::Queue;
 
 use_ok 'Teto::Feeder';
@@ -43,6 +43,25 @@ subtest 'タグ' => sub {
     is_deeply $q->queue->[0], {
         title => '変態先進国 黒子キャニオン【とある科学の超電磁砲】',
         url   => 'http://www.nicovideo.jp/watch/sm8755361',
+    };
+
+    done_testing;
+};
+
+$q->queue([]);
+
+subtest 'マイリスト', sub {
+    use utf8;
+
+    my $res = fake_http_response('http://www.nicovideo.jp/mylist/12065500');
+    ok $res->is_success;
+
+    $feeder->_feed_by_nicovideo_mylist($res);
+
+    is $q->size, 27;
+    is_deeply $q->queue->[0], {
+        title => '【VOCALOID】公開マイリスト一覧入口【無限公開マイリスト】',
+        url   => 'http://www.nicovideo.jp/watch/sm3555836',
     };
 
     done_testing;
