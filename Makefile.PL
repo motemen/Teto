@@ -26,6 +26,7 @@ requires 'Text::MicroTemplate';
 requires 'XML::Feed';
 requires 'WWW::Mechanize';
 requires 'WWW::Mechanize::AutoPager';
+requires 'JSON::XS';
 
 test_requires 'Test::More';
 test_requires 'File::Find::Rule';
