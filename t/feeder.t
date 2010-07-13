@@ -1,6 +1,7 @@
 use strict;
 use warnings;
-use Test::More tests => 5;
+use utf8;
+use Test::More tests => 11;
 use Teto::Server::Queue;
 
 use_ok 'Teto::Feeder';
@@ -8,7 +9,7 @@ use_ok 'Teto::Feeder';
 my $q = Teto::Server::Queue->new;
 my $feeder = new_ok 'Teto::Feeder', [ queue => $q ];
 
-subtest 'はてブ' => sub {
+{
     use utf8;
 
     my $res = fake_http_response('http://b.hatena.ne.jp/motemen/');
@@ -24,13 +25,11 @@ subtest 'はてブ' => sub {
         title => 'ゆめにっきキャニオン‐ニコニコ動画(ββ)',
         url   => 'http://www.nicovideo.jp/watch/sm7786003',
     } ];
-
-    done_testing;
-};
+}
 
 $q->queue([]);
 
-subtest 'タグ' => sub {
+{
     use utf8;
 
     # 「サンドキャニオン」タグ
@@ -44,15 +43,11 @@ subtest 'タグ' => sub {
         title => '変態先進国 黒子キャニオン【とある科学の超電磁砲】',
         url   => 'http://www.nicovideo.jp/watch/sm8755361',
     };
-
-    done_testing;
-};
+}
 
 $q->queue([]);
 
-subtest 'マイリスト', sub {
-    use utf8;
-
+{
     my $res = fake_http_response('http://www.nicovideo.jp/mylist/12065500');
     ok $res->is_success;
 
@@ -63,9 +58,9 @@ subtest 'マイリスト', sub {
         title => '【VOCALOID】公開マイリスト一覧入口【無限公開マイリスト】',
         url   => 'http://www.nicovideo.jp/watch/sm3555836',
     };
+}
 
-    done_testing;
-};
+done_testing;
 
 use HTTP::Response;
 
@@ -80,5 +75,3 @@ sub fake_http_response {
     local $/;
     return HTTP::Response->parse(<$fh>);
 }
-
-done_testing;

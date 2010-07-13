@@ -129,9 +129,6 @@ sub _feed_by_nicovideo_mylist {
     my ($json) = $res->decoded_content =~ /\bMylist\.preload\(\d+,(.+?)\);/ or return;
     my $list = decode_json $json;
 
-    use YAML;
-    warn YAML::Dump [ map $_->{item_data}->{title}, @$list ];
-
     my $found;
     foreach (@$list) {
         my $url   = 'http://www.nicovideo.jp/watch/' . ($_->{item_data}->{video_id} || next);
