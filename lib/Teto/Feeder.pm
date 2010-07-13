@@ -43,6 +43,14 @@ sub feed {
     my $res = $self->ua->get($url);
     return if $res->is_error;
 
+    return $self->feed_res($res, $url);
+}
+
+sub feed_res {
+    my ($self, $res, $url) = @_;
+
+    $url ||= $res->base;
+
     if ($url =~ m<^http://www\.nicovideo\.jp/mylist/\d+>) {
         $logger->log(debug => "$url seems like a nicovideo mylist");
         return $self->_feed_by_nicovideo_mylist($res);

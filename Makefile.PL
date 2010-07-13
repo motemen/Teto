@@ -29,6 +29,8 @@ requires 'WWW::Mechanize::AutoPager';
 requires 'JSON::XS';
 
 test_requires 'Test::More';
+test_requires 'Tset::Base';
+test_requires 'Tset::Deep';
 test_requires 'File::Find::Rule';
 
 tests 't/*.t';
