@@ -147,12 +147,10 @@ ul#queue li {
     <ul id="queue">
 ? foreach (0 .. $#{$_{server}->queue->queue}) {
 ?   my $entry = $_{server}->queue->queue->[$_];
-?   my $url   = ref $entry eq 'HASH' ? $entry->{url}   : $entry;
-?   my $title = ref $entry eq 'HASH' ? $entry->{title} : $entry;
 ?   my $selected = $_ == $_{server}->queue->index;
     <li <? if ($selected) { ?>class="selected"<? } ?>>
       <span class="indicator">&raquo;</span>
-      <img src="http://favicon.hatena.ne.jp/?url=<?= $url ?>" width="16" height="16" /><a href="<?= $url ?>"><?= $u->($title) ?></a>
+      <?=Text::MicroTemplate::encoded_string $entry->as_html ?>
     </li>
 ? }
 

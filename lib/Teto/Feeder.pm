@@ -77,11 +77,11 @@ sub _feed_by_html {
     foreach ($tree->findnodes('//a[@href]')) {
         my $url = $_->attr('href');
         if ($url_to_entry{$url}) {
-            $url_to_entry{$url}{title} ||= $_->as_text;
+            $url_to_entry{$url}{name} ||= $_->as_text;
         } else {
             push @entries, $url_to_entry{$url} = {
-                title => $_->as_text,
-                url   => $url,
+                name => $_->as_text,
+                url  => $url,
             };
         }
     }
@@ -98,9 +98,12 @@ sub _feed_by_html {
     if ($found) {
         if (my $url = $self->ua->next_link) {
             $logger->log(debug => "autopager link found: $url");
-            $self->queue->push(sub {
-                $self->feed($url);
-                return ();
+            $self->queue->push({
+                name => "AutoPager $url",
+                code => sub {
+                    $self->feed($url);
+                    return ();
+                },
             });
         }
     }
@@ -122,8 +125,8 @@ sub _feed_by_feed {
             my $title = $entry->title;
             $logger->log(debug => "found $title <$link>");
             $self->queue->push({
-                title => $title,
-                url   => $link,
+                name => $title,
+                url  => $link,
             });
         }
     }
@@ -144,8 +147,8 @@ sub _feed_by_nicovideo_mylist {
         $found++;
         $logger->log(debug => "found $title <$url>");
         $self->queue->push({
-            title => $title,
-            url   => $url,
+            name => $title,
+            url  => $url,
         });
     }
     return $found;

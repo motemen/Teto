@@ -42,6 +42,11 @@ sub only {
     return [ map { exists $index_to_value{$_} ? $index_to_value{$_} : Test::Deep::ignore() } (0 .. $indices[-1]) ];
 }
 
+sub map_noclass {
+    use Test::Deep ();
+    [ map { ref =~ /^Test::Deep/ ? $_ : Test::Deep::noclass($_) } @{ $_[0] } ];
+}
+
 sub utf8 {
     use Encode;
     return Encode::decode_utf8($_[0]);
@@ -52,26 +57,26 @@ __END__
 === はてなブックマーク
 --- url
 http://b.hatena.ne.jp/motemen/
---- queue
-- title: 重音テト　で　「サンドキャニオン」‐ニコニコ動画(秋)
+--- queue map_noclass
+- name: 重音テト　で　「サンドキャニオン」‐ニコニコ動画(秋)
   url: http://www.nicovideo.jp/watch/sm4965375
-- title: ゆめにっきキャニオン‐ニコニコ動画(ββ)
+- name: ゆめにっきキャニオン‐ニコニコ動画(ββ)
   url: http://www.nicovideo.jp/watch/sm7786003
 
 === ニコニコ動画タグ一覧
 --- url
 http://www.nicovideo.jp/tag/サンドキャニオン
---- queue only=0,30
-- title: 変態先進国 黒子キャニオン【とある科学の超電磁砲】
+--- queue only=0,30 map_noclass
+- name: 変態先進国 黒子キャニオン【とある科学の超電磁砲】
   url: http://www.nicovideo.jp/watch/sm8755361
-- title: 【吉幾三】先進村になれる訳無ェ！！【サンドキャニオン】
+- name: 【吉幾三】先進村になれる訳無ェ！！【サンドキャニオン】
   url: http://www.nicovideo.jp/watch/sm5296951
 
 === ニコニコ動画マイリスト
 --- url
 http://www.nicovideo.jp/mylist/12065500
---- queue only=0,26
-- title: 【VOCALOID】公開マイリスト一覧入口【無限公開マイリスト】
+--- queue only=0,26 map_noclass
+- name: 【VOCALOID】公開マイリスト一覧入口【無限公開マイリスト】
   url: http://www.nicovideo.jp/watch/sm3555836
-- title: 【初音ミク他】 VOCALOMANIA SPEED2 【高速ノンストップメドレー】
+- name: 【初音ミク他】 VOCALOMANIA SPEED2 【高速ノンストップメドレー】
   url: http://www.nicovideo.jp/watch/sm8078428

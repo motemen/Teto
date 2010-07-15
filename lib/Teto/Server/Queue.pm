@@ -36,11 +36,22 @@ use AnyEvent;
 use Guard ();
 use Teto::Writer;
 use Teto::Logger qw($logger);
+use Teto::Server::Queue::Entry;
 
 sub push {
     my $self = shift;
-    $logger->log(debug => "<< $_") for @_;
-    CORE::push @{$self->queue}, @_;
+    foreach (@_) {
+        my $entry = Teto::Server::Queue::Entry->new($_);
+        $logger->log(debug => "<< $entry");
+        CORE::push @{$self->{queue}}, $entry;
+    }
+}
+
+sub insert {
+    my $self = shift;
+    my @entries = map { Teto::Server::Queue::Entry->new($_) } @_;
+    $logger->log(debug => "<< $_") for @entries;
+    splice @{$self->{queue}}, $self->index, 0, @entries;
 }
 
 sub next {
@@ -53,9 +64,9 @@ sub next {
     my $next = $self->queue->[ $self->index ];
     $self->{index}++;
 
-    if (ref $next eq 'CODE') {
-        my @res = $next->();
-        splice @{$self->queue}, $self->index, 0, @res;
+    if ($next->code) {
+        my @res = $next->code->();
+        $self->insert(@res) if @res;
         return $self->next;
     }
 
@@ -100,14 +111,14 @@ sub start {
         return;
     };
 
-    my $url;
-    if (ref $next eq 'HASH') {
-        $url = $next->{url};
-        $logger->log(notice => "#$self->{index}: $next->{title} <$url>");
-    } else {
-        $url = $next;
-        $logger->log(notice => "#$self->{index}: $url");
-    }
+    my $url = $next->url;
+#   if (ref $next eq 'HASH') {
+#       $url = $next->{url};
+#       $logger->log(notice => "#$self->{index}: $next->{title} <$url>");
+#   } else {
+#       $url = $next;
+#       $logger->log(notice => "#$self->{index}: $url");
+#   }
 
     my $cv = $self->writer->write($url)
         or do {
