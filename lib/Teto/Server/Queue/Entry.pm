@@ -42,9 +42,9 @@ __PACKAGE__->meta->make_immutable;
 sub as_html {
     my $self = shift;
     if ($self->url) {
-        qq#<img src="$self->{icon_url}" width="16" height="16" /><a href="$self->{url}">$self->{name}</a>#;
+        qq#<a href="$self->{url}">$self->{name}</a>#;
     } else {
-        qq#<img src="$self->{icon_url}" width="16" height="16" />$self->{name}#;
+        qq#$self->{name}#;
     }
 }
 
