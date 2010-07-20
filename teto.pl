@@ -6,12 +6,27 @@ use lib 'lib';
 use Teto::Server;
 use Teto::Logger qw($logger);
 
-my @urls = @ARGV;
-
 $logger->add_logger(screen => { min_level => 'debug' });
 
 my $server = Teto::Server->new;
 $server->setup_callbacks;
+
+my @urls;
+my @components;
+
+while (my $arg = shift @ARGV) {
+    if ($arg =~ /^\+(.+)/) {
+        my $module = $1;
+        eval qq{ require $module } or do {
+            $logger->log(warn => $@);
+            next;
+        };
+        push @components, $module->new(server => $server);
+    } else {
+        push @urls, $arg;
+    }
+}
+
 $server->enqueue(@urls) if @urls;
 $server->queue->start_async;
 
