@@ -3,7 +3,7 @@ use Any::Moose;
 
 use AnyEvent::HTTPD;
 use Text::MicroTemplate::File;
-use POSIX;
+use POSIX qw(ceil);
 use Encode;
 
 use Teto::Server::Queue;
@@ -139,9 +139,10 @@ sub setup_callbacks {
         },
         '/' => sub {
             my ($server, $req) = @_;
+            my $content = $self->mt->render_file('root/index.mt', server => $self)->as_string;
+            $content = Encode::encode_utf8 $content if Encode::is_utf8 $content;
             $req->respond([
-                200, 'OK', { 'Content-Type' => 'text/html' }, 
-                $self->mt->render_file('root/index.mt', server => $self)->as_string,
+                200, 'OK', { 'Content-Type' => 'text/html' }, $content
             ]);
         },
     );

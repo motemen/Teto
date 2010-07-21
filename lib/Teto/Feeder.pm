@@ -27,9 +27,14 @@ use HTML::TreeBuilder::XPath;
 use XML::Feed;
 use JSON::XS qw(decode_json);
 
+sub BUILD {
+    my ($class, $params) = @_;
+    $params->{queue} ||= $params->{server}->queue;
+}
+
 sub _url_is_like_nicovideo {
     my $url = shift;
-    $url =~ m<^http://www\.nicovideo\.jp/watch/(s\w+\d+)>;
+    $url =~ m<^http://(?:www\.nicovideo\.jp/watch|nico\.ms)/[sn]m\d+>;
 }
 
 sub feed {

@@ -14,8 +14,8 @@ $server->setup_callbacks;
 my @urls;
 my @components;
 
-while (my $arg = shift @ARGV) {
-    if ($arg =~ /^\+(.+)/) {
+foreach (@ARGV) {
+    if (/^\+(.+)/) {
         my $module = $1;
         eval qq{ require $module } or do {
             $logger->log(warn => $@);
@@ -23,7 +23,7 @@ while (my $arg = shift @ARGV) {
         };
         push @components, $module->new(server => $server);
     } else {
-        push @urls, $arg;
+        push @urls, $_;
     }
 }
 

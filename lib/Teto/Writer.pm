@@ -44,7 +44,7 @@ sub transcode {
 sub write {
     my ($self, $url) = @_;
 
-    $url =~ m<^http://www\.nicovideo\.jp/watch/(s\w+\d+)> or return;
+    $url =~ m<^http://(?:www\.nicovideo\.jp/watch|nico\.ms)/([sn]m\d+)> or return;
 
     my $video_id = $1;
     Encode::_utf8_off($video_id) if Encode::is_utf8 $video_id;

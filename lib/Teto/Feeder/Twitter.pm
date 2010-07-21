@@ -16,12 +16,6 @@ has 'guard', (
     builder => '_build_guard',
 );
 
-# TODO Feeder に
-sub BUILD {
-    my ($class, $params) = @_;
-    $params->{queue} ||= $params->{server}->queue;
-}
-
 sub _build_guard {
     my $self = shift;
     my $config = pit_get('twitter.com');
