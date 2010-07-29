@@ -122,7 +122,7 @@ sub start {
 
     my $cv = $self->writer->write($url)
         or do {
-            $logger->log(info => 'writer did not write');
+            $logger->log(debug => 'writer did not write');
             $self->unguard;
             return;
         };

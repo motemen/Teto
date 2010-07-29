@@ -96,7 +96,7 @@ sub update_status {
     no warnings 'uninitialized';
     Encode::_utf8_off $status{title} if Encode::is_utf8 $status{title};
     if ($self->status->{title} ne $status{title}) {
-        $logger->log(info => "status title: $self->{status}->{title} -> $status{title}");
+        $logger->log(notice => "status title: $self->{status}->{title} -> $status{title}");
     }
     $self->status(+{ %status });
 }

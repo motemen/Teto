@@ -86,7 +86,7 @@ sub write {
 
     my $res = $client->user_agent->get($url); # TODO AnyEvent 化…
     unless ($res->is_success) {
-        $logger->log(info => "$url: " . $res->message);
+        $logger->log(warn => "$url: " . $res->message);
         if ($res->code == 403) {
             # XXX そもそもこれが出ないようにするべき
             $logger->log(notice => 'Got 403, sleep 30s');
@@ -121,7 +121,7 @@ sub write {
     $req->headers->scan(sub { $headers{$_[0]} = $_[1] });
 
     my $file = $self->cache_dir->file($video_id, "$title.$video_id.$ext");
-    $logger->log(info => ">> $file");
+    $logger->log(notice => ">> $file");
 
     $file->dir->mkpath;
     my $fh = $file->openw;
