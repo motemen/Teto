@@ -3,6 +3,9 @@ use strict;
 use warnings;
 use lib 'lib';
 
+use Coro;
+use Coro::LWP;
+
 use Teto::Server;
 use Teto::Logger qw($logger);
 
@@ -21,18 +24,24 @@ foreach (@ARGV) {
             $logger->log(warn => $@);
             next;
         };
-        push @components, $module->new(server => $server);
+        push @components, my $c = $module->new(server => $server);
     } else {
         push @urls, $_;
     }
 }
 
 $server->enqueue(@urls) if @urls;
-$server->queue->start_async;
+
+async {
+    $server->queue->start;
+};
 
 my $w; $w = AE::io *STDIN, 0, sub {
     chomp (my $url = <STDIN>);
     $server->enqueue($url) if $url;
+    if (eval { require Module::Refresh }) {
+        Module::Refresh->refresh;
+    }
 };
 
 if (eval { require AnyEvent::Monitor::CPU }) {

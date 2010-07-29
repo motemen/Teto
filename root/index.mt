@@ -130,7 +130,7 @@ ul#queue li {
 ? foreach (grep $_, (reverse @{$_{server}->playlist->entries})[0..4]) {
     <li>
     <img src="<?= $_->{image_url} ?>"/>
-    <a href="<?= $_->{source_url} ?>"><?= $u->($_->{title}) ?></a>
+    <a href="<?= $_->{source_url} ?>"><?= $_->{title} ?></a>
     <!--
     <dl class="info">
       <dt>media</dt> <dd><a href="<?= $_->{url} ?>"><?= $_->{url} ?></a></dd>

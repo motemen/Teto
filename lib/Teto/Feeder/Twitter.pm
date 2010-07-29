@@ -1,10 +1,12 @@
 package Teto::Feeder::Twitter;
 use Any::Moose;
 
+use Coro;
 use AnyEvent::HTTP;
 use Config::Pit;
 use MIME::Base64;
 use Encode;
+use Regexp::Common 'URI';
 
 use Teto::Logger '$logger';
 

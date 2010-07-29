@@ -12,6 +12,9 @@ requires 'AnyEvent::Util';
 requires 'AnyEvent::HTTPD';
 requires 'Guard';
 
+requires 'Coro';
+requires 'Coro::LWP';
+
 requires 'Log::Dispatch';
 requires 'Exporter::Lite';
 
@@ -27,6 +30,7 @@ requires 'XML::Feed';
 requires 'WWW::Mechanize';
 requires 'WWW::Mechanize::AutoPager';
 requires 'JSON::XS';
+requires 'Regexp::Common';
 
 test_requires 'Test::More';
 test_requires 'Tset::Base';
