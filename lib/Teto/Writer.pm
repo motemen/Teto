@@ -20,10 +20,19 @@ has 'cache_dir', (
     default => '.cache',
 );
 
+has 'store_file', (
+    is  => 'rw',
+    isa => 'Bool',
+    default => 1,
+);
+
 __PACKAGE__->meta->make_immutable;
 
 use AnyEvent::HTTP;
 use AnyEvent::Util;
+
+use Coro::Handle;
+use Coro::LWP;
 
 use Teto::Logger qw($logger);
 
@@ -34,11 +43,27 @@ use Config::Pit;
 use Encode;
 
 sub transcode {
-    my ($self, $file, $cb) = @_;
-    $file = Encode::encode_utf8 $file if Encode::is_utf8 $file;
+    my ($self, $file_or_fh, $cb) = @_;
+    my @args = (
+        '>',  $cb,
+        '2>', sub {
+            $logger->log(debug => "ffmpeg: @_") unless "@_" =~ /configuration:/;
+        },
+    );
+    
+    my $file;
+    if (ref $file_or_fh) {
+        $file = '-';
+        push @args, ( '<', $file_or_fh );
+    } else {
+        $file = $file_or_fh;
+        $file = Encode::encode_utf8 $file if Encode::is_utf8 $file;
+    }
+
     my @command = (qw(ffmpeg -i), $file, qw(-ab 192k -acodec libmp3lame -f mp3 -)); # TODO config
     $logger->log(debug => qq(running '@command'));
-    run_cmd \@command, '>', $cb, '2>', sub { $logger->log(debug => "ffmpeg: @_") };
+
+    return run_cmd \@command, @args;
 }
 
 sub write {
@@ -115,34 +140,47 @@ sub write {
     my $req = GET $media_url;
     $client->user_agent->cookie_jar->add_cookie_header($req);
 
-    my %headers;
-    $headers{'Referer'} = undef;
-    $headers{'User-Agent'} = $client->user_agent->agent;
+    my %headers = (
+        'Referer' => undef,
+        'User-Agent' => $client->user_agent->agent,
+    );
     $req->headers->scan(sub { $headers{$_[0]} = $_[1] });
 
-    my $file = $self->cache_dir->file($video_id, "$title.$video_id.$ext");
-    $logger->log(notice => ">> $file");
+    my $fh;
+    if ($self->store_file) {
+        my $file = $self->cache_dir->file($video_id, "$title.$video_id.$ext");
+        $logger->log(notice => ">> $file");
+        $file->dir->mkpath;
+        $fh = $file->openw;
+    }
 
-    $file->dir->mkpath;
-    my $fh = $file->openw;
+    my ($reader, $writer) = portable_pipe;
+    $writer = unblock $writer;
 
-    my $cv = AE::cv;
-    http_get $media_url, headers => \%headers, sub {
-        my ($data, $headers) = @_;
-        if ($headers->{Status} =~ /^2/) {
-            $fh->print($data);
-            $fh->close;
-            my $transcode_cv = $self->transcode("$file", sub {
-                my $data = shift;
-                return unless defined $data;
-                $self->server->update_status(title => $title); # TODO
-                $self->server->push_buffer($data);
-            });
-            $transcode_cv->cb(sub { $cv->send });
+    my $w; $w = http_get $media_url, headers => \%headers, on_body => sub {
+        my ($content, $headers) = @_;
+        if ($headers->{Status} != 200) {
+            $logger->log(error => "$media_url: $headers->{Status} $headers->{Reason}");
+            undef $w;
         }
+        $writer->print($content);
+        $fh->print($content) if $fh;
+    }, sub {
+        $writer->close;
+        $fh->close if $fh;
+        $logger->log(notice => "done $media_url");
     };
 
-    return $cv;
+    return $self->transcode($reader, sub {
+        my $data = shift;
+        if (!defined $data) {
+            $writer->close;
+            $reader->close;
+            return;
+        }
+        $self->server->update_status(title => $title); # TODO
+        $self->server->push_buffer($data);
+    });
 }
 
 1;

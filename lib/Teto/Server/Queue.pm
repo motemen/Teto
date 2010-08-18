@@ -127,6 +127,10 @@ sub start {
             return;
         };
     $cv->cb(sub {
+        my $exit_code = shift->recv || 0;
+        if ($exit_code != 0) {
+            $logger->log(error => "transcoder exited with code $exit_code");
+        }
         $self->server->wrote_one_track;
         $self->unguard;
     });
