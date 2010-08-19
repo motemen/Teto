@@ -1,8 +1,4 @@
 ? local %_ = @_;
-? my $u = sub {
-?   require Encode;
-?   Encode::is_utf8($_[0]) ? Encode::encode_utf8($_[0]) : $_[0];
-? };
 <!DOCTYPE html>
 <html>
   <head>
@@ -140,7 +136,7 @@ ul#queue li {
 ? }
     </ul>
 ? if (@{$_{server}->playlist->entries} > 5) {
-    <p class="more"><a href="#">more</a></p>
+    <p class="more"><a href="#TODO">more</a></p>
 ? }
 
     <h2>Queue</h2>

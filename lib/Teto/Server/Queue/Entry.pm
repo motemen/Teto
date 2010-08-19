@@ -41,10 +41,11 @@ __PACKAGE__->meta->make_immutable;
 
 sub as_html {
     my $self = shift;
-    if ($self->url) {
-        qq#<a href="$self->{url}">$self->{name}</a>#;
+    if (my $url = $self->url) {
+        my $name = $self->name || $url;
+        return qq#<a href="$url">$name</a>#;
     } else {
-        qq#$self->{name}#;
+        return $self->name || '#CODE';
     }
 }
 

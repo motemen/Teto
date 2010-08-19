@@ -20,6 +20,12 @@ has 'cache_dir', (
     default => '.cache',
 );
 
+has 'client', (
+    is  => 'rw',
+    isa => 'WWW::NicoVideo::Download',
+    lazy_build => 1,
+);
+
 has 'store_file', (
     is  => 'rw',
     isa => 'Bool',
@@ -78,6 +84,9 @@ sub write {
     if (-d (my $dir = $self->cache_dir->subdir($video_id))) {
         if (my $file = (grep { -f $_ } $dir->children)[0]) {
             my ($title) = $file->basename =~ /^(.+?)\.$video_id.\w+$/; # XXX
+            unless (Encode::is_utf8 $title) {
+                $title = decode_utf8 $title;
+            }
 
             $self->server->playlist->add_entry(
                 title      => $title,
@@ -95,40 +104,22 @@ sub write {
         }
     }
 
-    my $config = pit_get('nicovideo.jp');
-    my $client = WWW::NicoVideo::Download->new(
-        email    => $config->{username},
-        password => $config->{password},
-    );
-
-    # share ua
-    if ($self->ua) {
-        $client->user_agent($self->ua);
-    } else {
-        $self->ua($client->user_agent);
-        $self->ua->show_progress(1);
-    }
-
-    my $res = $client->user_agent->get($url); # TODO AnyEvent 化…
+    my $res = $self->client->user_agent->get($url);
     unless ($res->is_success) {
         $logger->log(warn => "$url: " . $res->message);
         if ($res->code == 403) {
-            # XXX そもそもこれが出ないようにするべき
-            $logger->log(notice => 'Got 403, sleep 30s');
+            $logger->log(notice => 'Got 403, sleep for 30s');
             sleep 30;
         }
-        my $cv = AE::cv;
-        $cv->send;
-        return $cv;
+        return;
     }
-
-    my $tree  = HTML::TreeBuilder::XPath->new_from_content($res->decoded_content);
-    my $title = $tree->findvalue('//h1');
-
-    my $media_url = $client->prepare_download($video_id);
-    my $media_res = $client->user_agent->head($media_url);
-    my $ext = (split '/', $media_res->header('Content-Type'))[1] || 'flv';
-    $ext = 'swf' if $ext =~ /flash/;
+    
+    my $title = $self->extract_title($res);
+    my $media_url = eval { $self->client->prepare_download($video_id) };
+    if ($@) {
+        $logger->log(error => "$@");
+        return;
+    }
 
     $self->server->playlist->add_entry(
         title      => $title,
@@ -137,50 +128,82 @@ sub write {
         image_url  => 'http://tn-skr1.smilevideo.jp/smile?i=' . do { $video_id =~ /(\d+)/; $1 },
     );
 
-    my $req = GET $media_url;
-    $client->user_agent->cookie_jar->add_cookie_header($req);
-
-    my %headers = (
-        'Referer' => undef,
-        'User-Agent' => $client->user_agent->agent,
-    );
-    $req->headers->scan(sub { $headers{$_[0]} = $_[1] });
-
     my $fh;
-    if ($self->store_file) {
-        my $file = $self->cache_dir->file($video_id, "$title.$video_id.$ext");
-        $logger->log(notice => ">> $file");
-        $file->dir->mkpath;
-        $fh = $file->openw;
-    }
-
     my ($reader, $writer) = portable_pipe;
     $writer = unblock $writer;
 
-    my $w; $w = http_get $media_url, headers => \%headers, on_body => sub {
-        my ($content, $headers) = @_;
-        if ($headers->{Status} != 200) {
-            $logger->log(error => "$media_url: $headers->{Status} $headers->{Reason}");
-            undef $w;
-        }
-        $writer->print($content);
-        $fh->print($content) if $fh;
-    }, sub {
-        $writer->close;
-        $fh->close if $fh;
-        $logger->log(notice => "done $media_url");
-    };
+    http_get $media_url, headers => $self->prepare_headers($media_url),
+        on_header => sub {
+            my ($headers) = @_;
+
+            if ($headers->{Status} != 200) {
+                $logger->log(error => "$media_url: $headers->{Status} $headers->{Reason}");
+                return;
+            }
+
+            my $ext = (split '/', $headers->{'content-type'})[1] || 'flv';
+               $ext = 'swf' if $ext =~ /flash/;
+
+            if ($self->store_file) {
+                my $file = $self->cache_dir->file($video_id, "$title.$video_id.$ext");
+                $logger->log(notice => ">> $file");
+                $file->dir->mkpath;
+                $fh = $file->openw;
+            }
+        },
+        on_body => sub {
+            my ($content, $headers) = @_;
+            $writer->print($content);
+            $fh->print($content) if $fh;
+        },
+        sub {
+            $writer->close;
+            $fh->close if $fh;
+            $logger->log(notice => "done $media_url");
+        };
 
     return $self->transcode($reader, sub {
         my $data = shift;
+
         if (!defined $data) {
             $writer->close;
             $reader->close;
+            $fh->close if $fh;
             return;
         }
+
         $self->server->update_status(title => $title); # TODO
         $self->server->push_buffer($data);
     });
+}
+
+sub extract_title {
+    my ($self, $res) = @_;
+
+    my $tree = HTML::TreeBuilder::XPath->new_from_content($res->decoded_content);
+    return $tree->findvalue('//h1');
+}
+
+sub prepare_headers {
+    my ($self, $url) = @_;
+
+    my %headers = (
+        'Referer' => undef,
+        'User-Agent' => $self->client->user_agent->agent,
+    );
+    $self->client->user_agent->prepare_request(GET $url)->scan(sub { $headers{$_[0]} = $_[1] });
+
+    return \%headers;
+}
+
+sub _build_client {
+    my $self = shift;
+
+    my $config = pit_get('nicovideo.jp');
+    return WWW::NicoVideo::Download->new(
+        email    => $config->{username},
+        password => $config->{password},
+    );
 }
 
 1;
