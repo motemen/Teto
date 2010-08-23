@@ -13,11 +13,10 @@ has 'ua', (
     isa => 'LWP::UserAgent',
 );
 
-has 'cache_dir', (
+has 'file_cache', (
     is  => 'rw',
-    isa => 'Path::Class::Dir',
-    coerce  => 1,
-    default => '.cache',
+    isa => 'Teto::FileCache',
+    lazy_build => 1,
 );
 
 has 'client', (
@@ -40,6 +39,7 @@ use AnyEvent::Util;
 use Coro::Handle;
 use Coro::LWP;
 
+use Teto::FileCache;
 use Teto::Logger qw($logger);
 
 use WWW::NicoVideo::Download;
@@ -81,27 +81,22 @@ sub write {
     Encode::_utf8_off($video_id) if Encode::is_utf8 $video_id;
 
     # from cache
-    if (-d (my $dir = $self->cache_dir->subdir($video_id))) {
-        if (my $file = (grep { -f $_ } $dir->children)[0]) {
-            my ($title) = $file->basename =~ /^(.+?)\.$video_id.\w+$/; # XXX
-            unless (Encode::is_utf8 $title) {
-                $title = decode_utf8 $title;
-            }
+    if (my $file = $self->file_cache->file_to_read($url)) {
+        my $meta = $self->file_cache->get_meta($file);
 
-            $self->server->playlist->add_entry(
-                title      => $title,
-                source_url => $url,
-                url        => "file://$file",
-                image_url  => 'http://tn-skr1.smilevideo.jp/smile?i=' . do { $video_id =~ /(\d+)/; $1 },
-            );
+        $self->server->playlist->add_entry(
+            title      => $meta->{title},
+            source_url => $url,
+            url        => "file://$file",
+            image_url  => 'http://tn-skr1.smilevideo.jp/smile?i=' . do { $video_id =~ /(\d+)/; $1 },
+        );
 
-            return $self->transcode("$file", sub {
-                my $data = shift;
-                return unless defined $data;
-                $self->server->update_status(title => $title);
-                $self->server->push_buffer($data);
-            });
-        }
+        return $self->transcode("$file", sub {
+            my $data = shift;
+            return unless defined $data;
+            $self->server->update_status(title => $meta->{title});
+            $self->server->push_buffer($data);
+        });
     }
 
     my $res = $self->client->user_agent->get($url);
@@ -141,24 +136,17 @@ sub write {
                 return;
             }
 
-            my $ext = (split '/', $headers->{'content-type'})[1] || 'flv';
-               $ext = 'swf' if $ext =~ /flash/;
-
-            if ($self->store_file) {
-                my $file = $self->cache_dir->file($video_id, "$title.$video_id.$ext");
-                $logger->log(notice => ">> $file");
-                $file->dir->mkpath;
-                $fh = $file->openw;
-            }
+            $fh = $self->file_cache->fh_to_write($url, { title => $title, content_type => $headers->{'content-type'} });
+            # $logger->log(notice => ">> $file");
         },
         on_body => sub {
             my ($content, $headers) = @_;
             $writer->print($content);
-            $fh->print($content) if $fh;
+            $fh->print($content);
         },
         sub {
             $writer->close;
-            $fh->close if $fh;
+            $fh->close;
             $logger->log(notice => "done $media_url");
         };
 
@@ -168,7 +156,7 @@ sub write {
         if (!defined $data) {
             $writer->close;
             $reader->close;
-            $fh->close if $fh;
+            $fh->close;
             return;
         }
 
@@ -194,6 +182,11 @@ sub prepare_headers {
     $self->client->user_agent->prepare_request(GET $url)->scan(sub { $headers{$_[0]} = $_[1] });
 
     return \%headers;
+}
+
+sub _build_file_cache {
+    my $self = shift;
+    return Teto::FileCache->new;
 }
 
 sub _build_client {
