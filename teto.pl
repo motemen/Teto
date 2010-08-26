@@ -9,15 +9,18 @@ use Coro::LWP;
 use Teto::Server;
 use Teto::Logger qw($logger);
 
+use Getopt::Long qw(:config pass_through);
+
 $logger->add_logger(screen => { min_level => 'debug' });
 
-my $server = Teto::Server->new;
+my $server = Teto::Server->new_with_options;
 $server->setup_callbacks;
 
 my @urls;
 my @components;
 
-foreach (@ARGV) {
+# TODO server で
+foreach (@{$server->extra_argv}) {
     if (/^\+(.+)/) {
         my $module = $1;
         eval qq{ require $module } or do {
@@ -25,7 +28,7 @@ foreach (@ARGV) {
             next;
         };
         push @components, my $c = $module->new(server => $server);
-    } else {
+    } elsif (/^http:/) {
         push @urls, $_;
     }
 }
@@ -44,13 +47,8 @@ my $w; $w = AE::io *STDIN, 0, sub {
     }
 };
 
-if (eval { require AnyEvent::Monitor::CPU }) {
-    AnyEvent::Monitor::CPU->new(
-        cb => sub {
-            my $self = shift;
-            $logger->log(debug => "high CPU usage");
-        }
-    );
-}
-
 AE::cv->wait;
+
+__END__
+
+./teto.pl --port=9090 --cache-dir=.cache --readonly

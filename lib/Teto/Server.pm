@@ -1,6 +1,8 @@
 package Teto::Server;
 use Any::Moose;
 
+with any_moose('X::Getopt::Strict');
+
 use AnyEvent::HTTPD;
 use Text::MicroTemplate::File;
 use POSIX qw(ceil);
@@ -12,6 +14,13 @@ use Teto::Feeder;
 use Teto::Playlist;
 
 use constant META_INTERVAL => 16_000;
+
+has 'port', (
+    is  => 'rw',
+    isa => 'Int',
+    default => 9090,
+    metaclass => 'Getopt',
+);
 
 has 'queue', (
     is  => 'rw',
@@ -83,7 +92,7 @@ sub _build_queue {
 
 sub _build_httpd {
     my $self = shift;
-    return AnyEvent::HTTPD->new(port => 9090); # TODO config
+    return AnyEvent::HTTPD->new(port => $self->port);
 }
 
 sub _build_feeder {

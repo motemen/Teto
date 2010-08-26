@@ -32,9 +32,11 @@ requires 'WWW::Mechanize::AutoPager';
 requires 'JSON::XS';
 requires 'Regexp::Common';
 
+requires 'YAML::Tiny';
+
 test_requires 'Test::More';
-test_requires 'Tset::Base';
-test_requires 'Tset::Deep';
+test_requires 'Test::Base';
+test_requires 'Test::Deep';
 test_requires 'File::Find::Rule';
 
 tests 't/*.t';

@@ -25,12 +25,6 @@ has 'client', (
     lazy_build => 1,
 );
 
-has 'store_file', (
-    is  => 'rw',
-    isa => 'Bool',
-    default => 1,
-);
-
 __PACKAGE__->meta->make_immutable;
 
 use AnyEvent::HTTP;
@@ -122,6 +116,7 @@ sub write {
         source_url => $url,
         image_url  => 'http://tn-skr1.smilevideo.jp/smile?i=' . do { $video_id =~ /(\d+)/; $1 },
     );
+    $self->file_cache->set_meta($url, title => $title);
 
     my $fh;
     my ($reader, $writer) = portable_pipe;
@@ -186,7 +181,7 @@ sub prepare_headers {
 
 sub _build_file_cache {
     my $self = shift;
-    return Teto::FileCache->new;
+    return Teto::FileCache->new_with_options;
 }
 
 sub _build_client {

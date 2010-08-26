@@ -2,23 +2,35 @@ package Teto::FileCache;
 use Any::Moose;
 use Any::Moose 'X::Types::Path::Class';
 
+with any_moose('X::Getopt::Strict');
+
 has 'cache_dir', (
     is  => 'rw',
     isa => 'Path::Class::Dir',
     coerce  => 1,
     default => '.cache',
+    metaclass => 'Getopt',
+    cmd_flag  => 'cache-dir',
 );
 
 has 'readonly', (
     is  => 'rw',
     isa => 'Bool',
     default => 0,
+    metaclass => 'Getopt',
+);
+
+has 'metainfo', (
+    is  => 'rw',
+    isa => 'YAML::Tiny',
+    lazy_build => 1,
 );
 
 __PACKAGE__->meta->make_immutable;
 
 use File::Spec;
 use Path::Class qw(file);
+use YAML::Tiny;
 
 sub file_to_read {
     my ($self, $url) = @_;
@@ -28,6 +40,7 @@ sub file_to_read {
 
     if (-d (my $dir = $self->cache_dir->subdir($video_id))) {
         if (my $file = (grep { -f $_ } $dir->children)[0]) {
+            $self->set_meta($url, last_access => time());
             return $file;
         }
     }
@@ -50,7 +63,40 @@ sub fh_to_write {
 
     my $file = $self->cache_dir->file($video_id, $filename);
     $file->dir->mkpath;
+
+    $self->set_meta($url, created => time());
+
     return $file->openw;
+}
+
+sub get_meta {
+    my ($self, $url) = @_;
+
+    if (@_ > 2) {
+        my $key = shift;
+        return $self->metainfo->[0]->{$url}->{$key};
+    } else {
+        return $self->metainfo->[0]->{$url};
+    }
+}
+
+sub set_meta {
+    my ($self, $url, $key, $value) = @_;
+    $self->metainfo->[0]->{$url}->{$key} = $value;
+    $self->write_metafile;
+}
+
+sub write_metafile {
+    my $self = shift;
+    my $file = $self->cache_dir->file('meta.yaml');
+    $file->dir->mkpath;
+    $self->metainfo->write($file);
+}
+
+sub _build_metainfo {
+    my $self = shift;
+    my $file = $self->cache_dir->file('meta.yaml');
+    return YAML::Tiny->read($file) || YAML::Tiny->new;
 }
 
 1;
