@@ -6,17 +6,13 @@ has 'server', (
     is  => 'rw',
     isa => 'Teto::Server',
     weak_ref => 1,
+    handles => [ 'file_cache' ],
 );
 
-has 'ua', (
+has 'url', (
     is  => 'rw',
-    isa => 'LWP::UserAgent',
-);
-
-has 'file_cache', (
-    is  => 'rw',
-    isa => 'Teto::FileCache',
-    lazy_build => 1,
+    isa => 'Str',
+    required => 1,
 );
 
 has 'client', (
@@ -33,7 +29,6 @@ use AnyEvent::Util;
 use Coro::Handle;
 use Coro::LWP;
 
-use Teto::FileCache;
 use Teto::Logger qw($logger);
 
 use WWW::NicoVideo::Download;
@@ -57,7 +52,7 @@ sub transcode {
         push @args, ( '<', $file_or_fh );
     } else {
         $file = $file_or_fh;
-        $file = Encode::encode_utf8 $file if Encode::is_utf8 $file;
+        utf8::encode $file if utf8::is_utf8 $file;
     }
 
     my @command = (qw(ffmpeg -i), $file, qw(-ab 192k -acodec libmp3lame -f mp3 -)); # TODO config
@@ -67,35 +62,34 @@ sub transcode {
 }
 
 sub write {
-    my ($self, $url) = @_;
+    my $self = shift;
 
-    $url =~ m<^http://(?:www\.nicovideo\.jp/watch|nico\.ms)/([sn]m\d+)> or return;
+    $self->url =~ m<^http://(?:www\.nicovideo\.jp/watch|nico\.ms)/([sn]m\d+)> or return;
 
     my $video_id = $1;
-    Encode::_utf8_off($video_id) if Encode::is_utf8 $video_id;
+    utf8::downgrade $video_id, 1;
 
     # from cache
-    if (my $file = $self->file_cache->file_to_read($url)) {
+    if (my $file = $self->file_cache->file_to_read($self->url)) {
         my $meta = $self->file_cache->get_meta($file);
 
-        $self->server->playlist->add_entry(
-            title      => $meta->{title},
-            source_url => $url,
-            url        => "file://$file",
-            image_url  => 'http://tn-skr1.smilevideo.jp/smile?i=' . do { $video_id =~ /(\d+)/; $1 },
+        $self->add_playlist_entry(
+            title => $meta->{title},
+            media_url => "file://$file",
         );
 
         return $self->transcode("$file", sub {
             my $data = shift;
             return unless defined $data;
+            warn "transcode " . length $data;
             $self->server->update_status(title => $meta->{title});
             $self->server->push_buffer($data);
         });
     }
 
-    my $res = $self->client->user_agent->get($url);
+    my $res = $self->client->user_agent->get($self->url);
     unless ($res->is_success) {
-        $logger->log(warn => "$url: " . $res->message);
+        $logger->log(warn => "$self->{url}: " . $res->message);
         if ($res->code == 403) {
             $logger->log(notice => 'Got 403, sleep for 30s');
             sleep 30;
@@ -110,13 +104,11 @@ sub write {
         return;
     }
 
-    $self->server->playlist->add_entry(
-        title      => $title,
-        url        => $media_url,
-        source_url => $url,
-        image_url  => 'http://tn-skr1.smilevideo.jp/smile?i=' . do { $video_id =~ /(\d+)/; $1 },
+    $self->add_playlist_entry(
+        title     => $title,
+        media_url => $media_url,
     );
-    $self->file_cache->set_meta($url, title => $title);
+    $self->file_cache->set_meta($self->url, title => $title);
 
     my $fh;
     my ($reader, $writer) = portable_pipe;
@@ -131,17 +123,20 @@ sub write {
                 return;
             }
 
-            $fh = $self->file_cache->fh_to_write($url, { title => $title, content_type => $headers->{'content-type'} });
-            # $logger->log(notice => ">> $file");
+            $fh = $self->file_cache->fh_to_write(
+                $self->url,
+                { title => $title, content_type => $headers->{'content-type'} },
+            );
+
+            return 1;
         },
         on_body => sub {
             my ($content, $headers) = @_;
-            $writer->print($content);
-            $fh->print($content);
+            $_->print($content) for $writer, $fh;
+            return 1;
         },
         sub {
-            $writer->close;
-            $fh->close;
+            $_->close for $writer, $fh;
             $logger->log(notice => "done $media_url");
         };
 
@@ -149,9 +144,7 @@ sub write {
         my $data = shift;
 
         if (!defined $data) {
-            $writer->close;
-            $reader->close;
-            $fh->close;
+            $_->close for $reader, $writer, $fh;
             return;
         }
 
@@ -179,19 +172,28 @@ sub prepare_headers {
     return \%headers;
 }
 
-sub _build_file_cache {
-    my $self = shift;
-    return Teto::FileCache->new_with_options;
+sub add_playlist_entry {
+    my ($self, %args) = @_;
+
+    my ($id) = $self->url =~ /(\d+)$/ or die;
+    $self->server->playlist->add_entry(
+        title      => $args{title},
+        url        => $args{media_url},
+        source_url => $self->url,
+        image_url  => "http://tn-skr1.smilevideo.jp/smile?i=$id",
+    );
 }
 
 sub _build_client {
     my $self = shift;
 
-    my $config = pit_get('nicovideo.jp');
-    return WWW::NicoVideo::Download->new(
-        email    => $config->{username},
-        password => $config->{password},
-    );
+    return our $Client ||= do {
+        my $config = pit_get('nicovideo.jp');
+        WWW::NicoVideo::Download->new(
+            email    => $config->{username},
+            password => $config->{password},
+        );
+    };
 }
 
 1;

@@ -12,6 +12,7 @@ use Teto::Server::Queue;
 use Teto::Logger qw($logger);
 use Teto::Feeder;
 use Teto::Playlist;
+use Teto::FileCache;
 
 use constant META_INTERVAL => 16_000;
 
@@ -44,6 +45,12 @@ has 'playlist', (
     is  => 'rw',
     isa => 'Teto::Playlist',
     default => sub { Teto::Playlist->new },
+);
+
+has 'file_cache', (
+    is  => 'rw',
+    isa => 'Teto::FileCache',
+    default => sub { Teto::FileCache->new },
 );
 
 has 'mt', (

@@ -19,12 +19,6 @@ has 'server', (
     weak_ref => 1,
 );
 
-has 'writer', (
-    is  => 'rw',
-    isa => 'Teto::Writer',
-    lazy_build => 1,
-);
-
 has 'guard', (
     is  => 'rw',
     isa => 'Guard',
@@ -112,20 +106,13 @@ sub start {
     };
 
     my $url = $next->url;
-#   if (ref $next eq 'HASH') {
-#       $url = $next->{url};
-#       $logger->log(notice => "#$self->{index}: $next->{title} <$url>");
-#   } else {
-#       $url = $next;
-#       $logger->log(notice => "#$self->{index}: $url");
-#   }
+    my $writer = Teto::Writer->new(server => $self->server, url => $url);
+    my $cv = $writer->write($url) or do {
+        $logger->log(debug => 'writer did not write');
+        $self->unguard;
+        return;
+    };
 
-    my $cv = $self->writer->write($url)
-        or do {
-            $logger->log(debug => 'writer did not write');
-            $self->unguard;
-            return;
-        };
     $cv->cb(sub {
         my $exit_code = shift->recv || 0;
         if ($exit_code != 0) {
@@ -144,11 +131,6 @@ sub start_async {
 sub unguard {
     my $self = shift;
     undef $self->{guard};
-}
-
-sub _build_writer {
-    my $self = shift;
-    return Teto::Writer->new(server => $self->server);
 }
 
 sub DEMOLISH {
