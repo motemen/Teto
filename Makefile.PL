@@ -5,6 +5,7 @@ all_from 'lib/Teto.pm';
 
 requires 'Any::Moose';
 requires_any_moose 'X::Types::Path::Class';
+requires_any_moose 'X::NativeTraits';
 
 requires 'AnyEvent';
 requires 'AnyEvent::HTTP';
@@ -45,5 +46,6 @@ tests 't/*.t';
 requires_external_bin 'ffmpeg';
 
 auto_include;
+# auto_install;
 
 WriteAll;

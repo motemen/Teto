@@ -11,6 +11,8 @@ has 'queue', (
     is  => 'rw',
     isa => 'ArrayRef',
     default => sub { +[] },
+    traits  => [ 'Array' ],
+    handles => { size => 'count' },
 );
 
 has 'server', (
@@ -26,11 +28,12 @@ has 'guard', (
 
 __PACKAGE__->meta->make_immutable;
 
-use AnyEvent;
-use Guard ();
 use Teto::Writer;
 use Teto::Logger qw($logger);
 use Teto::Server::Queue::Entry;
+
+use AnyEvent;
+use Guard ();
 
 sub push {
     my $self = shift;
@@ -65,10 +68,6 @@ sub next {
     }
 
     return $next;
-}
-
-sub size {
-    return scalar @{shift->queue};
 }
 
 sub remove {

@@ -1,15 +1,10 @@
 package Teto::Feeder;
 use Any::Moose;
 
-has 'server', (
-    is  => 'rw',
-    isa => 'Teto::Server',
-);
-
 has 'queue', (
     is  => 'rw',
     isa => 'Teto::Server::Queue',
-    lazy_build => 1,
+    required => 1,
 );
 
 has 'ua', (
@@ -32,10 +27,6 @@ use WWW::Mechanize::AutoPager;
 use HTML::TreeBuilder::XPath;
 use XML::Feed;
 use JSON::XS qw(decode_json);
-
-sub _build_queue {
-    shift->server->queue;
-}
 
 sub _url_is_like_nicovideo {
     my $url = shift;

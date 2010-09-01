@@ -23,19 +23,18 @@ has 'client', (
 
 __PACKAGE__->meta->make_immutable;
 
+use Teto::Logger qw($logger);
+
 use AnyEvent::HTTP;
 use AnyEvent::Util;
 
 use Coro::Handle;
 use Coro::LWP;
 
-use Teto::Logger qw($logger);
-
 use WWW::NicoVideo::Download;
 use HTML::TreeBuilder::XPath;
 use HTTP::Request::Common;
 use Config::Pit;
-use Encode;
 
 sub transcode {
     my ($self, $file_or_fh, $cb) = @_;
@@ -183,6 +182,8 @@ sub add_playlist_entry {
         image_url  => "http://tn-skr1.smilevideo.jp/smile?i=$id",
     );
 }
+
+# ------ Builder ------
 
 sub _build_client {
     my $self = shift;

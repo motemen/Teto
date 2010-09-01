@@ -1,15 +1,14 @@
 package Teto::Logger;
 use Any::Moose;
 
-use Log::Dispatch;
-use UNIVERSAL::require;
-use Encode qw(encode_utf8 is_utf8);
-
 has 'dispatcher', (
     is  => 'rw',
     isa => 'Log::Dispatch',
-    lazy_build => 1,
+    default => sub { Log::Dispatch->new },
 );
+
+use Log::Dispatch;
+use UNIVERSAL::require;
 
 __PACKAGE__->meta->make_immutable;
 
@@ -23,15 +22,11 @@ sub log {
     my $pkg = caller;
     $pkg =~ s/^Teto:://;
     $message .= "\n" unless $message =~ /[\n\r]$/;
-    $message = encode_utf8 $message if is_utf8 $message;
+    utf8::encode $message if utf8::is_utf8 $message;
     $self->dispatcher->log(
         level   => $level,
         message => "[$level] $pkg $message",
     ) if $self->dispatcher;
-}
-
-sub _build_dispatcher {
-    Log::Dispatch->new;
 }
 
 sub add_logger {

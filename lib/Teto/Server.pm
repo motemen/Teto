@@ -3,16 +3,16 @@ use Any::Moose;
 
 with any_moose('X::Getopt::Strict');
 
-use AnyEvent::HTTPD;
-use Text::MicroTemplate::File;
-use POSIX qw(ceil);
-use Encode;
-
 use Teto::Server::Queue;
 use Teto::Logger qw($logger);
 use Teto::Feeder;
 use Teto::Playlist;
 use Teto::FileCache;
+
+use AnyEvent::HTTPD;
+use Text::MicroTemplate::File;
+
+use POSIX qw(ceil);
 
 use constant META_INTERVAL => 16_000;
 
@@ -92,6 +92,8 @@ sub interval : lvalue {
 
 __PACKAGE__->meta->make_immutable;
 
+# ------ Builder ------
+
 sub _build_queue {
     my $self = shift;
     return Teto::Server::Queue->new(server => $self);
@@ -107,15 +109,19 @@ sub _build_feeder {
     return Teto::Feeder->new(queue => $self->queue);
 }
 
+# ------ Status ------
+
 sub update_status {
     my ($self, %status) = @_;
     no warnings 'uninitialized';
-    Encode::_utf8_off $status{title} if Encode::is_utf8 $status{title};
+    utf8::downgrade $status{title}, 1 if utf8::is_utf8 $status{title};
     if ($self->status->{title} ne $status{title}) {
         $logger->log(notice => "status title: $self->{status}->{title} -> $status{title}");
     }
     $self->status(+{ %status });
 }
+
+# ------ HTTPD ------
 
 sub setup_callbacks {
     my $self = shift;
@@ -156,7 +162,7 @@ sub setup_callbacks {
         '/' => sub {
             my ($server, $req) = @_;
             my $content = $self->mt->render_file('root/index.mt', server => $self)->as_string;
-            $content = Encode::encode_utf8 $content if Encode::is_utf8 $content;
+            utf8::encode $content if utf8::is_utf8 $content;
             $req->respond([
                 200, 'OK', { 'Content-Type' => 'text/html' }, $content
             ]);
@@ -210,6 +216,8 @@ sub stream_handler {
     }
 }
 
+# ------ Buffer ------
+
 sub buffer_length {
     length(shift->buffer);
 }
@@ -242,6 +250,8 @@ sub incremenet_bytes_sent {
     $self->bytes_sent($self->bytes_sent + $delta);
 }
 
+# ------ Track ------
+
 sub wrote_one_track {
     my $self = shift;
     push @{ $self->bytes_timeline }, $self->bytes_sent + $self->buffer_length;
@@ -261,6 +271,8 @@ sub remaining_tracks {
     my $self = shift;
     scalar @{ $self->bytes_timeline } - $self->current_track_number;
 }
+
+# ------ Queuing ------
 
 sub enqueue {
     my $self = shift;

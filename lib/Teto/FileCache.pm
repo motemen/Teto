@@ -26,6 +26,12 @@ has 'metainfo', (
     lazy_build => 1,
 );
 
+has 'metainfo_file', (
+    is  => 'rw',
+    isa => 'Path::Class::File',
+    lazy_build => 1,
+);
+
 __PACKAGE__->meta->make_immutable;
 
 use File::Spec;
@@ -88,15 +94,20 @@ sub set_meta {
 
 sub write_metafile {
     my $self = shift;
-    my $file = $self->cache_dir->file('meta.yaml');
-    $file->dir->mkpath;
-    $self->metainfo->write($file);
+    $self->metainfo_file->dir->mkpath;
+    $self->metainfo->write($self->metainfo_file);
 }
+
+# ------ Builder ------
 
 sub _build_metainfo {
     my $self = shift;
-    my $file = $self->cache_dir->file('meta.yaml');
-    return YAML::Tiny->read($file) || YAML::Tiny->new;
+    return YAML::Tiny->read($self->metainfo_file) || YAML::Tiny->new;
+}
+
+sub _build_metainfo_file {
+    my $self = shift;
+    return $self->cache_dir->file('meta.yaml');
 }
 
 1;
