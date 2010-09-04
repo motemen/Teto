@@ -14,7 +14,7 @@ use Text::MicroTemplate::File;
 
 use POSIX qw(ceil);
 
-use constant META_INTERVAL => 16_000;
+use constant META_INTERVAL => 16 * 1024;
 
 has 'port', (
     is  => 'rw',
@@ -78,10 +78,16 @@ has 'bytes_timeline', (
 
 );
 
-sub buffer : lvalue {
-    my $self = shift;
-    $self->{buffer};
-}
+has 'buffer', (
+    is  => 'rw',
+    isa => 'Teto::Server::Buffer',
+    default => sub { require Teto::Server::Buffer; Teto::Server::Buffer->new },
+);
+
+# sub buffer : lvalue {
+#     my $self = shift;
+#     $self->{buffer};
+# }
 
 sub interval : lvalue {
     my $self = shift;
@@ -94,7 +100,7 @@ __PACKAGE__->meta->make_immutable;
 
 sub BUILD {
     my $self = shift;
-    $self->{buffer} = '';
+    # $self->{buffer} = '';
     $self->{interval} = META_INTERVAL;
 }
 
@@ -123,6 +129,7 @@ sub update_status {
         $logger->log(notice => "status title: $self->{status}->{title} -> $status{title}");
     }
     $self->status(+{ %status });
+    $self->buffer->meta_data(+{ %status });
 }
 
 # ------ HTTPD ------
@@ -196,7 +203,8 @@ sub stream_handler {
                 }
 
                 my $send = sub {
-                    my $data = substr $self->{buffer}, 0, 256 * 1024, '';
+                    # my $data = substr $self->{buffer}, 0, 256 * 1024, '';
+                    my $data = $self->buffer->read(256 * 1024);
                     $data_cb->($data);
                     $self->incremenet_bytes_sent(length $data);
                 };
@@ -223,7 +231,8 @@ sub stream_handler {
 # ------ Buffer ------
 
 sub buffer_length {
-    length(shift->buffer);
+    # length(shift->buffer);
+    shift->buffer->length;
 }
 
 sub buffer_is_full {
@@ -235,6 +244,9 @@ sub buffer_underrun {
 }
 
 sub push_buffer {
+    shift->buffer->write(@_);
+    return;
+
     my $self = shift;
     my $data = join '', @_;
 
