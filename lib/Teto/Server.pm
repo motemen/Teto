@@ -80,19 +80,23 @@ has 'bytes_timeline', (
 
 sub buffer : lvalue {
     my $self = shift;
-    $self->{buffer} = '' unless defined $self->{buffer};
     $self->{buffer};
 }
 
 sub interval : lvalue {
     my $self = shift;
-    $self->{interval} ||= META_INTERVAL;
     $self->{interval};
 }
 
 __PACKAGE__->meta->make_immutable;
 
 # ------ Builder ------
+
+sub BUILD {
+    my $self = shift;
+    $self->{buffer} = '';
+    $self->{interval} = META_INTERVAL;
+}
 
 sub _build_queue {
     my $self = shift;
@@ -236,7 +240,8 @@ sub push_buffer {
 
     while (length($data) >= $self->interval) {
         $self->buffer .= substr $data, 0, $self->interval, '';
-        my $meta = qq(StreamTitle='$self->{status}->{title}';);
+        utf8::encode my $title = $self->{status}->{title};
+        my $meta = qq(StreamTitle='$title';);
         my $len = ceil(length($meta) / 16);
         $self->buffer .= chr($len) . $meta . ("\x00" x (16 * $len - length $meta));
         $self->interval = META_INTERVAL;

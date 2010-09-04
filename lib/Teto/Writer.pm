@@ -38,26 +38,26 @@ use Config::Pit;
 
 sub transcode {
     my ($self, $file_or_fh, $cb) = @_;
-    my @args = (
-        '>',  $cb,
-        '2>', sub {
+    my %args = (
+        '>'  => $cb,
+        '2>' => sub {
             $logger->log(debug => "ffmpeg: @_") unless "@_" =~ /configuration:/;
         },
     );
     
-    my $file;
+    my $filename;
     if (ref $file_or_fh) {
-        $file = '-';
-        push @args, ( '<', $file_or_fh );
+        $filename = '-';
+        $args{'<'} = $file_or_fh;
     } else {
-        $file = $file_or_fh;
-        utf8::encode $file if utf8::is_utf8 $file;
+        $filename = $file_or_fh;
+        utf8::encode $filename if utf8::is_utf8 $filename;
     }
 
-    my @command = (qw(ffmpeg -i), $file, qw(-ab 192k -acodec libmp3lame -f mp3 -)); # TODO config
+    my @command = (qw(ffmpeg -i), $filename, qw(-ab 192k -acodec libmp3lame -f mp3 -)); # TODO config
     $logger->log(debug => qq(running '@command'));
 
-    return run_cmd \@command, @args;
+    return run_cmd \@command, %args;
 }
 
 sub write {
@@ -80,7 +80,6 @@ sub write {
         return $self->transcode("$file", sub {
             my $data = shift;
             return unless defined $data;
-            warn "transcode " . length $data;
             $self->server->update_status(title => $meta->{title});
             $self->server->push_buffer($data);
         });
