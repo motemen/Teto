@@ -86,7 +86,7 @@ sub start {
     my $g = Guard::guard {
         return unless $self->server;
         $logger->log(debug => 'unguarded');
-        if ($self->server->buffer_is_full) {
+        if ($self->server->buffer->overruns) {
             $logger->log(debug => 'buffer is full');
             return;
         }

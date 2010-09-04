@@ -39,11 +39,11 @@ use POSIX qw(ceil);
 sub meta_interval { META_INTERVAL }
 
 sub underruns {
-    shift->size < BUFFER_SIZE_MIN;
+    shift->length < BUFFER_SIZE_MIN;
 }
 
 sub overruns {
-    shift->size > BUFFER_SIZE_MAX;
+    shift->length > BUFFER_SIZE_MAX;
 }
 
 sub write {

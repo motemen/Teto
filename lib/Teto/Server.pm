@@ -14,8 +14,6 @@ use Text::MicroTemplate::File;
 
 use POSIX qw(ceil);
 
-use constant META_INTERVAL => 16 * 1024;
-
 has 'port', (
     is  => 'rw',
     isa => 'Int',
@@ -69,6 +67,10 @@ has 'bytes_sent', (
     is  => 'rw',
     isa => 'Int',
     default => sub { 0 },
+    traits  => [ 'Number' ],
+    handles => {
+        incremenet_bytes_sent => 'add',
+    },
 );
 
 has 'bytes_timeline', (
@@ -82,27 +84,14 @@ has 'buffer', (
     is  => 'rw',
     isa => 'Teto::Server::Buffer',
     default => sub { require Teto::Server::Buffer; Teto::Server::Buffer->new },
+    # handles => {
+    #     push_buffer => 'write',
+    # },
 );
-
-# sub buffer : lvalue {
-#     my $self = shift;
-#     $self->{buffer};
-# }
-
-sub interval : lvalue {
-    my $self = shift;
-    $self->{interval};
-}
 
 __PACKAGE__->meta->make_immutable;
 
 # ------ Builder ------
-
-sub BUILD {
-    my $self = shift;
-    # $self->{buffer} = '';
-    $self->{interval} = META_INTERVAL;
-}
 
 sub _build_queue {
     my $self = shift;
@@ -192,7 +181,7 @@ sub stream_handler {
         $req->respond([
             200, 'OK', {
                 'Content-Type' => 'audio/mpeg',
-                'Icy-Metaint'  => META_INTERVAL,
+                'Icy-Metaint'  => $self->buffer->meta_interval,
                 'Icy-Name'     => 'tetocast',
                 'Icy-Url'      => $req->url,
             }, sub {
@@ -203,13 +192,12 @@ sub stream_handler {
                 }
 
                 my $send = sub {
-                    # my $data = substr $self->{buffer}, 0, 256 * 1024, '';
                     my $data = $self->buffer->read(256 * 1024);
                     $data_cb->($data);
                     $self->incremenet_bytes_sent(length $data);
                 };
 
-                unless ($self->buffer_underrun) {
+                unless ($self->buffer->underruns) {
                     $send->();
                     return;
                 }
@@ -218,7 +206,7 @@ sub stream_handler {
                 # TODO guard で外から叩くようにする
                 my $w; $w = AE::timer 0, 1, sub {
                     $self->queue->start;
-                    return unless $self->buffer_length;
+                    return unless $self->buffer->length;
                     $logger->log(debug => 'timer; write');
                     $send->();
                     undef $w;
@@ -229,49 +217,20 @@ sub stream_handler {
 }
 
 # ------ Buffer ------
-
-sub buffer_length {
-    # length(shift->buffer);
-    shift->buffer->length;
-}
-
-sub buffer_is_full {
-    shift->buffer_length > 4 * 1024 * 1024;
-}
-
-sub buffer_underrun {
-    shift->buffer_length < 1 * 1024 * 1024
-}
-
 sub push_buffer {
     shift->buffer->write(@_);
-    return;
-
-    my $self = shift;
-    my $data = join '', @_;
-
-    while (length($data) >= $self->interval) {
-        $self->buffer .= substr $data, 0, $self->interval, '';
-        utf8::encode my $title = $self->{status}->{title};
-        my $meta = qq(StreamTitle='$title';);
-        my $len = ceil(length($meta) / 16);
-        $self->buffer .= chr($len) . $meta . ("\x00" x (16 * $len - length $meta));
-        $self->interval = META_INTERVAL;
-    }
-    $self->buffer .= $data;
-    $self->interval -= length($data);
 }
 
-sub incremenet_bytes_sent {
-    my ($self, $delta) = @_;
-    $self->bytes_sent($self->bytes_sent + $delta);
-}
+# sub incremenet_bytes_sent {
+#     my ($self, $delta) = @_;
+#     $self->bytes_sent($self->bytes_sent + $delta);
+# }
 
 # ------ Track ------
 
 sub wrote_one_track {
     my $self = shift;
-    push @{ $self->bytes_timeline }, $self->bytes_sent + $self->buffer_length;
+    push @{ $self->bytes_timeline }, $self->bytes_sent + $self->buffer->length;
 }
 
 sub current_track_number {
