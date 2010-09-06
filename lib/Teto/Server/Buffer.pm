@@ -11,7 +11,6 @@ has 'buffer', (
     handles => {
         append => 'append',
         length => 'length',
-        substr_buffer => 'substr',
     },
 );
 
@@ -35,8 +34,6 @@ use constant {
 __PACKAGE__->meta->make_immutable;
 
 use POSIX qw(ceil);
-
-sub meta_interval { META_INTERVAL }
 
 sub underruns {
     shift->length < BUFFER_SIZE_MIN;

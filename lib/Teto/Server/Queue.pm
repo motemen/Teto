@@ -2,23 +2,28 @@ package Teto::Server::Queue;
 use Any::Moose;
 
 has 'index', (
-    is  => 'rw',
-    isa => 'Int',
-    default => sub { 0 },
+    is      => 'rw',
+    isa     => 'Int',
+    default => 0,
 );
 
 has 'queue', (
-    is  => 'rw',
-    isa => 'ArrayRef',
+    is      => 'rw',
+    isa     => 'ArrayRef',
     default => sub { +[] },
     traits  => [ 'Array' ],
-    handles => { size => 'count' },
+    handles => {
+        size => 'count',
+        push => 'push',
+        insert_queue => 'insert',
+    },
 );
 
 has 'server', (
-    is  => 'rw',
-    isa => 'Teto::Server',
+    is       => 'rw',
+    isa      => 'Teto::Server',
     weak_ref => 1,
+    required => 1,
 );
 
 has 'guard', (
@@ -35,20 +40,18 @@ use Teto::Server::Queue::Entry;
 use AnyEvent;
 use Guard ();
 
-sub push {
-    my $self = shift;
-    foreach (@_) {
-        my $entry = Teto::Server::Queue::Entry->new($_);
-        $logger->log(debug => "<< $entry");
-        CORE::push @{$self->{queue}}, $entry;
-    }
-}
+around push => sub {
+    my ($orig, $self, @args) = @_;
+    @args = map Teto::Server::Queue::Entry->new($_), @args;
+    $logger->log(debug => "<< $_") for @args;
+    $self->$orig(@args);
+};
 
 sub insert {
     my $self = shift;
     my @entries = map { Teto::Server::Queue::Entry->new($_) } @_;
     $logger->log(debug => "<< $_") for @entries;
-    splice @{$self->{queue}}, $self->index, 0, @entries;
+    $self->insert_queue($self->index, $_) for @entries;
 }
 
 sub next {
@@ -83,7 +86,7 @@ sub start {
 
     return if $self->guard;
 
-    my $g = Guard::guard {
+    $self->{guard} = Guard::guard {
         return unless $self->server;
         $logger->log(debug => 'unguarded');
         if ($self->server->buffer->overruns) {
@@ -96,21 +99,23 @@ sub start {
         }
         $self->start;
     };
-    $self->guard($g);
 
-    my $next = $self->next or do {
-        $g->cancel;
+    my $next = $self->next;
+    
+    if (not $next) {
+        $self->guard->cancel;
         $self->unguard;
         return;
     };
 
-    my $url = $next->url;
-    my $writer = Teto::Writer->new(server => $self->server, url => $url);
-    my $cv = $writer->write($url) or do {
+    my $writer = Teto::Writer->new(server => $self->server, url => $next->url);
+    my $cv = $writer->write;
+        
+    if (not $cv) {
         $logger->log(debug => 'writer did not write');
         $self->unguard;
         return;
-    };
+    }
 
     $cv->cb(sub {
         my $exit_code = shift->recv || 0;
@@ -120,11 +125,6 @@ sub start {
         $self->server->wrote_one_track;
         $self->unguard;
     });
-}
-
-sub start_async {
-    my $self = shift;
-    my $w; $w = AE::idle sub { $self->start; undef $w };
 }
 
 sub unguard {

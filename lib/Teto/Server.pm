@@ -84,9 +84,9 @@ has 'buffer', (
     is  => 'rw',
     isa => 'Teto::Server::Buffer',
     default => sub { require Teto::Server::Buffer; Teto::Server::Buffer->new },
-    # handles => {
-    #     push_buffer => 'write',
-    # },
+    handles => {
+        push_buffer => 'write',
+    },
 );
 
 __PACKAGE__->meta->make_immutable;
@@ -181,7 +181,7 @@ sub stream_handler {
         $req->respond([
             200, 'OK', {
                 'Content-Type' => 'audio/mpeg',
-                'Icy-Metaint'  => $self->buffer->meta_interval,
+                'Icy-Metaint'  => $self->buffer->META_INTERVAL,
                 'Icy-Name'     => 'tetocast',
                 'Icy-Url'      => $req->url,
             }, sub {
@@ -216,16 +216,6 @@ sub stream_handler {
     }
 }
 
-# ------ Buffer ------
-sub push_buffer {
-    shift->buffer->write(@_);
-}
-
-# sub incremenet_bytes_sent {
-#     my ($self, $delta) = @_;
-#     $self->bytes_sent($self->bytes_sent + $delta);
-# }
-
 # ------ Track ------
 
 sub wrote_one_track {
@@ -245,7 +235,7 @@ sub current_track_number {
 
 sub remaining_tracks {
     my $self = shift;
-    scalar @{ $self->bytes_timeline } - $self->current_track_number;
+    return scalar @{ $self->bytes_timeline } - $self->current_track_number;
 }
 
 # ------ Queuing ------

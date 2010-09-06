@@ -1,69 +1,59 @@
 use strict;
 use warnings;
-use Test::More tests => 13;
+use Test::More;
 use Test::Deep;
+
 use Teto::Server;
+use Teto::Writer;
+
+use AnyEvent;
+
+my $cv;
+my @writers;
+
+{
+    no warnings 'redefine';
+    *Teto::Writer::write = sub {
+        push @writers, $_[0];
+        return $cv = AE::cv;
+    };
+}
 
 use_ok 'Teto::Server::Queue';
 
-my $the_cv;
-
-{
-    package t::writer;
-    use base 'Teto::Writer';
-
-    our @cv;
-    our $i = 0;
-    our $wrote;
-
-    sub write {
-        $wrote = $_[1];
-        return $cv[$i++] = AE::cv;
-    }
-
-}
-
-my $writer = t::writer->new;
 my $server = Teto::Server->new;
-my $q = new_ok 'Teto::Server::Queue', [ writer => $writer, server => $server ];
+my $queue  = new_ok 'Teto::Server::Queue', [ server => $server ];
 
-is $q->index, 0;
+# push url, hashref
+$queue->push('about:blank');
+$queue->push({ name => 'example', url => 'http://www.example.com/' });
 
-$q->push('about:blank');
-$q->push({ name => 'example', url => 'http://www.example.com/' });
+is $queue->index, 0,      'initial';
+cmp_deeply \@writers, [ ],'initial';
 
-is $q->index, 0;
+$queue->start;
+cmp_deeply \@writers, [
+    noclass({ server => $server, url => 'about:blank' })
+], 'started';
+is $queue->index, 1, 'started';
 
-$q->start;
+# push coderef
+$queue->push(sub { +{ url => 'http://localhost/' } });
+is $queue->index, 1, 'pushed; writer 1 not finished';
 
-is $t::writer::wrote, 'about:blank'
-    or diag explain $t::writer::wrote;
-undef $t::writer::wrote;
-is $q->index, 1;
+$cv->send;
+cmp_deeply \@writers, [
+    noclass({ server => $server, url => 'about:blank' }),
+    noclass({ server => $server, url => 'http://www.example.com/' }),
+], 'writer 1 finish';
+is $queue->index, 2, 'writer 1 finish';
 
-$q->push(sub { +{ url => 'http://localhost/' } });
-
-is $q->index, 1;
-
-$t::writer::cv[0]->send;
-
-is $q->index, 2;
-is $t::writer::wrote, 'http://www.example.com/'
-    or diag explain $t::writer::wrote;
-undef $t::writer::wrote;
-
-$t::writer::cv[1]->send;
-
-is $q->index, 4;
-is $t::writer::wrote, 'http://localhost/'
-    or diag explain $t::writer::wrote;
-
-my $called;
-$q->push(sub { $called++; () });
-
-$t::writer::cv[2]->send;
-
-is $q->index, 5;
-ok $called;
+$cv->send;
+cmp_deeply \@writers, [
+    noclass({ server => $server, url => 'about:blank' }),
+    noclass({ server => $server, url => 'http://www.example.com/' }),
+    noclass({ server => $server, url => 'http://localhost/' }),
+], 'writer 2 finish; produced url';
+is $queue->index, 4, 'writer 2 finish; produced url';
 
 done_testing;

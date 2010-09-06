@@ -1,12 +1,15 @@
 use Test::Base;
 use Test::More;
 
-plan tests => 3 + blocks;
+use Teto::Server;
+use Teto::Server::Queue;
+
+plan tests => 2 + blocks;
 
 use_ok 'Teto::Feeder';
-use_ok 'Teto::Server::Queue';
 
-my $feeder = new_ok 'Teto::Feeder', [ queue => Teto::Server::Queue->new ];
+my $server = Teto::Server->new;
+my $feeder = new_ok 'Teto::Feeder', [ queue => Teto::Server::Queue->new(server => $server) ];
 
 local $Test::Builder::Level = $Test::Builder::Level + 2;
 
