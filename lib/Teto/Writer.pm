@@ -2,6 +2,17 @@ package Teto::Writer;
 use Any::Moose;
 use Any::Moose 'X::Types::Path::Class';
 
+# is
+# - buffer writer
+# - transcoder
+# has
+# - server
+# - nicovideo url
+# does
+# - get nicovideo media
+# - transcode
+# - write
+
 has 'server', (
     is  => 'rw',
     isa => 'Teto::Server',

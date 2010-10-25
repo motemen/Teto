@@ -164,7 +164,7 @@ sub setup_callbacks {
             my $content = $self->mt->render_file('root/index.mt', server => $self)->as_string;
             utf8::encode $content if utf8::is_utf8 $content;
             $req->respond([
-                200, 'OK', { 'Content-Type' => 'text/html' }, $content
+                200, 'OK', { 'Content-Type' => 'text/html; charset=utf-8' }, $content
             ]);
         },
     );

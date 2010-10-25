@@ -5,52 +5,34 @@
     <title>teto</title>
     <style type="text/css">
 body {
-    padding: 0 15%;
     margin: 0;
     background-color: #152D38;
 }
 h1 {
     font-family: "Lucida Sans Unicode";
-    margin-bottom: 1.5em;
 }
 h1 a {
     text-decoration: none;
 }
 h2 {
-    margin-top: 0.2em;
     font-family: Georgia;
-    position: absolute;
-    right: 88%;
     color: #385D66;
+    clear: both;
 }
 div#container {
-    border: 1px solid #FFFFFF;
-    border-top: none;
-    border-bottom: none;
-    background-color: #385D66;
     color: #FFFFFF;
-    padding: 1em;
+    padding: 10px;
 }
 div#container a {
     color: #99D487;
 }
-#queue li {
-    line-height: 2em;
-}
-li .indicator {
-    visibility: hidden;
-}
-li.selected .indicator {
-    visibility: visible;
-}
+
 input {
     font-family: sans-serif;
     font-size: large;
-    height: 1.5em;
-    padding: 2px 8px;
 }
 input[type="submit"] {
-    height: 2em;
+    padding: 0.1em 0.4em;
 }
 img {
     border: 0;
@@ -61,21 +43,6 @@ textarea.url {
     width: 80%;
     height: 8em;
 }
-#playlist {
-    padding: 0
-}
-#playlist > li {
-    background: #27858D;
-    padding: 5px;
-    margin-bottom: 10px;
-    position: relative;
-    list-style: none;
-    overflow: hidden;
-    color: #EFEFEF;
-}
-#playlist > li img {
-    max-height: 60px;
-}
 
 #status {
     font-size: smaller;
@@ -85,24 +52,8 @@ th {
   padding: 0.4em 0.5em;
 }
 td {
+  background-color: #385D66;
   padding: 0.4em 0.5em;
-}
-
-.info { 
-    font-size: 90%;
-    position: absolute;
-    left: 60%;
-    top: 10px;
-}
-
-.info dt {
-    font-weight: bold;
-    float: left;
-    margin-right: 0.5em;
-}
-
-p.more {
-    text-align: right;
 }
 
 ul#queue {
@@ -112,7 +63,34 @@ ul#queue {
 }
 
 ul#queue li {
-    margin: 0.1em;
+    margin: 3px;
+    width: 156px;
+    height: 120px;
+    overflow: hidden;
+    border: 1px solid #385D66;
+    float: left;
+    position: relative;
+    text-align: center;
+    line-height: 120px;
+}
+
+ul#queue li.selected {
+    background-color: #385D66;
+}
+
+ul#queue li img {
+    vertical-align: middle;
+}
+
+ul#queue li .title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 0.3em;
+    font-size: smaller;
+    line-height: 1em;
+    background: #333;
+    opacity: 0.7;
 }
     </style>
   </head>
@@ -121,48 +99,39 @@ ul#queue li {
 
     <h1><a href="/">teto</a><a href="/stream" class="stream-link">stream <img src="/static/speaker-orange.gif"></a></h1>
 
-    <h2>Playlist</h2>
-    <ul id="playlist">
-? foreach (grep $_, (reverse @{$_{server}->playlist->entries})[0..4]) {
-    <li>
-    <img src="<?= $_->{image_url} ?>"/>
-    <a href="<?= $_->{source_url} ?>"><?= $_->{title} ?></a>
-    <!--
-    <dl class="info">
-      <dt>media</dt> <dd><a href="<?= $_->{url} ?>"><?= $_->{url} ?></a></dd>
-    </dl>
-    -->
-    </li>
-? }
-    </ul>
-? if (@{$_{server}->playlist->entries} > 5) {
-    <p class="more"><a href="#TODO">more</a></p>
-? }
-
     <h2>Queue</h2>
     <ul id="queue">
 ? foreach (0 .. $#{$_{server}->queue->queue}) {
 ?   my $entry = $_{server}->queue->queue->[$_];
 ?   my $selected = $_ == $_{server}->queue->index;
     <li <? if ($selected) { ?>class="selected"<? } ?>>
-      <span class="indicator">&raquo;</span>
-      <?=Text::MicroTemplate::encoded_string $entry->as_html ?>
+?     if ($entry->url) {
+      <img src="<?= $entry->thumbnail ?>" onerror="this.src='http://res.nimg.jp/img/common/video_deleted.jpg'" />
+?     } else {
+      <img src="/static/add-page-orange.gif" />
+?     }
+      <span class="title"><?= do { my $name = $entry->name; utf8::decode $name if !utf8::is_utf8 $name; $name } ?></span>
     </li>
 ? }
 
-    <li>
-    <form action="/add" method="post">
-    <textarea class="url" name="url"></textarea> <input type="submit" name="add" value="add" />
-    </form>
-    </li>
-
     </ul>
+
+    <br style="clear: both" />
+
+    <h2>Add</h2>
+
+    <div>
+      <form action="/add" method="post">
+      <textarea class="url" name="url"></textarea>
+      <input type="submit" name="add" value="add" />
+      </form>
+    </div>
 
     <h2>Status</h2>
     <table id="status">
       <tr>
-        <th>buffer_length</th>
-        <td><?= $_{server}->buffer_length ?></td>
+        <th>buffer-&gt;length</th>
+        <td><?= $_{server}->buffer->length ?></td>
       </tr>
       <tr>
         <th>bytes_sent</th>

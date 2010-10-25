@@ -1,6 +1,15 @@
 package Teto::Server::Queue;
 use Any::Moose;
 
+# is
+# - play queue
+# has
+# - queue
+# - server
+# does
+# - push to server
+# - accept new entry
+
 has 'index', (
     is      => 'rw',
     isa     => 'Int',
@@ -64,6 +73,7 @@ sub next {
     my $next = $self->queue->[ $self->index ];
     $self->{index}++;
 
+    # CodeRef が入ってたらその実行結果を push
     if ($next->code) {
         my @res = $next->code->();
         $self->insert(@res) if @res;
@@ -73,6 +83,7 @@ sub next {
     return $next;
 }
 
+# FIXME たぶん変
 sub remove {
     my ($self, $i) = @_;
     if ($self->index < $i) {
@@ -86,8 +97,10 @@ sub start {
 
     return if $self->guard;
 
+    # これが undef されたら次のトラックへ
     $self->{guard} = Guard::guard {
         return unless $self->server;
+
         $logger->log(debug => 'unguarded');
         if ($self->server->buffer->overruns) {
             $logger->log(debug => 'buffer is full');
@@ -97,6 +110,7 @@ sub start {
             $logger->log(debug => 'too many remaining tracks');
             return;
         }
+
         $self->start;
     };
 

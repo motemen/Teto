@@ -49,6 +49,15 @@ sub as_html {
     }
 }
 
+sub thumbnail {
+    my $self = shift;
+    if (($self->url || '') =~ /(\d+)$/) {
+        return "http://tn-skr1.smilevideo.jp/smile?i=$1";
+    } else {
+        return 'about:blank';
+    }
+}
+
 sub stringify {
     my $self = shift;
 
