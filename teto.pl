@@ -9,7 +9,7 @@ use Coro::LWP;
 use Teto::Server;
 use Teto::Logger qw($logger);
 
-use Getopt::Long qw(:config pass_through);
+# use Getopt::Long qw(:config pass_through);
 
 $logger->add_logger(screen => { min_level => 'debug' });
 

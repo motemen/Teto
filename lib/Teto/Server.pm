@@ -48,7 +48,19 @@ has 'playlist', (
 has 'file_cache', (
     is  => 'rw',
     isa => 'Teto::FileCache',
-    default => sub { Teto::FileCache->new },
+    lazy_build => 1,
+);
+
+sub _build_file_cache {
+    my $self = shift;
+    return Teto::FileCache->new(readonly => $self->readonly);
+}
+
+has 'readonly', (
+    is  => 'rw',
+    isa => 'Bool',
+    default => 0,
+    metaclass => 'Getopt',
 );
 
 has 'mt', (
