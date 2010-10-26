@@ -3,11 +3,12 @@ use Any::Moose;
 
 with any_moose('X::Getopt::Strict');
 
-use Teto::Server::Queue;
 use Teto::Logger qw($logger);
 use Teto::Feeder;
 use Teto::Playlist;
 use Teto::FileCache;
+use Teto::Server::Queue;
+use Teto::Server::Buffer;
 
 use AnyEvent::HTTPD;
 use Text::MicroTemplate::File;
@@ -24,7 +25,7 @@ has port => (
 has queue => (
     is  => 'rw',
     isa => 'Teto::Server::Queue',
-    lazy_build => 1,
+    default => sub { Teto::Server::Queue->new(server => $_[0]) },
 );
 
 has feeder => (
@@ -33,10 +34,15 @@ has feeder => (
     lazy_build => 1,
 );
 
+sub _build_feeder {
+    my $self = shift;
+    return Teto::Feeder->new(queue => $self->queue);
+}
+
 has httpd => (
     is  => 'rw',
     isa => 'AnyEvent::HTTPD',
-    lazy_build => 1,
+    default => sub { AnyEvent::HTTPD->new(port => $_[0]->port) },
 );
 
 has playlist => (
@@ -95,30 +101,13 @@ has bytes_timeline => (
 has buffer => (
     is  => 'rw',
     isa => 'Teto::Server::Buffer',
-    default => sub { require Teto::Server::Buffer; Teto::Server::Buffer->new },
+    default => sub { Teto::Server::Buffer->new },
     handles => {
         push_buffer => 'write',
     },
 );
 
 __PACKAGE__->meta->make_immutable;
-
-# ------ Builder ------
-
-sub _build_queue {
-    my $self = shift;
-    return Teto::Server::Queue->new(server => $self);
-}
-
-sub _build_httpd {
-    my $self = shift;
-    return AnyEvent::HTTPD->new(port => $self->port);
-}
-
-sub _build_feeder {
-    my $self = shift;
-    return Teto::Feeder->new(queue => $self->queue);
-}
 
 # ------ Status ------
 

@@ -11,7 +11,7 @@ use Any::Moose 'X::Types::Path::Class';
 # does
 # - get nicovideo media
 # - transcode
-# - write
+# - write bytes to buffer
 
 has server => (
     is  => 'rw',
@@ -107,6 +107,7 @@ sub write {
     }
     
     my $title = $self->extract_title($res);
+    $logger->log(info => "title: $title");
     my $media_url = eval { $self->client->prepare_download($video_id) };
     if ($@) {
         $logger->log(error => "$@");
@@ -164,9 +165,10 @@ sub write {
 
 sub extract_title {
     my ($self, $res) = @_;
-
     my $tree = HTML::TreeBuilder::XPath->new_from_content($res->decoded_content);
-    return $tree->findvalue('//h1');
+    my $title = $tree->findvalue('//h1');
+    $tree->delete;
+    return $title;
 }
 
 sub prepare_headers {
@@ -192,8 +194,6 @@ sub add_playlist_entry {
         image_url  => "http://tn-skr1.smilevideo.jp/smile?i=$id",
     );
 }
-
-# ------ Builder ------
 
 sub _build_client {
     my $self = shift;

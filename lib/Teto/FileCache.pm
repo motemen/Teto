@@ -2,22 +2,17 @@ package Teto::FileCache;
 use Any::Moose;
 use Any::Moose 'X::Types::Path::Class';
 
-with any_moose('X::Getopt::Strict');
-
 has cache_dir => (
     is  => 'rw',
     isa => 'Path::Class::Dir',
     coerce  => 1,
     default => '.cache',
-    metaclass => 'Getopt',
-    cmd_flag  => 'cache-dir',
 );
 
 has readonly => (
     is  => 'rw',
     isa => 'Bool',
     default => 0,
-    metaclass => 'Getopt',
 );
 
 has metainfo => (
@@ -26,11 +21,21 @@ has metainfo => (
     lazy_build => 1,
 );
 
+sub _build_metainfo {
+    my $self = shift;
+    return YAML::Tiny->read($self->metainfo_file) || YAML::Tiny->new;
+}
+
 has metainfo_file => (
     is  => 'rw',
     isa => 'Path::Class::File',
     lazy_build => 1,
 );
+
+sub _build_metainfo_file {
+    my $self = shift;
+    return $self->cache_dir->file('meta.yaml');
+}
 
 __PACKAGE__->meta->make_immutable;
 
@@ -97,18 +102,6 @@ sub write_metafile {
     my $self = shift;
     $self->metainfo_file->dir->mkpath;
     $self->metainfo->write($self->metainfo_file);
-}
-
-# ------ Builder ------
-
-sub _build_metainfo {
-    my $self = shift;
-    return YAML::Tiny->read($self->metainfo_file) || YAML::Tiny->new;
-}
-
-sub _build_metainfo_file {
-    my $self = shift;
-    return $self->cache_dir->file('meta.yaml');
 }
 
 1;

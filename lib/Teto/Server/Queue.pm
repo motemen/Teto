@@ -92,20 +92,19 @@ sub remove {
     splice @{ $self->queue }, $i, 1;
 }
 
-sub start {
+sub next_track_guard {
     my $self = shift;
-
-    return if $self->guard;
-
-    # これが undef されたら次のトラックへ
-    $self->{guard} = Guard::guard {
+    
+    return Guard::guard {
         return unless $self->server;
 
         $logger->log(debug => 'unguarded');
+
         if ($self->server->buffer->overruns) {
             $logger->log(debug => 'buffer is full');
             return;
         }
+
         if ($self->server->remaining_tracks > 1) {
             $logger->log(debug => 'too many remaining tracks');
             return;
@@ -113,10 +112,17 @@ sub start {
 
         $self->start;
     };
+}
 
-    my $next = $self->next;
-    
-    if (not $next) {
+sub start {
+    my $self = shift;
+
+    return if $self->guard;
+
+    # これが undef されたら次のトラックへ
+    $self->{guard} = $self->next_track_guard;
+
+    my $next = $self->next or do {
         $self->guard->cancel;
         $self->unguard;
         return;
