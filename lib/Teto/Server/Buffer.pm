@@ -27,8 +27,8 @@ has 'meta_data', (
 );
 
 use constant {
-    BUFFER_SIZE_MAX => 4 * 1024 * 1024,
-    BUFFER_SIZE_MIN => 1 * 1024 * 1024,
+    BUFFER_SIZE_MAX => 16 * 1024, # 16kb
+    BUFFER_SIZE_MIN =>  1 * 1024, #  1kb
 };
 
 __PACKAGE__->meta->make_immutable;
