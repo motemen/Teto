@@ -1,7 +1,7 @@
 package Teto::Playlist;
 use Any::Moose;
 
-has 'entries', (
+has entries => (
     is  => 'rw',
     isa => 'ArrayRef[Teto::Playlist::Entry]',
     default => sub { [] },

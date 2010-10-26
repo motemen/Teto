@@ -1,22 +1,22 @@
 package Teto::Playlist::Entry;
 use Any::Moose;
 
-has 'title', (
+has title => (
     is  => 'rw',
     isa => 'Maybe[Str]',
 );
 
-has 'url', (
+has url => (
     is  => 'rw',
     isa => 'Maybe[Str]', # XXX URI
 );
 
-has 'source_url', (
+has source_url => (
     is  => 'rw',
     isa => 'Maybe[Str]',
 );
 
-has 'image_url', (
+has image_url => (
     is  => 'rw',
     isa => 'Maybe[Str]',
 );

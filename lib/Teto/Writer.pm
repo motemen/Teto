@@ -13,20 +13,20 @@ use Any::Moose 'X::Types::Path::Class';
 # - transcode
 # - write
 
-has 'server', (
+has server => (
     is  => 'rw',
     isa => 'Teto::Server',
     weak_ref => 1,
     handles => [ 'file_cache' ],
 );
 
-has 'url', (
+has url => (
     is  => 'rw',
     isa => 'Str',
     required => 1,
 );
 
-has 'client', (
+has client => (
     is  => 'rw',
     isa => 'WWW::NicoVideo::Download',
     lazy_build => 1,

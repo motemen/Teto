@@ -1,7 +1,7 @@
 package Teto::Logger;
 use Any::Moose;
 
-has 'dispatcher', (
+has dispatcher => (
     is  => 'rw',
     isa => 'Log::Dispatch',
     default => sub { Log::Dispatch->new },

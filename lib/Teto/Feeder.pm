@@ -1,13 +1,13 @@
 package Teto::Feeder;
 use Any::Moose;
 
-has 'queue', (
+has queue => (
     is  => 'rw',
     isa => 'Teto::Server::Queue',
     required => 1,
 );
 
-has 'ua', (
+has ua => (
     is  => 'rw',
     isa => 'LWP::UserAgent',
     default => sub {

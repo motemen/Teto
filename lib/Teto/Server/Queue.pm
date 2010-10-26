@@ -10,13 +10,13 @@ use Any::Moose;
 # - push to server
 # - accept new entry
 
-has 'index', (
+has index => (
     is      => 'rw',
     isa     => 'Int',
     default => 0,
 );
 
-has 'queue', (
+has queue => (
     is      => 'rw',
     isa     => 'ArrayRef',
     default => sub { +[] },
@@ -28,14 +28,14 @@ has 'queue', (
     },
 );
 
-has 'server', (
+has server => (
     is       => 'rw',
     isa      => 'Teto::Server',
     weak_ref => 1,
     required => 1,
 );
 
-has 'guard', (
+has guard => (
     is  => 'rw',
     isa => 'Guard',
 );

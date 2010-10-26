@@ -4,7 +4,7 @@ use Any::Moose 'X::Types::Path::Class';
 
 with any_moose('X::Getopt::Strict');
 
-has 'cache_dir', (
+has cache_dir => (
     is  => 'rw',
     isa => 'Path::Class::Dir',
     coerce  => 1,
@@ -13,20 +13,20 @@ has 'cache_dir', (
     cmd_flag  => 'cache-dir',
 );
 
-has 'readonly', (
+has readonly => (
     is  => 'rw',
     isa => 'Bool',
     default => 0,
     metaclass => 'Getopt',
 );
 
-has 'metainfo', (
+has metainfo => (
     is  => 'rw',
     isa => 'YAML::Tiny',
     lazy_build => 1,
 );
 
-has 'metainfo_file', (
+has metainfo_file => (
     is  => 'rw',
     isa => 'Path::Class::File',
     lazy_build => 1,

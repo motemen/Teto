@@ -3,7 +3,7 @@ use Any::Moose;
 
 use constant META_INTERVAL => 16 * 1024;
 
-has 'buffer', (
+has buffer => (
     traits  => [ 'String' ],
     is      => 'rw',
     isa     => 'Str',
@@ -14,13 +14,13 @@ has 'buffer', (
     },
 );
 
-has 'meta_interval', (
+has meta_interval => (
     is  => 'rw',
     isa => 'Int',
     default => sub { META_INTERVAL },
 );
 
-has 'meta_data', (
+has meta_data => (
     is  => 'rw',
     isa => 'HashRef',
     default => sub { +{} },

@@ -12,7 +12,7 @@ use Teto::Logger '$logger';
 
 extends 'Teto::Feeder';
 
-has 'guard', (
+has guard => (
     is  => 'rw',
     isa => 'Guard',
     builder => '_build_guard',

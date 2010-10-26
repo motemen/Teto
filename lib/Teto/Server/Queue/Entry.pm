@@ -4,22 +4,22 @@ use overload
         '""' => 'stringify',
         fallback => 1;
 
-has 'url', (
+has url => (
     is  => 'rw',
     isa => 'Str',
 );
 
-has 'code', (
+has code => (
     is  => 'rw',
     isa => 'CodeRef',
 );
 
-has 'name', (
+has name => (
     is  => 'rw',
     isa => 'Str',
 );
 
-has 'icon_url', (
+has icon_url => (
     is  => 'rw',
     isa => 'Str',
 );

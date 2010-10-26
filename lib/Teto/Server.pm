@@ -14,38 +14,38 @@ use Text::MicroTemplate::File;
 
 use POSIX qw(ceil);
 
-has 'port', (
+has port => (
     is  => 'rw',
     isa => 'Int',
     default => 9090,
     metaclass => 'Getopt',
 );
 
-has 'queue', (
+has queue => (
     is  => 'rw',
     isa => 'Teto::Server::Queue',
     lazy_build => 1,
 );
 
-has 'feeder', (
+has feeder => (
     is  => 'rw',
     isa => 'Teto::Feeder',
     lazy_build => 1,
 );
 
-has 'httpd', (
+has httpd => (
     is  => 'rw',
     isa => 'AnyEvent::HTTPD',
     lazy_build => 1,
 );
 
-has 'playlist', (
+has playlist => (
     is  => 'rw',
     isa => 'Teto::Playlist',
     default => sub { Teto::Playlist->new },
 );
 
-has 'file_cache', (
+has file_cache => (
     is  => 'rw',
     isa => 'Teto::FileCache',
     lazy_build => 1,
@@ -56,26 +56,26 @@ sub _build_file_cache {
     return Teto::FileCache->new(readonly => $self->readonly);
 }
 
-has 'readonly', (
+has readonly => (
     is  => 'rw',
     isa => 'Bool',
     default => 0,
     metaclass => 'Getopt',
 );
 
-has 'mt', (
+has mt => (
     is  => 'rw',
     isa => 'Text::MicroTemplate',
     default => sub { Text::MicroTemplate::File->new },
 );
 
-has 'status', (
+has status => (
     is  => 'rw',
     isa => 'HashRef',
     default => sub { +{} },
 );
 
-has 'bytes_sent', (
+has bytes_sent => (
     is  => 'rw',
     isa => 'Int',
     default => sub { 0 },
@@ -85,14 +85,14 @@ has 'bytes_sent', (
     },
 );
 
-has 'bytes_timeline', (
+has bytes_timeline => (
     is  => 'rw',
     isa => 'ArrayRef[Int]',
     default => sub { +[] },
 
 );
 
-has 'buffer', (
+has buffer => (
     is  => 'rw',
     isa => 'Teto::Server::Buffer',
     default => sub { require Teto::Server::Buffer; Teto::Server::Buffer->new },
