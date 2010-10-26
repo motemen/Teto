@@ -122,10 +122,10 @@ sub setup_callbacks {
             );
             $req->respond({ redirect => '/' });
         },
-        '/remove' => sub {
+        '/set_next' => sub {
             my ($server, $req) = @_;
             $server->stop_request;
-            $self->queue->remove(int $req->parm('i'));
+            $self->queue->next_index(int $req->parm('i'));
             $req->respond({ redirect => '/' });
         },
         '/static' => sub {

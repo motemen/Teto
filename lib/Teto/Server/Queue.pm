@@ -16,6 +16,12 @@ has index => (
     default => 0,
 );
 
+has next_index => (
+    is      => 'rw',
+    isa     => 'Int',
+    default => 0,
+);
+
 has queue => (
     is      => 'rw',
     isa     => 'ArrayRef',
@@ -66,12 +72,12 @@ sub insert {
 sub next {
     my $self = shift;
 
-    if ($self->index >= @{ $self->queue }) {
+    if ($self->next_index >= @{ $self->queue }) {
         return undef;
     }
 
-    my $next = $self->queue->[ $self->index ];
-    $self->{index}++;
+    my $next = $self->queue->[ $self->next_index ];
+    $self->{index} = $self->{next_index}++;
 
     # CodeRef が入ってたらその実行結果を push
     if ($next->code) {
@@ -81,15 +87,6 @@ sub next {
     }
 
     return $next;
-}
-
-# FIXME たぶん変
-sub remove {
-    my ($self, $i) = @_;
-    if ($self->index < $i) {
-        $self->{index}--;
-    }
-    splice @{ $self->queue }, $i, 1;
 }
 
 sub next_track_guard {

@@ -103,14 +103,16 @@ ul#queue li .title {
     <ul id="queue">
 ? foreach (0 .. $#{$_{server}->queue->queue}) {
 ?   my $entry = $_{server}->queue->queue->[$_];
-?   my $selected = $_ == $_{server}->queue->index;
+?   my $selected = ($_ == $_{server}->queue->index);
     <li <? if ($selected) { ?>class="selected"<? } ?>>
+      <a href="/set_next?i=<?= $_ ?>">
 ?     if ($entry->url) {
-      <img src="<?= $entry->thumbnail ?>" onerror="this.src='http://res.nimg.jp/img/common/video_deleted.jpg'" />
+        <img src="<?= $entry->thumbnail ?>" onerror="this.src='http://res.nimg.jp/img/common/video_deleted.jpg'" />
 ?     } else {
-      <img src="/static/add-page-orange.gif" />
+        <img src="/static/add-page-orange.gif" />
 ?     }
-      <span class="title"><?= do { my $name = $entry->name; utf8::decode $name if !utf8::is_utf8 $name; $name } ?></span>
+        <span class="title"><?= do { my $name = $entry->name; utf8::decode $name if !utf8::is_utf8 $name; $name } ?></span>
+      </a>
     </li>
 ? }
 
@@ -152,6 +154,10 @@ ul#queue li .title {
       <tr>
         <th>queue index</th>
         <td><?= $_{server}->queue->index ?></td>
+      </tr>
+      <tr>
+        <th>queue next index</th>
+        <td><?= $_{server}->queue->next_index ?></td>
       </tr>
     </table>
 
