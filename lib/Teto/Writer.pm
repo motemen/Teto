@@ -32,7 +32,22 @@ has client => (
     lazy_build => 1,
 );
 
+sub _build_client {
+    my $self = shift;
+
+    # 共有する
+    return our $Client ||= do {
+        my $config = pit_get('nicovideo.jp');
+        WWW::NicoVideo::Download->new(
+            email    => $config->{username},
+            password => $config->{password},
+        );
+    };
+}
+
 __PACKAGE__->meta->make_immutable;
+
+no Any::Moose;
 
 use Teto::Logger qw($logger);
 
@@ -166,7 +181,7 @@ sub write {
 sub extract_title {
     my ($self, $res) = @_;
     my $tree = HTML::TreeBuilder::XPath->new_from_content($res->decoded_content);
-    my $title = $tree->findvalue('//h1');
+    my $title = $tree->findvalue('//h1') || $tree->findvalue('//p[@class="video_title"]');
     $tree->delete;
     return $title;
 }
@@ -193,18 +208,6 @@ sub add_playlist_entry {
         source_url => $self->url,
         image_url  => "http://tn-skr1.smilevideo.jp/smile?i=$id",
     );
-}
-
-sub _build_client {
-    my $self = shift;
-
-    return our $Client ||= do {
-        my $config = pit_get('nicovideo.jp');
-        WWW::NicoVideo::Download->new(
-            email    => $config->{username},
-            password => $config->{password},
-        );
-    };
 }
 
 1;
