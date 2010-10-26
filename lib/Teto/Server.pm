@@ -1,8 +1,6 @@
 package Teto::Server;
 use Any::Moose;
 
-with any_moose('X::Getopt::Strict');
-
 use Teto::Logger qw($logger);
 use Teto::Feeder;
 use Teto::Playlist;
@@ -19,7 +17,6 @@ has port => (
     is  => 'rw',
     isa => 'Int',
     default => 9090,
-    metaclass => 'Getopt',
 );
 
 has queue => (
@@ -54,19 +51,7 @@ has playlist => (
 has file_cache => (
     is  => 'rw',
     isa => 'Teto::FileCache',
-    lazy_build => 1,
-);
-
-sub _build_file_cache {
-    my $self = shift;
-    return Teto::FileCache->new(readonly => $self->readonly);
-}
-
-has readonly => (
-    is  => 'rw',
-    isa => 'Bool',
-    default => 0,
-    metaclass => 'Getopt',
+    default => sub { Teto::FileCache->new },
 );
 
 has mt => (
