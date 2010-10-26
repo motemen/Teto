@@ -75,11 +75,44 @@ ul#queue li {
 }
 
 ul#queue li.selected {
+    border-color: #DDD;
+}
+
+ul#queue li.next {
     background-color: #385D66;
 }
 
 ul#queue li img {
     vertical-align: middle;
+}
+
+ul#queue li span.playing {
+    position: absolute;
+    top: 0;
+    left: 0;
+    line-height: 14px;
+    background-color: #FFF;
+    opacity: 0.8;
+}
+
+ul#queue li span.delete {
+    position: absolute;
+    top: 0;
+    left: 0;
+    line-height: 14px;
+    background-color: #FFF;
+    opacity: 0.8;
+    display: none;
+}
+
+ul#queue li span.delete a {
+    color: #333;
+    text-decoration: none;
+    display: block;
+}
+
+ul#queue li:hover span.delete {
+    display: inline;
 }
 
 ul#queue li .title {
@@ -103,16 +136,24 @@ ul#queue li .title {
     <ul id="queue">
 ? foreach (0 .. $#{$_{server}->queue->queue}) {
 ?   my $entry = $_{server}->queue->queue->[$_];
-?   my $selected = ($_ == $_{server}->queue->index);
-    <li <? if ($selected) { ?>class="selected"<? } ?>>
+    <li
+      <? if ($_ == $_{server}->queue->index) { ?>class="selected"<? } ?>
+      <? if ($_ == $_{server}->queue->next_index) { ?>class="next"<? } ?>
+    >
+?     if ($_ == $_{server}->queue->index) {
+        <span class="playing"><img src="/static/speaker-orange.gif" /></span>
+?     }
+      <span class="delete"><a href="/remove?i=<?= $_ ?>"><img src="/static/delete-page-red.gif" /></a></span>
       <a href="/set_next?i=<?= $_ ?>">
 ?     if ($entry->url) {
         <img src="<?= $entry->thumbnail ?>" onerror="this.src='http://res.nimg.jp/img/common/video_deleted.jpg'" />
 ?     } else {
         <img src="/static/add-page-orange.gif" />
 ?     }
-        <span class="title"><?= do { my $name = $entry->name; utf8::decode $name if !utf8::is_utf8 $name; $name } ?></span>
       </a>
+      <span class="title">
+        <?= do { my $name = $entry->name; utf8::decode $name if !utf8::is_utf8 $name; $name } ?>
+      </span>
     </li>
 ? }
 
@@ -156,7 +197,7 @@ ul#queue li .title {
         <td><?= $_{server}->queue->index ?></td>
       </tr>
       <tr>
-        <th>queue next index</th>
+        <th>next queue index</th>
         <td><?= $_{server}->queue->next_index ?></td>
       </tr>
     </table>

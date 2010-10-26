@@ -31,6 +31,7 @@ has queue => (
         size => 'count',
         push => 'push',
         insert_queue => 'insert',
+        delete_queue => 'delete',
     },
 );
 
@@ -60,6 +61,13 @@ around push => sub {
     @args = map { Teto::Server::Queue::Entry->new($_) } @args;
     $logger->log(debug => "<< $_") for @args;
     $self->$orig(@args);
+};
+
+around delete_queue => sub {
+    my ($orig, $self, $i) = @_;
+    $self->{index}-- if $i < $self->index;
+    $self->{next_index}-- if $i < $self->next_index;
+    $self->$orig($i);
 };
 
 sub insert {

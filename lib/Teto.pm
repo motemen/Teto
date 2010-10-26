@@ -93,9 +93,9 @@ sub run {
         $self->server->enqueue($_);
     }
 
-    async {
+    # async {
         $self->server->queue->start;
-    };
+    # };
 
     AE::cv->wait;
 }

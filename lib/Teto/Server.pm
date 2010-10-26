@@ -8,6 +8,7 @@ use Teto::Server::Queue;
 use Teto::Server::Buffer;
 
 use AnyEvent::HTTPD;
+use Coro;
 use Text::MicroTemplate::File;
 
 use POSIX qw(ceil);
@@ -21,8 +22,13 @@ has port => (
 has queue => (
     is  => 'rw',
     isa => 'Teto::Server::Queue',
-    default => sub { Teto::Server::Queue->new(server => $_[0]) },
+    lazy_build => 1,
 );
+
+sub _build_queue {
+    my $self = shift;
+    return Teto::Server::Queue->new(server => $self);
+}
 
 has feeder => (
     is  => 'rw',
@@ -115,15 +121,23 @@ sub setup_callbacks {
         '/add' => sub {
             my ($server, $req) = @_;
             $server->stop_request;
-            $self->enqueue(
-                map { split /\n/, $_ } @{ $req->{parm}->{url}->[0] || [] }
-            );
+            async {
+                $self->enqueue(
+                    map { split /\n/, $_ } @{ $req->{parm}->{url}->[0] || [] }
+                );
+            };
             $req->respond({ redirect => '/' });
         },
         '/set_next' => sub {
             my ($server, $req) = @_;
             $server->stop_request;
             $self->queue->next_index(int $req->parm('i'));
+            $req->respond({ redirect => '/' });
+        },
+        '/remove' => sub {
+            my ($server, $req) = @_;
+            $server->stop_request;
+            $self->queue->delete_queue(int $req->parm('i'));
             $req->respond({ redirect => '/' });
         },
         '/static' => sub {
