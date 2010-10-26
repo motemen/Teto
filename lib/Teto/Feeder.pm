@@ -143,7 +143,9 @@ sub _feed_by_nicovideo_mylist {
 
     my $found;
     foreach (@$list) {
-        my $url   = 'http://www.nicovideo.jp/watch/' . ($_->{item_data}->{video_id} || next);
+        my $item_data = $_->{item_data};
+        next unless ref $item_data eq 'HASH'
+        my $url   = 'http://www.nicovideo.jp/watch/' . ($item_data->{video_id} || next);
         my $title = $_->{item_data}->{title};
         $found++;
         $logger->log(debug => "found $title <$url>");

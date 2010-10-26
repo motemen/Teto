@@ -35,6 +35,7 @@ has 'metainfo_file', (
 __PACKAGE__->meta->make_immutable;
 
 use File::Spec;
+use File::Util qw(escape_filename);
 use Path::Class qw(file);
 use YAML::Tiny;
 
@@ -65,7 +66,7 @@ sub fh_to_write {
 
     my $filename = "$video_id.$ext";
        $filename = "$meta->{title}.$filename" if length $meta->{title};
-       $filename = join '_', File::Spec->splitdir($filename);
+       $filename = escape_filename($filename);
 
     my $file = $self->cache_dir->file($video_id, $filename);
     $file->dir->mkpath;

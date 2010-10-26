@@ -47,7 +47,8 @@ sub write {
     my $self = shift;
     my $data = join '', @_;
 
-    utf8::encode my $title = $self->meta_data->{title} || '';
+    my $title = $self->meta_data->{title} || '';
+    utf8::encode $title if utf8::is_utf8 $title;
     my $meta = qq(StreamTitle='$title';);
     my $len = ceil(length($meta) / 16);
     my $metadata_section = chr($len) . $meta . ("\x00" x (16 * $len - length $meta));
