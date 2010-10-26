@@ -94,6 +94,7 @@ sub get_meta {
 
 sub set_meta {
     my ($self, $url, $key, $value) = @_;
+    utf8::encode $value if utf8::is_utf8 $value;
     $self->metainfo->[0]->{$url}->{$key} = $value;
     $self->write_metafile;
 }

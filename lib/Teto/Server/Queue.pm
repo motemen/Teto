@@ -57,7 +57,7 @@ use Guard ();
 
 around push => sub {
     my ($orig, $self, @args) = @_;
-    @args = map Teto::Server::Queue::Entry->new($_), @args;
+    @args = map { Teto::Server::Queue::Entry->new($_) } @args;
     $logger->log(debug => "<< $_") for @args;
     $self->$orig(@args);
 };
@@ -66,7 +66,7 @@ sub insert {
     my $self = shift;
     my @entries = map { Teto::Server::Queue::Entry->new($_) } @_;
     $logger->log(debug => "<< $_") for @entries;
-    $self->insert_queue($self->index, $_) for @entries;
+    $self->insert_queue($self->next_index, $_) for @entries;
 }
 
 sub next {

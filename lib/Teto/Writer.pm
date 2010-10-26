@@ -98,11 +98,6 @@ sub write {
     if (my $file = $self->file_cache->file_to_read($self->url)) {
         my $meta = $self->file_cache->get_meta($file);
 
-        $self->add_playlist_entry(
-            title => $meta->{title},
-            media_url => "file://$file",
-        );
-
         return $self->transcode("$file", sub {
             my $data = shift;
             return unless defined $data;
@@ -129,10 +124,6 @@ sub write {
         return;
     }
 
-    $self->add_playlist_entry(
-        title     => $title,
-        media_url => $media_url,
-    );
     $self->file_cache->set_meta($self->url, title => $title);
 
     my $fh;
@@ -196,18 +187,6 @@ sub prepare_headers {
     $self->client->user_agent->prepare_request(GET $url)->scan(sub { $headers{$_[0]} = $_[1] });
 
     return \%headers;
-}
-
-sub add_playlist_entry {
-    my ($self, %args) = @_;
-
-    my ($id) = $self->url =~ /(\d+)$/ or die;
-    $self->server->playlist->add_entry(
-        title      => $args{title},
-        url        => $args{media_url},
-        source_url => $self->url,
-        image_url  => "http://tn-skr1.smilevideo.jp/smile?i=$id",
-    );
 }
 
 1;

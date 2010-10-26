@@ -3,7 +3,6 @@ use Any::Moose;
 
 use Teto::Logger qw($logger);
 use Teto::Feeder;
-use Teto::Playlist;
 use Teto::FileCache;
 use Teto::Server::Queue;
 use Teto::Server::Buffer;
@@ -39,14 +38,13 @@ sub _build_feeder {
 has httpd => (
     is  => 'rw',
     isa => 'AnyEvent::HTTPD',
-    default => sub { AnyEvent::HTTPD->new(port => $_[0]->port) },
+    lazy_build => 1,
 );
 
-has playlist => (
-    is  => 'rw',
-    isa => 'Teto::Playlist',
-    default => sub { Teto::Playlist->new },
-);
+sub _build_httpd {
+    my $self = shift;
+    return AnyEvent::HTTPD->new(port => $self->port);
+}
 
 has file_cache => (
     is  => 'rw',
