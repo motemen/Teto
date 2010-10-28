@@ -6,12 +6,11 @@ Description
 音声を聴くためのニコニコ動画ストリームプロキシです。
 メディアファイルをローカルに保存しつつ、トランスコーディングしてストリームプレーヤーで再生できます。
 
-
 Synopsis
 --------
 以下のようにして起動し、
 
-	./teto.pl 'http://www.nicovideo.jp/tag/サンドキャニオン?sort=v'
+	 plackup teto.psgi --debug --port 9090 --readonly 'http://b.hatena.ne.jp/cho45/?url=http://www.nicovideo.jp/'
 
  * http://yourhost:9090/stream にプレーヤでアクセスすると連続して音声を聴けます。
    * 動的なタイトルの更新に対応しているプレーヤー (iTunes, foobar2000 など) で聴く必要があります.
@@ -27,8 +26,8 @@ TODO
  * ニコ動以外のサイト
  * <del>AutoPagerize</del>
  * Twitter
- * nm\d+ って再生できるのか
- * マイリストは JS が必要らしい…
+ * nm\d+ って再生できるのか → できない
+ * <del>マイリストは JS が必要らしい…</del>
  * ICY 対応してないのも
  * Queue ちゃんと表示
  * HTTP GET で固まる/進行状況
@@ -36,4 +35,4 @@ TODO
 
 Screenshot
 ----------
-[![http://f.hatena.ne.jp/motemen/20100708224728](http://img.f.hatena.ne.jp/images/fotolife/m/motemen/20100708/20100708224728.png)](http://f.hatena.ne.jp/motemen/20100708224728)
+[![http://f.hatena.ne.jp/motemen/20101028204941](http://img.f.hatena.ne.jp/images/fotolife/m/motemen/20101028/20101028204941.png)](http://f.hatena.ne.jp/motemen/20101028204941)
