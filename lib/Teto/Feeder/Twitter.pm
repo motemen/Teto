@@ -1,6 +1,8 @@
 package Teto::Feeder::Twitter;
 use Any::Moose;
 
+# TODO 消して作りなおす
+
 use Coro;
 use AnyEvent::HTTP;
 use Config::Pit;

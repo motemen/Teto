@@ -99,6 +99,7 @@ sub set_meta {
     $self->write_metafile;
 }
 
+# TODO Wide character...
 sub write_metafile {
     my $self = shift;
     $self->metainfo_file->dir->mkpath;

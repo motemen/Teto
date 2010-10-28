@@ -35,6 +35,8 @@ __PACKAGE__->meta->make_immutable;
 
 use POSIX qw(ceil);
 
+# TODO なんかもっといい API で Coro のコントロールできないか…
+
 sub underruns {
     shift->length < BUFFER_SIZE_MIN;
 }

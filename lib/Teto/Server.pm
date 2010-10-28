@@ -164,8 +164,6 @@ sub to_psgi_app {
     };
 }
 
-# ------ Track ------
-
 sub wrote_one_track {
     my $self = shift;
     push @{ $self->bytes_timeline }, $self->bytes_sent + $self->buffer->length;
@@ -190,6 +188,8 @@ sub enqueue {
     my ($self, @args) = @_;
     $self->feeder->feed_async(@args);
 }
+
+# XXX
 
 sub Twiggy::Writer::poll_cb {
     my ($self, $cb) = @_;

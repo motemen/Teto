@@ -111,15 +111,15 @@ __END__
 
 =head1 NAME
 
-Teto - nicovideo audio player
+Teto - nicovideo audio streaming server
 
 =head1 SYNOPSIS
 
-  use Teto;
+  ./teto [playlist_url]
 
 =head1 DESCRIPTION
 
-Teto is
+Teto is a nicovideo audio streaming server.
 
 =head1 AUTHOR
 

@@ -173,6 +173,7 @@ sub write {
              my ($hdl, $fatal, $msg) = @_;
              $logger->log(error => "AnyEvent::Handle: $msg");
              $hdl->destroy;
+             # TODO 即座に write を終える
         }
     );
 
