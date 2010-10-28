@@ -9,12 +9,9 @@ requires_any_moose 'X::NativeTraits';
 
 requires 'AnyEvent';
 requires 'AnyEvent::HTTP';
-requires 'AnyEvent::Util';
-requires 'AnyEvent::HTTPD';
 requires 'Guard';
 
 requires 'Coro';
-requires 'Coro::LWP';
 
 requires 'Log::Dispatch';
 requires 'Exporter::Lite';

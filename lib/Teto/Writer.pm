@@ -45,17 +45,27 @@ sub _build_client {
     };
 }
 
+has wrote => (
+    is  => 'rw',
+    isa => 'Bool',
+    default => 0,
+);
+
+has error => (
+    is  => 'rw',
+    isa => 'Str',
+);
+
 __PACKAGE__->meta->make_immutable;
 
 no Any::Moose;
 
 use Teto::Logger qw($logger);
 
+use AnyEvent;
 use AnyEvent::HTTP;
 use AnyEvent::Util;
-
-use Coro::Handle;
-use Coro::LWP;
+use AnyEvent::Handle;
 
 use WWW::NicoVideo::Download;
 use HTML::TreeBuilder::XPath;
@@ -69,6 +79,7 @@ sub transcode {
         '2>' => sub {
             $logger->log(debug => "ffmpeg: @_") unless "@_" =~ /configuration:/;
         },
+        '$$' => \my $pid,
     );
     
     my $filename;
@@ -83,7 +94,26 @@ sub transcode {
     my @command = (qw(ffmpeg -i), $filename, qw(-ab 192k -acodec libmp3lame -f mp3 -)); # TODO config
     $logger->log(debug => qq(running '@command'));
 
-    return run_cmd \@command, %args;
+    my $cv = AE::cv;
+
+    my $cmd_cv = run_cmd \@command, %args;
+
+    $logger->log(info => qq(ffmpeg pid: $pid));
+
+    $cmd_cv->cb(sub {
+        my $exit_code = $_[0]->recv;
+        $logger->log(debug => "ffmpeg exited with code $exit_code");
+
+        if ($exit_code != 0) {
+            $self->error("ffmpeg exited with code $exit_code");
+        }
+
+        $self->wrote(1);
+
+        $cv->send;
+    });
+
+    return $cv;
 }
 
 sub write {
@@ -108,7 +138,7 @@ sub write {
 
     my $res = $self->client->user_agent->get($self->url);
     unless ($res->is_success) {
-        $logger->log(warn => "$self->{url}: " . $res->message);
+        $logger->log(error => "$self->{url}: " . $res->message);
         if ($res->code == 403) {
             $logger->log(notice => 'Got 403, sleep for 30s');
             sleep 30;
@@ -128,7 +158,14 @@ sub write {
 
     my $fh;
     my ($reader, $writer) = portable_pipe;
-    $writer = unblock $writer;
+    my $write_handle = AnyEvent::Handle->new(
+        fh => $writer,
+        on_error => sub {
+             my ($hdl, $fatal, $msg) = @_;
+             $logger->log(error => "AnyEvent::Handle: $msg");
+             $hdl->destroy;
+        }
+    );
 
     http_get $media_url, headers => $self->prepare_headers($media_url),
         on_header => sub {
@@ -148,11 +185,14 @@ sub write {
         },
         on_body => sub {
             my ($content, $headers) = @_;
-            $_->print($content) for $writer, $fh;
+            print $fh $content;
+            $write_handle->push_write($content);
             return 1;
         },
         sub {
-            $_->close for $writer, $fh;
+            close $fh;
+            $write_handle->on_drain(sub { close $_[0]->fh; $_[0]->destroy });
+
             $logger->log(notice => "done $media_url");
         };
 
@@ -160,7 +200,7 @@ sub write {
         my $data = shift;
 
         if (!defined $data) {
-            $_->close for $reader, $writer, $fh;
+            $_->close for $reader, $fh;
             return;
         }
 

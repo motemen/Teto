@@ -22,6 +22,8 @@ __PACKAGE__->meta->make_immutable;
 
 use Teto::Logger qw($logger);
 
+use Coro;
+use Coro::LWP;
 use WWW::Mechanize;
 use WWW::Mechanize::AutoPager;
 use HTML::TreeBuilder::XPath;
@@ -49,6 +51,8 @@ sub feed {
 
 sub feed_res {
     my ($self, $res, $url) = @_;
+
+    $Coro::current->desc("feeder: feeding $url") if $Coro::current;
 
     $url ||= $res->base;
 
@@ -102,7 +106,7 @@ sub _feed_by_html {
             $self->queue->push({
                 name => "AutoPager $url",
                 code => sub {
-                    $self->feed($url);
+                    async { $self->feed($url) };
                     return ();
                 },
             });

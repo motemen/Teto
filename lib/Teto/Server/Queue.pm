@@ -53,7 +53,9 @@ use Teto::Writer;
 use Teto::Logger qw($logger);
 use Teto::Server::Queue::Entry;
 
-use AnyEvent;
+use Coro;
+use Coro::Timer;
+
 use Guard ();
 
 around push => sub {
@@ -97,24 +99,10 @@ sub next {
     return $next;
 }
 
-sub next_track_guard {
+sub start_async {
     my $self = shift;
-    
-    return Guard::guard {
-        return unless $self->server;
-
-        $logger->log(debug => 'unguarded');
-
-        if ($self->server->buffer->overruns) {
-            $logger->log(debug => 'buffer is full');
-            return;
-        }
-
-        if ($self->server->remaining_tracks > 1) {
-            $logger->log(debug => 'too many remaining tracks');
-            return;
-        }
-
+    async {
+        $Coro::current->desc('queue');
         $self->start;
     };
 }
@@ -122,44 +110,43 @@ sub next_track_guard {
 sub start {
     my $self = shift;
 
-    return if $self->guard;
+    while (1) {
+        my $track = $self->next or do {
+            my $t = Coro::Timer::timeout 1;
+            schedule until $t;
+            next;
+        };
+        $logger->log(info => "next: $track");
 
-    # これが undef されたら次のトラックへ
-    $self->{guard} = $self->next_track_guard;
+        my $writer = Teto::Writer->new(server => $self->server, url => $track->url);
 
-    my $next = $self->next or do {
-        $self->guard->cancel;
-        $self->unguard;
-        return;
-    };
-
-    my $writer = Teto::Writer->new(server => $self->server, url => $next->url);
-    my $cv = $writer->write;
-        
-    if (not $cv) {
-        $logger->log(debug => 'writer did not write');
-        $self->unguard;
-        return;
-    }
-
-    $cv->cb(sub {
-        my $exit_code = shift->recv || 0;
-        if ($exit_code != 0) {
-            $logger->log(error => "transcoder exited with code $exit_code");
+        if (my $cv = $writer->write) {
+            $cv->cb(rouse_cb);
+            rouse_wait;
         }
-        $self->server->wrote_one_track;
-        $self->unguard;
-    });
-}
 
-sub unguard {
-    my $self = shift;
-    undef $self->{guard};
-}
+        if ($writer->wrote) {
+            $self->server->wrote_one_track;
+            $logger->log(debug => 'writer wrote');
+        } elsif ($writer->error) {
+            $logger->log(error => 'writer: ' . $writer->error);
+        } else {
+            $logger->log(notice => 'writer did not write');
+        }
 
-sub DEMOLISH {
-    my $self = shift;
-    $self->guard->cancel if $self->guard;
+        while (1) {
+            if ($self->server->buffer->overruns) {
+                # $logger->log(debug => 'buffer full');
+                $Coro::current->desc('queue paused: buffer is full');
+            } elsif ($self->server->remaining_tracks > 1) {
+                # $logger->log(info => $self->server->remaining_tracks . 'track(s) remaining');
+                $Coro::current->desc('queue paused: ' . $self->server->remaining_tracks . 'track(s) remaining');
+            } else {
+                last;
+            }
+            Coro::Timer::sleep 1;
+        }
+    }
 }
 
 1;

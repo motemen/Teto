@@ -79,25 +79,21 @@ use Teto::Logger qw($logger);
 use AnyEvent;
 use Coro;
 
-sub setup {
+sub start_psgi {
     my $self = shift;
-    $self->server->setup_callbacks;
+
     $logger->add_logger(screen => { min_level => $self->debug ? 'debug' : 'notice' });
-}
 
-sub run {
-    my $self = shift;
-    $self->setup;
+    async {
+        foreach (@{ $self->extra_argv }) {
+            next if $_ eq 'teto.psgi';
+            $self->server->enqueue($_);
+        }
+    };
 
-    foreach (@{ $self->extra_argv }) {
-        $self->server->enqueue($_);
-    }
+    $self->server->queue->start_async;
 
-    # async {
-        $self->server->queue->start;
-    # };
-
-    AE::cv->wait;
+    return $self->server->to_psgi_app;
 }
 
 1;

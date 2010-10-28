@@ -6,51 +6,60 @@
     <style type="text/css">
 body {
     margin: 0;
-    background-color: #152D38;
+    background-color: #262626;
 }
+
 h1 {
     font-family: "Lucida Sans Unicode";
 }
+
 h1 a {
     text-decoration: none;
 }
+
 h2 {
     font-family: Georgia;
-    color: #385D66;
+    color: #8F8650;
     clear: both;
 }
+
 div#container {
     color: #FFFFFF;
     padding: 10px;
 }
+
 div#container a {
-    color: #99D487;
+    color: #5A7678;
 }
 
 input {
     font-family: sans-serif;
     font-size: large;
-}
-input[type="submit"] {
     padding: 0.1em 0.4em;
 }
+
 img {
     border: 0;
     vertical-align: middle;
     margin: 3px;
 }
-textarea.url {
-    width: 80%;
+
+textarea {
+    width: 100%;
     height: 8em;
+    background-color: #E9E9E9;
+    border: 1px solid #8F8442;
 }
 
 #status {
     font-size: smaller;
 }
+
 th {
   background-color: #152D38;
   padding: 0.4em 0.5em;
 }
+
 td {
   background-color: #385D66;
   padding: 0.4em 0.5em;
@@ -63,11 +72,12 @@ ul#queue {
 }
 
 ul#queue li {
-    margin: 3px;
+    margin: 5px;
     width: 156px;
     height: 120px;
     overflow: hidden;
-    border: 1px solid #385D66;
+    border: 1px solid #474F45;
+    background-color: #101010;
     float: left;
     position: relative;
     text-align: center;
@@ -79,7 +89,7 @@ ul#queue li.selected {
 }
 
 ul#queue li.next {
-    background-color: #385D66;
+    background-color: #455776;
 }
 
 ul#queue li img {
@@ -132,7 +142,6 @@ ul#queue li .title {
 
     <h1><a href="/">teto</a><a href="/stream" class="stream-link">stream <img src="/static/speaker-orange.gif"></a></h1>
 
-    <h2>Queue</h2>
     <ul id="queue">
 ? foreach (0 .. $#{$_{server}->queue->queue}) {
 ?   my $entry = $_{server}->queue->queue->[$_];
@@ -152,7 +161,7 @@ ul#queue li .title {
 ?     }
       </a>
       <span class="title">
-        <?= do { my $name = $entry->name; utf8::decode $name if !utf8::is_utf8 $name; $name } ?>
+        <?= do { my $name = $entry->name || ''; utf8::decode $name if !utf8::is_utf8 $name; $name } ?>
       </span>
     </li>
 ? }
@@ -161,16 +170,13 @@ ul#queue li .title {
 
     <br style="clear: both" />
 
-    <h2>Add</h2>
-
     <div>
       <form action="/add" method="post">
-      <textarea class="url" name="url"></textarea>
+      <textarea class="url" name="url"></textarea><br />
       <input type="submit" name="add" value="add" />
       </form>
     </div>
 
-    <h2>Status</h2>
     <table id="status">
       <tr>
         <th>buffer-&gt;length</th>

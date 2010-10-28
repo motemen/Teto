@@ -7,8 +7,8 @@ use Teto::FileCache;
 use Teto::Server::Queue;
 use Teto::Server::Buffer;
 
-use AnyEvent::HTTPD;
 use Coro;
+use Coro::Timer;
 use Text::MicroTemplate::File;
 
 use POSIX qw(ceil);
@@ -39,17 +39,6 @@ has feeder => (
 sub _build_feeder {
     my $self = shift;
     return Teto::Feeder->new(queue => $self->queue);
-}
-
-has httpd => (
-    is  => 'rw',
-    isa => 'AnyEvent::HTTPD',
-    lazy_build => 1,
-);
-
-sub _build_httpd {
-    my $self = shift;
-    return AnyEvent::HTTPD->new(port => $self->port);
 }
 
 has file_cache => (
@@ -113,105 +102,72 @@ sub update_status {
 
 # ------ HTTPD ------
 
-sub setup_callbacks {
+use Plack::Request;
+use Plack::Builder;
+
+sub to_psgi_app {
     my $self = shift;
 
-    $self->httpd->reg_cb(
-        '/stream' => $self->stream_handler,
-        '/add' => sub {
-            my ($server, $req) = @_;
-            $server->stop_request;
-            async {
-                $self->enqueue(
-                    map { split /\n/, $_ } @{ $req->{parm}->{url}->[0] || [] }
-                );
-            };
-            $req->respond({ redirect => '/' });
-        },
-        '/set_next' => sub {
-            my ($server, $req) = @_;
-            $server->stop_request;
-            $self->queue->next_index(int $req->parm('i'));
-            $req->respond({ redirect => '/' });
-        },
-        '/remove' => sub {
-            my ($server, $req) = @_;
-            $server->stop_request;
-            $self->queue->delete_queue(int $req->parm('i'));
-            $req->respond({ redirect => '/' });
-        },
-        '/static' => sub {
-            my ($server, $req) = @_;
-            $server->stop_request;
+    my $app = sub {
+        my $env = shift;
+        my $req = Plack::Request->new($env);
+        my $res = $req->new_response(200);
 
-            my $path = $req->url->path;
-            $path =~ s<^/+><>;
-            open my $fh, '<', $path or do {
-                warn "$path: $!";
-                $req->respond([
-                    404, 'Not Found', { 'Content-Type' => 'text/html' }, '404 Not Found'
-                ]);
-                return;
-            };
-            $req->respond({
-                content => [ 'image/gif', do { local $/; <$fh> } ]
-            })
-        },
-        '/' => sub {
-            my ($server, $req) = @_;
+        if ($req->path eq '/') {
             my $content = $self->mt->render_file('root/index.mt', server => $self)->as_string;
             utf8::encode $content if utf8::is_utf8 $content;
-            $req->respond([
-                200, 'OK', { 'Content-Type' => 'text/html; charset=utf-8' }, $content
-            ]);
-        },
-    );
-}
+            $res->content($content);
+            return $res->finalize;
+        }
 
-sub stream_handler {
-    my $self = shift;
+        if ($req->path eq '/stream') {
+            return sub {
+                my $respond = shift;
+                my $writer = $respond->([
+                    200, [
+                        'Content-Type' => 'audio/mpeg',
+                        'Icy-Metaint'  => $self->buffer->META_INTERVAL,
+                        'Icy-Name'     => 'tetocast',
+                        'Icy-Url'      => $req->request_uri,
+                    ]
+                ]);
 
-    return sub {
-        my ($server, $req) = @_;
+                $writer->can('poll_cb') or die 'this server does not implement $writer->poll_cb($cb)';
 
-        $server->stop_request;
+                $writer->poll_cb(unblock_sub {
+                    my $writer = shift;
 
-        $req->respond([
-            200, 'OK', {
-                'Content-Type' => 'audio/mpeg',
-                'Icy-Metaint'  => $self->buffer->META_INTERVAL,
-                'Icy-Name'     => 'tetocast',
-                'Icy-Url'      => $req->url,
-            }, sub {
-                my ($data_cb) = @_;
-                unless ($data_cb) {
-                    $logger->log(info => 'client disconnected');
-                    return;
-                }
+                    while ($self->buffer->underruns) {
+                        Coro::Timer::sleep 1;
+                    }
 
-                my $send = sub {
                     my $data = $self->buffer->read(256 * 1024);
-                    $data_cb->($data);
+                    $writer->write($data);
                     $self->incremenet_bytes_sent(length $data);
-                };
+                });
+            };
+        }
 
-                unless ($self->buffer->underruns) {
-                    $send->();
-                    return;
-                }
+        $res->code(302);
+        $res->headers([ Location => '/' ]);
 
-                $logger->log(debug => 'buffer underrun');
-                # TODO guard で外から叩くようにする
-                my $w; $w = AE::timer 0, 1, sub {
-                    $self->queue->start;
-                    return unless $self->buffer->length;
-                    $logger->log(debug => 'timer; write');
-                    $send->();
-                    undef $w;
-                };
-            }
-        ]);
-    }
+        if ($req->path eq '/add') {
+            $self->enqueue(split /\n/, $req->param('url') || '');
+        }
+        elsif ($req->path eq '/set_next') {
+            $self->queue->next_index(int $req->param('i'));
+        }
+        elsif ($req->path eq '/remove') {
+            $self->queue->delete_queue(int $req->param('i'));
+        }
+
+        return $res->finalize;
+    };
+
+    builder {
+        enable 'Static', path => qr(^/static/), root => '.';
+        $app;
+    };
 }
 
 # ------ Track ------
@@ -239,8 +195,15 @@ sub remaining_tracks {
 # ------ Queuing ------
 
 sub enqueue {
-    my $self = shift;
-    $self->feeder->feed($_) for @_;
+    my ($self, @args) = @_;
+    async {
+        $self->feeder->feed($_) for @args;
+    };
+}
+
+sub Twiggy::Writer::poll_cb {
+    my ($self, $cb) = @_;
+    $self->{handle}->on_drain($cb && sub { $cb->($self) });
 }
 
 1;
