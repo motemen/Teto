@@ -3,15 +3,9 @@ use Any::Moose;
 
 our $VERSION = '0.01';
 
-with any_moose('X::Getopt::Strict');
+use Getopt::Long ':config' => qw(pass_through);
 
-# --port=9090
-has port => (
-    is  => 'rw',
-    isa => 'Int',
-    default => 9090,
-    metaclass => 'Getopt',
-);
+with any_moose('X::Getopt::Strict');
 
 # --readonly
 has readonly => (
@@ -64,9 +58,13 @@ sub _build_server {
     my $self = shift;
     return Teto::Server->new(
         file_cache => $self->file_cache,
-        port       => $self->port,
     );
 }
+
+has coro_debug_server_guard => (
+    is  => 'rw',
+    isa => 'Guard',
+);
 
 no Any::Moose;
 
@@ -79,17 +77,28 @@ use Teto::Logger qw($logger);
 use AnyEvent;
 use Coro;
 
+sub BUILD {
+    my $self = shift;
+
+    our $instance = $self;
+
+    if ($self->debug) {
+        require Coro::Debug;
+        $self->coro_debug_server_guard(
+            Coro::Debug->new_unix_server('/tmp/teto_debug')
+        );
+    }
+}
+
 sub start_psgi {
     my $self = shift;
 
-    $logger->add_logger(screen => { min_level => $self->debug ? 'debug' : 'notice' });
+    $logger->add_logger(screen => { min_level => $self->debug ? 'debug' : 'info' });
 
-    async {
-        foreach (@{ $self->extra_argv }) {
-            next if $_ eq 'teto.psgi';
-            $self->server->enqueue($_);
-        }
-    };
+    foreach (@{ $self->extra_argv || [] }) {
+        next unless $_ =~ m(^https?://);
+        $self->server->enqueue($_);
+    }
 
     $self->server->queue->start_async;
 

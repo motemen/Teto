@@ -138,21 +138,30 @@ sub write {
 
     my $res = $self->client->user_agent->get($self->url);
     unless ($res->is_success) {
-        $logger->log(error => "$self->{url}: " . $res->message);
+        $self->error("$self->{url}: " . $res->message);
+
+        my $cv = AE::cv;
         if ($res->code == 403) {
-            $logger->log(notice => 'Got 403, sleep for 30s');
-            sleep 30;
+            $logger->log(notice => 'Got 403, sleep for 45s');
+            my $w; $w = AE::timer 45, 0, sub {
+                $cv->send;
+                undef $w;
+            };
+        } else {
+            $cv->send;
         }
-        return;
+
+        return $cv;
     }
     
     my $title = $self->extract_title($res);
     $logger->log(info => "title: $title");
     my $media_url = eval { $self->client->prepare_download($video_id) };
-    if ($@) {
-        $logger->log(error => "$@");
+    if (!$media_url) {
+        $logger->log(error => 'Could not get media' . ($@ ? ": $@" : ''));
         return;
     }
+    $logger->log(info => "media: $media_url");
 
     $self->file_cache->set_meta($self->url, title => $title);
 
@@ -193,7 +202,7 @@ sub write {
             close $fh;
             $write_handle->on_drain(sub { close $_[0]->fh; $_[0]->destroy });
 
-            $logger->log(notice => "done $media_url");
+            $logger->log(notice => "Done: GET $media_url");
         };
 
     return $self->transcode($reader, sub {

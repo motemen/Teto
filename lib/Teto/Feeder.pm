@@ -10,12 +10,7 @@ has queue => (
 has ua => (
     is  => 'rw',
     isa => 'LWP::UserAgent',
-    default => sub {
-        my $ua = WWW::Mechanize->new;
-        eval { $ua->autopager->load_siteinfo };
-        warn $@ if $@;
-        return $ua;
-    },
+    lazy_build => 1,
 );
 
 __PACKAGE__->meta->make_immutable;
@@ -30,23 +25,42 @@ use HTML::TreeBuilder::XPath;
 use XML::Feed;
 use JSON::XS qw(decode_json);
 
+sub _build_ua {
+    my $ua = WWW::Mechanize->new;
+    eval { $ua->autopager->load_siteinfo };
+    $logger->log(warn => $@) if $@;
+    return $ua;
+}
+
 sub _url_is_like_nicovideo {
     my $url = shift;
     $url =~ m<^http://(?:www\.nicovideo\.jp/watch|nico\.ms)/[sn]m\d+>;
 }
 
-sub feed {
-    my ($self, $url) = @_;
+sub feed_async {
+    my ($self, @urls) = @_;
 
-    if (_url_is_like_nicovideo $url) {
-        $self->queue->push($url);
-        return;
-    }
+    async {
+        foreach my $url (@urls) {
+            utf8::encode $url if utf8::is_utf8 $url;
 
-    my $res = $self->ua->get($url);
-    return if $res->is_error;
+            if (_url_is_like_nicovideo $url) {
+                $self->queue->push($url);
+                next;
+            }
 
-    return $self->feed_res($res, $url);
+            my $res = $self->ua->get($url);
+            if ($res->is_error) {
+                $logger->log(error => "$url: " . $res->message);
+                next;
+            }
+
+            my $found = $self->feed_res($res, $url);
+            unless ($found) {
+                $logger->log(notice => "$url: no video found");
+            }
+        }
+    };
 }
 
 sub feed_res {
@@ -106,7 +120,7 @@ sub _feed_by_html {
             $self->queue->push({
                 name => "AutoPager $url",
                 code => sub {
-                    async { $self->feed($url) };
+                    $self->feed_async($url);
                     return ();
                 },
             });

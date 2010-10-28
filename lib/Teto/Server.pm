@@ -13,12 +13,6 @@ use Text::MicroTemplate::File;
 
 use POSIX qw(ceil);
 
-has port => (
-    is  => 'rw',
-    isa => 'Int',
-    default => 9090,
-);
-
 has queue => (
     is  => 'rw',
     isa => 'Teto::Server::Queue',
@@ -87,8 +81,6 @@ has buffer => (
 
 __PACKAGE__->meta->make_immutable;
 
-# ------ Status ------
-
 sub update_status {
     my ($self, %status) = @_;
     no warnings 'uninitialized';
@@ -99,8 +91,6 @@ sub update_status {
     $self->status(+{ %status });
     $self->buffer->meta_data(+{ %status });
 }
-
-# ------ HTTPD ------
 
 use Plack::Request;
 use Plack::Builder;
@@ -116,6 +106,7 @@ sub to_psgi_app {
         if ($req->path eq '/') {
             my $content = $self->mt->render_file('root/index.mt', server => $self)->as_string;
             utf8::encode $content if utf8::is_utf8 $content;
+            $res->content_type('text/html; charset=utf-8');
             $res->content($content);
             return $res->finalize;
         }
@@ -160,6 +151,9 @@ sub to_psgi_app {
         elsif ($req->path eq '/remove') {
             $self->queue->delete_queue(int $req->param('i'));
         }
+        else {
+            $res->code(404);
+        }
 
         return $res->finalize;
     };
@@ -192,13 +186,9 @@ sub remaining_tracks {
     return scalar @{ $self->bytes_timeline } - $self->current_track_number;
 }
 
-# ------ Queuing ------
-
 sub enqueue {
     my ($self, @args) = @_;
-    async {
-        $self->feeder->feed($_) for @args;
-    };
+    $self->feeder->feed_async(@args);
 }
 
 sub Twiggy::Writer::poll_cb {
