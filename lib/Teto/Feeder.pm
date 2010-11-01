@@ -13,6 +13,16 @@ has ua => (
     lazy_build => 1,
 );
 
+has feeds => (
+    is  => 'rw',
+    isa => 'ArrayRef[HashRef]',
+    traits  => [ 'Array' ],
+    default => sub { [] },
+    handles => {
+        push_feed => 'push',
+    },
+);
+
 __PACKAGE__->meta->make_immutable;
 
 use Teto::Logger qw($logger);
@@ -55,8 +65,11 @@ sub feed_async {
                 next;
             }
 
-            my $found = $self->feed_res($res, $url);
-            unless ($found) {
+            my ($found, $title) = $self->feed_res($res, $url);
+
+            if ($found) {
+                $self->push_feed({ url => $url, title => $title });
+            } else {
                 $logger->log(notice => "$url: no video found");
             }
         }
@@ -88,6 +101,8 @@ sub _feed_by_html {
 
     my $tree = HTML::TreeBuilder::XPath->new;
     $tree->parse($res->decoded_content);
+
+    my ($title) = $res->decoded_content =~ m#<title>(.+?)</title>#s;
 
     my $found;
 
@@ -127,7 +142,7 @@ sub _feed_by_html {
         }
     }
 
-    return $found;
+    return ($found, $title);
 }
 
 sub _feed_by_feed {
@@ -150,7 +165,7 @@ sub _feed_by_feed {
         }
     }
 
-    return $found;
+    return ($found, $feed->title);
 }
 
 sub _feed_by_nicovideo_mylist {
@@ -158,6 +173,8 @@ sub _feed_by_nicovideo_mylist {
 
     my ($json) = $res->decoded_content =~ /\bMylist\.preload\(\d+,(.+?)\);/ or return;
     my $list = decode_json $json;
+
+    my ($title) = $res->decoded_content =~ m#<link rel="alternate" charset="utf-8" type="application/rss\+xml" title="([^"]+)"#;
 
     my $found;
     foreach (@$list) {
@@ -172,7 +189,8 @@ sub _feed_by_nicovideo_mylist {
             url  => $url,
         });
     }
-    return $found;
+
+    return ($found, $title);
 }
 
 1;

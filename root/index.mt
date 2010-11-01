@@ -5,11 +5,12 @@
     <title>teto</title>
     <style type="text/css">
 body {
-    margin: 0;
+    margin: 15px;
     background-color: #262626;
 }
 
 h1 {
+    margin-top: 0;
     font-family: "Lucida Sans Unicode";
 }
 
@@ -28,8 +29,12 @@ div#container {
     padding: 10px;
 }
 
-div#container a {
+a {
     color: #5A7678;
+}
+
+a:hover {
+    color: #7AA0A3;
 }
 
 input {
@@ -65,10 +70,19 @@ td {
   padding: 0.4em 0.5em;
 }
 
+ul#feed {
+    list-style: none;
+    font-size: x-large;
+    border: 1px solid #8F8F8F;
+    background-color: #101010;
+    padding: 0.5em 1em;
+}
+
 ul#queue {
     font-size: 90%;
     list-style: none;
-    padding-left: 0;
+    margin: 0;
+    padding: 0;
 }
 
 ul#queue li {
@@ -89,7 +103,7 @@ ul#queue li.selected {
 }
 
 ul#queue li.next {
-    background-color: #455776;
+    background-color: #454746;
 }
 
 ul#queue li img {
@@ -135,12 +149,24 @@ ul#queue li .title {
     background: #333;
     opacity: 0.7;
 }
+
+ul#queue li .title a {
+    color: #F9F9F9;
+    text-decoration: none;
+    display: block;
+}
     </style>
   </head>
   <body>
     <div id="container">
 
     <h1><a href="/">teto</a><a href="/stream" class="stream-link">stream <img src="/static/speaker-orange.gif"></a></h1>
+
+    <ul id="feed">
+? foreach (@{$_{server}->feeder->feeds}) {
+      <li><a href="<?= $_->{url} ?>"><?= $_->{title} || $_->{url} ?></a></li>
+? }
+    </ul>
 
     <ul id="queue">
 ? foreach (0 .. $#{$_{server}->queue->queue}) {
@@ -161,7 +187,9 @@ ul#queue li .title {
 ?     }
       </a>
       <span class="title">
+        <a href="<?= $entry->url ?>" target="_blank">
         <?= do { my $name = $entry->name || ''; utf8::decode $name if !utf8::is_utf8 $name; $name } ?>
+        </a>
       </span>
     </li>
 ? }
@@ -177,6 +205,7 @@ ul#queue li .title {
       </form>
     </div>
 
+    <!--
     <table id="status">
       <tr>
         <th>buffer-&gt;length</th>
@@ -207,6 +236,7 @@ ul#queue li .title {
         <td><?= $_{server}->queue->next_index ?></td>
       </tr>
     </table>
+    -->
 
     </div>
   </body>
