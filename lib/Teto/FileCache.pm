@@ -46,7 +46,7 @@ use YAML::Tiny;
 
 sub file_to_read {
     my ($self, $url) = @_;
-    $url =~ m<^http://(?:www\.nicovideo\.jp/watch|nico\.ms)/([sn]m\d+)> or return;
+    $url =~ m<^http://(?:www\.nicovideo\.jp/watch|nico\.ms)/(sm\d+)> or return;
 
     my $video_id = $1;
 
@@ -60,7 +60,7 @@ sub file_to_read {
 
 sub fh_to_write {
     my ($self, $url, $meta) = @_;
-    $url =~ m<^http://(?:www\.nicovideo\.jp/watch|nico\.ms)/([sn]m\d+)> or return;
+    $url =~ m<^http://(?:www\.nicovideo\.jp/watch|nico\.ms)/(sm\d+)> or return;
 
     return file(File::Spec->devnull)->openw if $self->readonly;
 

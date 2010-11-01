@@ -34,7 +34,7 @@ sub _build_ua {
 
 sub _url_is_like_nicovideo {
     my $url = shift;
-    $url =~ m<^http://(?:www\.nicovideo\.jp/watch|nico\.ms)/[sn]m\d+>;
+    $url =~ m<^http://(?:www\.nicovideo\.jp/watch|nico\.ms)/sm\d+>;
 }
 
 sub feed_async {

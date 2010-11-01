@@ -119,7 +119,7 @@ sub transcode {
 sub write {
     my $self = shift;
 
-    $self->url =~ m<^http://(?:www\.nicovideo\.jp/watch|nico\.ms)/([sn]m\d+)> or return;
+    $self->url =~ m<^http://(?:www\.nicovideo\.jp/watch|nico\.ms)/(sm\d+)> or return;
 
     my $video_id = $1;
     utf8::downgrade $video_id, 1;
