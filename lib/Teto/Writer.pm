@@ -142,8 +142,8 @@ sub write {
 
         my $cv = AE::cv;
         if ($res->code == 403) {
-            $logger->log(notice => 'Got 403, sleep for 45s');
-            my $w; $w = AE::timer 45, 0, sub {
+            $logger->log(notice => 'Got 403, sleep for 60s');
+            my $w; $w = AE::timer 60, 0, sub {
                 $cv->send;
                 undef $w;
             };
@@ -159,7 +159,12 @@ sub write {
     my $media_url = eval { $self->client->prepare_download($video_id) };
     if (!$media_url) {
         $logger->log(error => 'Could not get media' . ($@ ? ": $@" : ''));
-        return;
+        my $cv = AE::cv;
+        my $w; $w = AE::timer 10, 0, sub {
+            $cv->send;
+            undef $w;
+        };
+        return $cv;
     }
     $logger->log(info => "media: $media_url");
 

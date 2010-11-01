@@ -1,7 +1,7 @@
 package Teto::Server::Buffer;
 use Any::Moose;
 
-use constant META_INTERVAL => 16 * 1024;
+use constant META_INTERVAL => 4 * 1024;
 
 has buffer => (
     traits  => [ 'String' ],
@@ -27,7 +27,7 @@ has meta_data => (
 );
 
 use constant {
-    BUFFER_SIZE_MAX => 16 * 1024, # 16kb
+    BUFFER_SIZE_MAX => 32 * 1024, # 32kb
     BUFFER_SIZE_MIN =>  1 * 1024, #  1kb
 };
 

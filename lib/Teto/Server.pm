@@ -11,6 +11,9 @@ use Coro;
 use Coro::Timer;
 use Text::MicroTemplate::File;
 
+use Plack::Request;
+use Plack::Builder;
+
 use POSIX qw(ceil);
 
 has queue => (
@@ -79,7 +82,13 @@ has buffer => (
     },
 );
 
+has client_writer => (
+    is  => 'rw',
+);
+
 __PACKAGE__->meta->make_immutable;
+
+no Any::Moose;
 
 sub update_status {
     my ($self, %status) = @_;
@@ -91,9 +100,6 @@ sub update_status {
     $self->status(+{ %status });
     $self->buffer->meta_data(+{ %status });
 }
-
-use Plack::Request;
-use Plack::Builder;
 
 sub to_psgi_app {
     my $self = shift;
@@ -112,6 +118,12 @@ sub to_psgi_app {
         }
 
         if ($req->path eq '/stream') {
+            if ($self->client_writer) {
+                # 他のクライアントが聴いてる
+                $res->code(503);
+                return $res->finalize;
+            }
+
             return sub {
                 my $respond = shift;
                 my $writer = $respond->([
@@ -125,16 +137,25 @@ sub to_psgi_app {
 
                 $writer->can('poll_cb') or die 'this server does not implement $writer->poll_cb($cb)';
 
+                $self->client_writer($writer);
+
                 $writer->poll_cb(unblock_sub {
                     my $writer = shift;
+                    if ($writer) {
+                        while ($self->buffer->underruns) {
+                            Coro::Timer::sleep 1;
+                        }
 
-                    while ($self->buffer->underruns) {
-                        Coro::Timer::sleep 1;
+                        my $data = $self->buffer->read(256 * 1024);
+                        $writer->write($data);
+                        $self->incremenet_bytes_sent(length $data);
+                    } else {
+                        $logger->log(error => "$_[0]");
+
+                        # meta_interval の整合性を保ったまま残りのバイト列を破棄
+                        substr $self->buffer->{buffer}, 0, $self->buffer->length - ($self->buffer->META_INTERVAL - $self->buffer->meta_interval), '';
+                        $self->client_writer(undef);
                     }
-
-                    my $data = $self->buffer->read(256 * 1024);
-                    $writer->write($data);
-                    $self->incremenet_bytes_sent(length $data);
                 });
             };
         }
@@ -184,16 +205,27 @@ sub remaining_tracks {
     return scalar @{ $self->bytes_timeline } - $self->current_track_number;
 }
 
+sub bytes_remaining {
+    my $self = shift;
+    for (0 .. $#{ $self->bytes_timeline }) {
+        if ($self->bytes_sent < $self->bytes_timeline->[$_]) {
+            return $self->bytes_timeline->[$_] - $self->bytes_sent;
+        }
+    }
+    return undef;
+}
+
 sub enqueue {
     my ($self, @args) = @_;
     $self->feeder->feed_async(@args);
 }
 
-# XXX
+# XXX ちょっと PSGI の仕様を拡張している
 
 sub Twiggy::Writer::poll_cb {
     my ($self, $cb) = @_;
     $self->{handle}->on_drain($cb && sub { $cb->($self) });
+    $self->{handle}->on_error($cb && sub { $cb->(undef, $_[2]) });
 }
 
 1;
