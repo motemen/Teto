@@ -6,9 +6,9 @@ all_from 'lib/Teto.pm';
 requires 'Any::Moose';
 requires_any_moose 'X::Types::Path::Class';
 requires_any_moose 'X::NativeTraits';
+requires_any_moose 'X::Getopt::Strict';
 
 requires 'AnyEvent';
-requires 'AnyEvent::HTTP';
 requires 'Guard';
 
 requires 'Coro';
@@ -31,6 +31,10 @@ requires 'JSON::XS';
 requires 'Regexp::Common';
 
 requires 'YAML::Tiny';
+
+requires 'Twiggy'; # XXX 本当は Plack だけでいいはず
+
+requires 'Plack';
 
 test_requires 'Test::More';
 test_requires 'Test::Base';
