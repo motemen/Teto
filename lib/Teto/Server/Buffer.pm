@@ -37,11 +37,11 @@ use POSIX qw(ceil);
 
 # TODO なんかもっといい API で Coro のコントロールできないか…
 
-sub underruns {
+sub is_empty {
     shift->length < BUFFER_SIZE_MIN;
 }
 
-sub overruns {
+sub is_full {
     shift->length > BUFFER_SIZE_MAX;
 }
 

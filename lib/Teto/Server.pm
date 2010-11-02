@@ -142,9 +142,7 @@ sub to_psgi_app {
                 $writer->poll_cb(unblock_sub {
                     my $writer = shift;
                     if ($writer) {
-                        while ($self->buffer->underruns) {
-                            Coro::Timer::sleep 1;
-                        }
+                        Coro::Timer::sleep 1 while $self->buffer->is_empty;
 
                         my $data = $self->buffer->read(256 * 1024);
                         $writer->write($data);

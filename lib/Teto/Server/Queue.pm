@@ -30,7 +30,6 @@ has queue => (
     handles => {
         size => 'count',
         push => 'push',
-        insert_queue => 'insert',
         delete_queue => 'delete',
     },
 );
@@ -72,13 +71,6 @@ around delete_queue => sub {
     $self->$orig($i);
 };
 
-sub insert {
-    my $self = shift;
-    my @entries = map { Teto::Server::Queue::Entry->new($_) } @_;
-    $logger->log(debug => "<< $_") for @entries;
-    $self->insert_queue($self->next_index, $_) for @entries;
-}
-
 sub next {
     my $self = shift;
 
@@ -92,7 +84,7 @@ sub next {
     # CodeRef が入ってたらその実行結果を push
     if ($next->code) {
         my @res = $next->code->();
-        $self->insert(@res) if @res;
+        $self->push(@res) if @res;
         return $self->next;
     }
 
@@ -135,7 +127,7 @@ sub start {
         }
 
         while (1) {
-            if ($self->server->buffer->overruns) {
+            if ($self->server->buffer->is_full) {
                 # $logger->log(debug => 'buffer full');
                 $Coro::current->desc('queue paused: buffer is full');
             } elsif ($self->server->remaining_tracks > 1) {

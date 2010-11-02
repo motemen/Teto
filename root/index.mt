@@ -187,9 +187,13 @@ ul#queue li .title a {
 ?     }
       </a>
       <span class="title">
+?     if ($entry->url) {
         <a href="<?= $entry->url ?>" target="_blank">
+?     }
         <?= do { my $name = $entry->name || ''; utf8::decode $name if !utf8::is_utf8 $name; $name } ?>
+?     if ($entry->url) {
         </a>
+?     }
       </span>
     </li>
 ? }
