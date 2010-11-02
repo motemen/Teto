@@ -120,7 +120,13 @@ sub _feed_by_html {
         }
     }
 
+    my $content = $res->decoded_content;
+    while ($content =~ m#<iframe[^>]* src="http://ext\.nicovideo\.jp/thumb/(sm\d+)"#g) {
+        push @entries, { url => "http://www.nicovideo.jp/watch/$1", name => $1 };
+    }
+
     foreach my $entry (@entries) {
+        # 相対 URL を (むりやり) 絶対 URL に
         $entry->{url} =~ s"^/*"http://www.nicovideo.jp/" unless $entry->{url} =~ /^https?:/;
         if (_url_is_like_nicovideo $entry->{url}) {
             $found++;
@@ -141,6 +147,8 @@ sub _feed_by_html {
             });
         }
     }
+
+    $tree->delete;
 
     return ($found, $title);
 }
