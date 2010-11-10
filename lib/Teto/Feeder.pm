@@ -26,6 +26,7 @@ has feeds => (
 __PACKAGE__->meta->make_immutable;
 
 use Teto::Logger qw($logger);
+use Teto::Writer;
 
 use Coro;
 use Coro::LWP;
@@ -34,6 +35,8 @@ use WWW::Mechanize::AutoPager;
 use HTML::TreeBuilder::XPath;
 use XML::Feed;
 use JSON::XS qw(decode_json);
+use URI;
+use URI::QueryParam;
 
 sub _build_ua {
     my $ua = WWW::Mechanize->new;
@@ -42,9 +45,9 @@ sub _build_ua {
     return $ua;
 }
 
-sub _url_is_like_nicovideo {
+sub _writer_supports_url {
     my $url = shift;
-    $url =~ m<^http://(?:www\.nicovideo\.jp/watch|nico\.ms)/sm\d+>;
+    return Teto::Writer->handles_url($url);
 }
 
 sub feed_async {
@@ -54,7 +57,7 @@ sub feed_async {
         foreach my $url (@urls) {
             utf8::encode $url if utf8::is_utf8 $url;
 
-            if (_url_is_like_nicovideo $url) {
+            if (_writer_supports_url $url) {
                 $self->queue->push($url);
                 next;
             }
@@ -84,14 +87,17 @@ sub feed_res {
     $url ||= $res->base;
 
     if ($url =~ m<^http://www\.nicovideo\.jp/mylist/\d+>) {
-        $logger->log(debug => "$url seems like a nicovideo mylist");
+        $logger->log(debug => "$url seems to be a nicovideo mylist");
         return $self->_feed_by_nicovideo_mylist($res);
+    } elsif ($url =~ m<^http://www\.youtube\.com/user/\w+>) {
+        $logger->log(debug => "$url seems to be a youtube user page");
+        return $self->_feed_by_youtube_playlist($res);
     } elsif ($res->content_type =~ /html/) {
-        $logger->log(debug => "$url seems like an HTML");
+        $logger->log(debug => "$url seems to be an HTML");
         return $self->_feed_by_html($res);
     }
     elsif ($res->content_type =~ /rss|atom|xml/) {
-        $logger->log(debug => "$url seems like a feed");
+        $logger->log(debug => "$url seems to be a feed");
         return $self->_feed_by_feed($res);
     }
 }
@@ -128,7 +134,7 @@ sub _feed_by_html {
     foreach my $entry (@entries) {
         # 相対 URL を (むりやり) 絶対 URL に
         $entry->{url} =~ s"^/*"http://www.nicovideo.jp/" unless $entry->{url} =~ /^https?:/;
-        if (_url_is_like_nicovideo $entry->{url}) {
+        if (_writer_supports_url $entry->{url}) {
             $found++;
             $logger->log(debug => "found $entry->{url}");
             $self->queue->push($entry);
@@ -162,7 +168,7 @@ sub _feed_by_feed {
     my $found;
     foreach my $entry ($feed->entries) {
         my $link = $entry->link;
-        if (_url_is_like_nicovideo $link) {
+        if (_writer_supports_url $link) {
             $found++;
             my $title = $entry->title;
             $logger->log(debug => "found $title <$link>");
@@ -199,6 +205,34 @@ sub _feed_by_nicovideo_mylist {
     }
 
     return ($found, $title);
+}
+
+sub _feed_by_youtube_playlist {
+    my ($self, $res) = @_;
+
+    my $tree = HTML::TreeBuilder::XPath->new;
+    $tree->parse($res->decoded_content);
+
+    my ($href) = $tree->findnodes_as_strings('//link[@rel="alternate"][@type="application/rss+xml"]/@href') or return;
+    my $url = URI->new($href);
+    $url->query_param(alt => 'json');
+
+    my $json_res = $self->ua->get($url);
+    return if $json_res->is_error;
+
+    my $json = eval { decode_json $json_res->content } or return;
+
+    my $found;
+    foreach my $entry (@{ $json->{feed}->{entry} }) {
+        my ($link) = grep { $_->{rel} eq 'alternate' && $_->{type} eq 'text/html' } @{ $entry->{link} } or next;
+        $self->queue->push({
+            name => $entry->{title}->{'$t'},
+            url  => $link->{href},
+        });
+        $found++;
+    }
+
+    return ($found, $json->{feed}->{title}->{'$t'});
 }
 
 1;

@@ -72,6 +72,22 @@ use HTML::TreeBuilder::XPath;
 use HTTP::Request::Common;
 use Config::Pit;
 
+our @HandleMap = (
+    qr<^http://(?:\w+\.nicovideo\.jp/watch|nico\.ms)/(sm\d+)> => __PACKAGE__,
+    qr<^http://www\.youtube\.com/watch\?v=(.+)>               => __PACKAGE__ . '::YouTube',
+);
+
+sub handles_url {
+    my ($class, $url) = @_;
+
+    my @map = @HandleMap;
+    while (my ($regex, $writer_class) = splice @map, 0, 2) {
+        return $writer_class if $url =~ $regex;
+    }
+
+    return undef;
+}
+
 sub transcode {
     my ($self, $file_or_fh, $cb) = @_;
     my %args = (
@@ -169,6 +185,16 @@ sub write {
     $logger->log(info => "media: $media_url");
 
     $self->file_cache->set_meta($self->url, title => $title);
+
+    return $self->start_transcoding_url($media_url, { title => $title });
+
+}
+
+sub start_transcoding_url {
+    my ($self, $media_url, $option) = @_;
+    $option ||= {};
+
+    my $title = $option->{title} || $media_url;
 
     my $fh;
     my ($reader, $writer) = portable_pipe;

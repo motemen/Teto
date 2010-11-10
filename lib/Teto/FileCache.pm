@@ -60,9 +60,10 @@ sub file_to_read {
 
 sub fh_to_write {
     my ($self, $url, $meta) = @_;
-    $url =~ m<^http://(?:www\.nicovideo\.jp/watch|nico\.ms)/(sm\d+)> or return;
 
-    return file(File::Spec->devnull)->openw if $self->readonly;
+    if ($self->readonly || $url =~ m<^http://(?:www\.nicovideo\.jp/watch|nico\.ms)/(sm\d+)>) {
+        return file(File::Spec->devnull)->openw;
+    }
 
     my $video_id = $1;
 

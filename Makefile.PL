@@ -1,9 +1,14 @@
+BEGIN {
+    require Module::Install::Any::Moose;
+}
+
 use inc::Module::Install;
 
 name 'Teto';
 all_from 'lib/Teto.pm';
 
-requires 'Any::Moose';
+requires 'Any::Moose', '0.13';
+requires_any_moose;
 requires_any_moose 'X::Types::Path::Class';
 requires_any_moose 'X::NativeTraits';
 requires_any_moose 'X::Getopt::Strict';
@@ -17,6 +22,7 @@ requires 'Log::Dispatch';
 requires 'Exporter::Lite';
 
 requires 'WWW::NicoVideo::Download';
+requires 'WWW::YouTube::Download', '0.16';
 requires 'HTML::TreeBuilder::XPath';
 requires 'HTTP::Request::Common';
 requires 'Encode';

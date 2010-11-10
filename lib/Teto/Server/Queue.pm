@@ -56,6 +56,7 @@ use Coro;
 use Coro::Timer;
 
 use Guard ();
+use UNIVERSAL::require;
 
 around push => sub {
     my ($orig, $self, @args) = @_;
@@ -110,7 +111,15 @@ sub start {
         };
         $logger->log(info => "next: $track");
 
-        my $writer = Teto::Writer->new(server => $self->server, url => $track->url);
+        my $writer_class = Teto::Writer->handles_url($track->url) or do {
+            $logger->log(notice => 'Cannot handle ' . $track->url);
+            next;
+        };
+        $writer_class->require or do {
+            $logger->log(warn => "Could not load $writer_class: $@");
+            next;
+        };
+        my $writer = $writer_class->new(server => $self->server, url => $track->url);
 
         if (my $cv = $writer->write) {
             $cv->cb(rouse_cb);

@@ -51,8 +51,11 @@ sub as_html {
 
 sub thumbnail {
     my $self = shift;
-    if (($self->url || '') =~ /(\d+)$/) {
+    my $url = $self->url || '';
+    if ($url =~ m#\.nicovideo\.jp/watch/sm(\d+)#) {
         return "http://tn-skr1.smilevideo.jp/smile?i=$1";
+    } elsif ($url =~ m#\byoutube\.com/watch\?.*?\bv=([^&]+)#) {
+        return "http://i.ytimg.com/vi/$1/default.jpg";
     } else {
         return 'about:blank';
     }
