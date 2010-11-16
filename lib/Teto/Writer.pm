@@ -7,11 +7,11 @@ use Any::Moose 'X::Types::Path::Class';
 # - transcoder
 # has
 # - server
-# - nicovideo url
+# - url
 # does
-# - get nicovideo media
+# - get media
 # - transcode
-# - write bytes to buffer
+# - write dara to buffer
 
 has server => (
     is  => 'rw',
@@ -26,24 +26,11 @@ has url => (
     required => 1,
 );
 
-has client => (
+has user_agent => (
     is  => 'rw',
-    isa => 'WWW::NicoVideo::Download',
-    lazy_build => 1,
+    isa => 'LWP::UserAgent',
+    default => sub { LWP::UserAgent->new },
 );
-
-sub _build_client {
-    my $self = shift;
-
-    # 共有する
-    return our $Client ||= do {
-        my $config = pit_get('nicovideo.jp');
-        WWW::NicoVideo::Download->new(
-            email    => $config->{username},
-            password => $config->{password},
-        );
-    };
-}
 
 has wrote => (
     is  => 'rw',
@@ -61,19 +48,15 @@ __PACKAGE__->meta->make_immutable;
 no Any::Moose;
 
 use Teto::Logger qw($logger);
-
 use AnyEvent;
 use AnyEvent::HTTP;
 use AnyEvent::Util;
 use AnyEvent::Handle;
-
-use WWW::NicoVideo::Download;
-use HTML::TreeBuilder::XPath;
 use HTTP::Request::Common;
-use Config::Pit;
+use LWP::UserAgent;
 
 our @HandleMap = (
-    qr<^http://(?:\w+\.nicovideo\.jp/watch|nico\.ms)/(sm\d+)> => __PACKAGE__,
+    qr<^http://(?:\w+\.nicovideo\.jp/watch|nico\.ms)/(sm\d+)> => __PACKAGE__ . '::Nicovideo',
     qr<^http://www\.youtube\.com/watch\?v=(.+)>               => __PACKAGE__ . '::YouTube',
 );
 
@@ -135,11 +118,6 @@ sub transcode {
 sub write {
     my $self = shift;
 
-    $self->url =~ m<^http://(?:www\.nicovideo\.jp/watch|nico\.ms)/(sm\d+)> or return;
-
-    my $video_id = $1;
-    utf8::downgrade $video_id, 1;
-
     # from cache
     if (my $file = $self->file_cache->file_to_read($self->url)) {
         my $meta = $self->file_cache->get_meta($file);
@@ -152,47 +130,11 @@ sub write {
         });
     }
 
-    my $res = $self->client->user_agent->get($self->url);
-    unless ($res->is_success) {
-        $self->error("$self->{url}: " . $res->message);
-
-        my $cv = AE::cv;
-        if ($res->code == 403) {
-            $logger->log(notice => 'Got 403, sleep for 60s');
-            my $w; $w = AE::timer 60, 0, sub {
-                $cv->send;
-                undef $w;
-            };
-        } else {
-            $cv->send;
-        }
-
-        return $cv;
-    }
-    
-    my $title = $self->extract_title($res);
-    $logger->log(info => "title: $title");
-    my $media_url = eval { $self->client->prepare_download($video_id) };
-    if (!$media_url) {
-        $logger->log(error => 'Could not get media' . ($@ ? ": $@" : ''));
-        my $cv = AE::cv;
-        my $w; $w = AE::timer 10, 0, sub {
-            $cv->send;
-            undef $w;
-        };
-        return $cv;
-    }
-    $logger->log(info => "media: $media_url");
-
-    $self->file_cache->set_meta($self->url, title => $title);
-
-    return $self->start_transcoding_url($media_url, { title => $title });
-
+    return $self->_write;
 }
 
 sub start_transcoding_url {
     my ($self, $media_url, $option) = @_;
-    $option ||= {};
 
     my $title = $option->{title} || $media_url;
 
@@ -250,22 +192,14 @@ sub start_transcoding_url {
     });
 }
 
-sub extract_title {
-    my ($self, $res) = @_;
-    my $tree = HTML::TreeBuilder::XPath->new_from_content($res->decoded_content);
-    my $title = $tree->findvalue('//h1') || $tree->findvalue('//p[@class="video_title"]');
-    $tree->delete;
-    return $title;
-}
-
 sub prepare_headers {
     my ($self, $url) = @_;
 
     my %headers = (
         'Referer' => undef,
-        'User-Agent' => $self->client->user_agent->agent,
+        'User-Agent' => $self->user_agent->agent,
     );
-    $self->client->user_agent->prepare_request(GET $url)->scan(sub { $headers{$_[0]} = $_[1] });
+    $self->user_agent->prepare_request(GET $url)->scan(sub { $headers{$_[0]} = $_[1] });
 
     return \%headers;
 }
