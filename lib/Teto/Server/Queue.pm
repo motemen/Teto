@@ -97,8 +97,7 @@ sub start {
 
     while (1) {
         my $track = $self->next or do {
-            my $t = Coro::Timer::timeout 1;
-            schedule until $t;
+            Coro::Timer::sleep 1;
             next;
         };
         $logger->log(info => "next: $track");

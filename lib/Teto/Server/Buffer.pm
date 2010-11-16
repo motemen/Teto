@@ -1,7 +1,13 @@
 package Teto::Server::Buffer;
 use Any::Moose;
+use POSIX qw(ceil);
 
-use constant META_INTERVAL => 4 * 1024;
+use constant META_INTERVAL => 1 * 1024;
+
+use constant {
+    BUFFER_SIZE_MAX => 32 * 1024, # 32kb
+    BUFFER_SIZE_MIN =>       512,
+};
 
 has buffer => (
     traits  => [ 'String' ],
@@ -32,16 +38,9 @@ has do_interleave => (
     default => sub { 1 },
 );
 
-use constant {
-    BUFFER_SIZE_MAX => 32 * 1024, # 32kb
-    BUFFER_SIZE_MIN =>  1 * 1024, #  1kb
-};
-
 __PACKAGE__->meta->make_immutable;
 
-use POSIX qw(ceil);
-
-# TODO なんかもっといい API で Coro のコントロールできないか…
+no Any::Moose;
 
 sub is_empty {
     shift->length < BUFFER_SIZE_MIN;

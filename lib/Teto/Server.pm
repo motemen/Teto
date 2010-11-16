@@ -183,8 +183,19 @@ sub make_stream_writer {
             } else {
                 $logger->log(error => "$_[0]");
 
+                # クライアント切断
                 # meta_interval の整合性を保ったまま残りのバイト列を破棄
-                substr $self->buffer->{buffer}, 0, $self->buffer->length - ($self->buffer->META_INTERVAL - $self->buffer->meta_interval), '';
+                while (1) {
+                    my $rest = $self->buffer->length - ($self->buffer->META_INTERVAL - $self->buffer->meta_interval);
+                    if ($rest < 0) {
+                        Coro::Timer::sleep 1;
+                        next;
+                    }
+
+                    substr $self->buffer->{buffer}, 0, $rest, '';
+                    last;
+                }
+
                 $self->client_writer(undef);
             }
         });
