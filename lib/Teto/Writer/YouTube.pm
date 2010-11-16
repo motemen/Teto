@@ -1,12 +1,11 @@
 package Teto::Writer::YouTube;
 use Any::Moose;
+use Teto::Logger qw($logger);
+use WWW::YouTube::Download;
 
 extends 'Teto::Writer';
 
 no Any::Moose;
-
-use Teto::Logger qw($logger);
-use WWW::YouTube::Download;
 
 sub write {
     my $self = shift;
@@ -19,7 +18,6 @@ sub write {
         return;
     };
     my $title = $client->get_title($video_id);
-
     return $self->start_transcoding_url($video_url, { title => $title });
 }
 

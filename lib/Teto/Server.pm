@@ -124,38 +124,9 @@ sub to_psgi_app {
                 return $res->finalize;
             }
 
-            return sub {
-                my $respond = shift;
-                my $writer = $respond->([
-                    200, [
-                        'Content-Type' => 'audio/mpeg',
-                        'Icy-Metaint'  => $self->buffer->META_INTERVAL,
-                        'Icy-Name'     => 'tetocast',
-                        'Icy-Url'      => $req->request_uri,
-                    ]
-                ]);
+            $self->buffer->do_interleave($req->header('Icy-Metadata') ? 1 : 0);
 
-                $writer->can('poll_cb') or die 'this server does not implement $writer->poll_cb($cb)';
-
-                $self->client_writer($writer);
-
-                $writer->poll_cb(unblock_sub {
-                    my $writer = shift;
-                    if ($writer) {
-                        Coro::Timer::sleep 1 while $self->buffer->is_empty;
-
-                        my $data = $self->buffer->read(256 * 1024);
-                        $writer->write($data);
-                        $self->incremenet_bytes_sent(length $data);
-                    } else {
-                        $logger->log(error => "$_[0]");
-
-                        # meta_interval の整合性を保ったまま残りのバイト列を破棄
-                        substr $self->buffer->{buffer}, 0, $self->buffer->length - ($self->buffer->META_INTERVAL - $self->buffer->meta_interval), '';
-                        $self->client_writer(undef);
-                    }
-                });
-            };
+            return $self->make_stream_writer($req);
         }
 
         $res->code(302);
@@ -180,6 +151,43 @@ sub to_psgi_app {
     builder {
         enable 'Static', path => qr(^/static/), root => '.';
         $app;
+    };
+}
+
+sub make_stream_writer {
+    my ($self, $req) = @_;
+
+    return sub {
+        my $respond = shift;
+        my $writer = $respond->([
+            200, [
+                'Content-Type' => 'audio/mpeg',
+                'Icy-Metaint'  => $self->buffer->META_INTERVAL,
+                'Icy-Name'     => 'tetocast',
+                'Icy-Url'      => $req->request_uri,
+            ]
+        ]);
+
+        $writer->can('poll_cb') or die 'this server does not implement $writer->poll_cb($cb)';
+
+        $self->client_writer($writer);
+
+        $writer->poll_cb(unblock_sub {
+            my $writer = shift;
+            if ($writer) {
+                Coro::Timer::sleep 1 while $self->buffer->is_empty;
+
+                my $data = $self->buffer->read(256 * 1024);
+                $writer->write($data);
+                $self->incremenet_bytes_sent(length $data);
+            } else {
+                $logger->log(error => "$_[0]");
+
+                # meta_interval の整合性を保ったまま残りのバイト列を破棄
+                substr $self->buffer->{buffer}, 0, $self->buffer->length - ($self->buffer->META_INTERVAL - $self->buffer->meta_interval), '';
+                $self->client_writer(undef);
+            }
+        });
     };
 }
 
@@ -218,7 +226,7 @@ sub enqueue {
     $self->feeder->feed_async(@args);
 }
 
-# XXX ちょっと PSGI の仕様を拡張している
+# XXX ちょっと PSGI の仕様を拡張している (on_error)
 
 sub Twiggy::Writer::poll_cb {
     my ($self, $cb) = @_;

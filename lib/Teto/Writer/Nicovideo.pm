@@ -1,5 +1,9 @@
 package Teto::Writer::Nicovideo;
 use Any::Moose;
+use Config::Pit;
+use WWW::NicoVideo::Download;
+use Teto::Logger qw($logger);
+use HTML::TreeBuilder::XPath;
 
 extends 'Teto::Writer';
 
@@ -8,9 +12,6 @@ has nicovideo_client => (
     isa => 'WWW::NicoVideo::Download',
     lazy_build => 1,
 );
-
-use Config::Pit;
-use WWW::NicoVideo::Download;
 
 sub _build_nicovideo_client {
     my $self = shift;
@@ -29,9 +30,6 @@ has '+user_agent' => (
 sub _build_user_agent {
     return shift->nicovideo_client->user_agent;
 }
-
-use Teto::Logger qw($logger);
-use HTML::TreeBuilder::XPath;
 
 override handles_url => sub {
     my ($self, $url) = @_;

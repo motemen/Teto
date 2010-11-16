@@ -82,7 +82,7 @@ sub next {
     my $next = $self->queue->[ $self->next_index ];
     $self->{index} = $self->{next_index}++;
 
-    # CodeRef が入ってたらその実行結果を push
+    # CodeRef が入ってたらその実行結果を push して次へ
     if ($next->code) {
         my @res = $next->code->();
         $self->push(@res) if @res;
@@ -90,14 +90,6 @@ sub next {
     }
 
     return $next;
-}
-
-sub start_async {
-    my $self = shift;
-    async {
-        $Coro::current->desc('queue');
-        $self->start;
-    };
 }
 
 sub start {
@@ -119,8 +111,10 @@ sub start {
             $logger->log(warn => "Could not load $writer_class: $@");
             next;
         };
+
         my $writer = $writer_class->new(server => $self->server, url => $track->url);
 
+        # 一曲書き込む
         if (my $cv = $writer->write) {
             $cv->cb(rouse_cb);
             rouse_wait;
@@ -148,6 +142,14 @@ sub start {
             Coro::Timer::sleep 1;
         }
     }
+}
+
+sub start_async {
+    my $self = shift;
+    async {
+        $Coro::current->desc('queue');
+        $self->start;
+    };
 }
 
 1;
