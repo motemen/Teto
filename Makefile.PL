@@ -10,8 +10,9 @@ all_from 'lib/Teto.pm';
 requires 'Any::Moose', '0.13';
 requires_any_moose;
 requires_any_moose 'X::Types::Path::Class';
-requires_any_moose 'X::NativeTraits';
 requires_any_moose 'X::Getopt::Strict';
+
+requires 'MouseX::NativeTraits', '1.04';
 
 requires 'AnyEvent';
 requires 'Guard';
