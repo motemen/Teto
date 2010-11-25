@@ -69,7 +69,7 @@ http://b.hatena.ne.jp/motemen/
 === ニコニコ動画タグ一覧
 --- url
 http://www.nicovideo.jp/tag/サンドキャニオン
---- queue only=0,31 map_noclass
+--- queue only=0,30 map_noclass
 - name: 変態先進国 黒子キャニオン【とある科学の超電磁砲】
   url: http://www.nicovideo.jp/watch/sm8755361
 - name: 【吉幾三】先進村になれる訳無ェ！！【サンドキャニオン】
