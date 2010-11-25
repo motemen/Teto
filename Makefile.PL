@@ -29,8 +29,11 @@ requires 'HTTP::Request::Common';
 requires 'Encode';
 requires 'Config::Pit';
 
+requires 'File::Util';
+
 requires 'Text::MicroTemplate';
 
+requires 'AnyEvent::HTTP';
 requires 'XML::Feed';
 requires 'WWW::Mechanize';
 requires 'WWW::Mechanize::AutoPager';
