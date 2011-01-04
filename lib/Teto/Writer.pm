@@ -90,7 +90,7 @@ sub transcode {
         utf8::encode $filename if utf8::is_utf8 $filename;
     }
 
-    my @command = (qw(ffmpeg -i), $filename, qw(-ab 192k -ar 44100 -acodec libmp3lame -f mp3 -)); # TODO config
+    my @command = (qw(ffmpeg -i), $filename, qw(-ab 192k -ar 44100 -acodec libmp3lame -ac 2 -f mp3 -)); # TODO config
     $logger->log(debug => qq(running '@command'));
 
     my $cv = AE::cv;

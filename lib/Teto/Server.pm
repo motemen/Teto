@@ -161,10 +161,11 @@ sub make_stream_writer {
         my $respond = shift;
         my $writer = $respond->([
             200, [
-                'Content-Type' => 'audio/mpeg',
-                'Icy-Metaint'  => $self->buffer->META_INTERVAL,
-                'Icy-Name'     => 'tetocast',
-                'Icy-Url'      => $req->request_uri,
+                'Content-Type'   => 'audio/mpeg',
+                'Icy-Metaint'    => $self->buffer->META_INTERVAL,
+                'Icy-Name'       => 'tetocast',
+                'Icy-Url'        => $req->request_uri,
+                'ice-audio-info' => 'ice-samplerate=44100;ice-bitrate=192000;ice-channels=2',
             ]
         ]);
 
