@@ -1,11 +1,11 @@
 package Teto::Writer::YouTube;
-use Any::Moose;
+use Mouse;
 use Teto::Logger qw($logger);
 use WWW::YouTube::Download;
 
 extends 'Teto::Writer';
 
-no Any::Moose;
+no Mouse;
 
 sub write {
     my $self = shift;

@@ -1,11 +1,11 @@
 package Teto;
-use Any::Moose;
+use Mouse;
 
 our $VERSION = '0.01';
 
 use Getopt::Long ':config' => qw(pass_through);
 
-with any_moose('X::Getopt::Strict');
+with 'MouseX::Getopt::Strict';
 
 # --readonly
 has readonly => (
@@ -66,7 +66,7 @@ has coro_debug_server_guard => (
     isa => 'Guard',
 );
 
-no Any::Moose;
+no Mouse;
 
 __PACKAGE__->meta->make_immutable;
 

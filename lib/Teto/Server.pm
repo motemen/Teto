@@ -1,5 +1,5 @@
 package Teto::Server;
-use Any::Moose;
+use Mouse;
 
 use Teto::Logger qw($logger);
 use Teto::Feeder;
@@ -88,7 +88,7 @@ has client_writer => (
 
 __PACKAGE__->meta->make_immutable;
 
-no Any::Moose;
+no Mouse;
 
 sub update_status {
     my ($self, %status) = @_;

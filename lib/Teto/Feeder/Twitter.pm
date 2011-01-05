@@ -1,5 +1,5 @@
 package Teto::Feeder::Twitter;
-use Any::Moose;
+use Mouse;
 
 # TODO 消して作りなおす
 

@@ -1,6 +1,6 @@
 package Teto::FileCache;
-use Any::Moose;
-use Any::Moose 'X::Types::Path::Class';
+use Mouse;
+use MouseX::Types::Path::Class;
 
 has cache_dir => (
     is  => 'rw',

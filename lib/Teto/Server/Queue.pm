@@ -1,5 +1,5 @@
 package Teto::Server::Queue;
-use Any::Moose;
+use Mouse;
 
 # is
 # - play queue

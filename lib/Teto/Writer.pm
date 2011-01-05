@@ -1,6 +1,6 @@
 package Teto::Writer;
-use Any::Moose;
-use Any::Moose 'X::Types::Path::Class';
+use Mouse;
+use MouseX::Types::Path::Class;
 
 # is
 # - buffer writer
@@ -45,7 +45,7 @@ has error => (
 
 __PACKAGE__->meta->make_immutable;
 
-no Any::Moose;
+no Mouse;
 
 use Teto::Logger qw($logger);
 use AnyEvent;

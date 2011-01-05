@@ -1,5 +1,5 @@
 package Teto::Server::Queue::Entry;
-use Any::Moose;
+use Mouse;
 use overload
         '""' => 'stringify',
         fallback => 1;

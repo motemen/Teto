@@ -1,5 +1,5 @@
 package Teto::Server::Buffer;
-use Any::Moose;
+use Mouse;
 use POSIX qw(ceil);
 
 use constant META_INTERVAL => 1 * 1024;
@@ -40,7 +40,7 @@ has do_interleave => (
 
 __PACKAGE__->meta->make_immutable;
 
-no Any::Moose;
+no Mouse;
 
 sub is_empty {
     shift->length < BUFFER_SIZE_MIN;

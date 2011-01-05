@@ -1,5 +1,5 @@
 package Teto::Feeder;
-use Any::Moose;
+use Mouse;
 
 has queue => (
     is  => 'rw',

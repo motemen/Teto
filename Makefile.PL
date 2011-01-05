@@ -1,17 +1,11 @@
-BEGIN {
-    require Module::Install::Any::Moose;
-}
-
 use inc::Module::Install;
 
 name 'Teto';
 all_from 'lib/Teto.pm';
 
-requires 'Any::Moose', '0.13';
-requires_any_moose;
-requires_any_moose 'X::Types::Path::Class';
-requires_any_moose 'X::Getopt::Strict';
-
+requires 'Mouse';
+requires 'MouseX::Types::Path::Class';
+requires 'MouseX::Getopt::Strict';
 requires 'MouseX::NativeTraits', '1.04';
 
 requires 'AnyEvent';

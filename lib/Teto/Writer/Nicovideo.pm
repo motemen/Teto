@@ -1,5 +1,5 @@
 package Teto::Writer::Nicovideo;
-use Any::Moose;
+use Mouse;
 use Config::Pit;
 use WWW::NicoVideo::Download;
 use Teto::Logger qw($logger);
@@ -36,7 +36,7 @@ override handles_url => sub {
     return $url =~ m<^http://(?:\w+\.nicovideo\.jp/watch|nico\.ms)/(sm\d+)>;
 };
 
-no Any::Moose;
+no Mouse;
 
 sub _write {
     my $self = shift;

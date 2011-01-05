@@ -1,5 +1,5 @@
 package Teto::Logger;
-use Any::Moose;
+use Mouse;
 
 has dispatcher => (
     is  => 'rw',
