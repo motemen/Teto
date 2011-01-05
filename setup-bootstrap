@@ -1,0 +1,11 @@
+#!/bin/sh
+
+TETO_DIR=$(dirname $0)
+
+if which cpanm; then
+    CPANM=cpanm
+else
+    CPANM='curl -L http://htn.to/cpanm | perl -- -'
+fi
+
+eval "$CPANM -l $TETO_DIR/extlib --installdeps $TETO_DIR"

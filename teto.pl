@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use lib 'lib';
+use lib 'lib', 'extlib/lib/perl5';
 
 use Teto;
 
