@@ -22,6 +22,7 @@ requires 'HTML::TreeBuilder::XPath';
 requires 'HTTP::Request::Common';
 requires 'Encode';
 requires 'Config::Pit';
+requires 'Crypt::SSLeay';
 
 requires 'File::Util';
 

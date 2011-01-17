@@ -2,10 +2,20 @@
 
 TETO_DIR=$(dirname $0)
 
+/bin/echo -n 'which cpanm ... '
 if which cpanm; then
     CPANM=cpanm
 else
+    echo 'cpanm not found'
     CPANM='curl -L http://htn.to/cpanm | perl -- -'
+fi
+
+/bin/echo -n 'which ffmpeg ... '
+if which ffmpeg; then
+    :
+else
+    echo 'ffmpeg not found; install ffmpeg and retry.'
+    exit 1
 fi
 
 eval "$CPANM -l $TETO_DIR/extlib --installdeps $TETO_DIR"
