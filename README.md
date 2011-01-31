@@ -40,4 +40,4 @@ How to Use
 
 Screenshot
 ----------
-[![http://f.hatena.ne.jp/motemen/20101101215633](http://img.f.hatena.ne.jp/images/fotolife/m/motemen/20101101/20101101215633.png)](http://f.hatena.ne.jp/motemen/20101101215633)
+[![http://f.hatena.ne.jp/motemen/20101101215633](http://cdn.f.st-hatena.com/images/fotolife/m/motemen/20101101/20101101215633.png)](http://f.hatena.ne.jp/motemen/20101101215633)
