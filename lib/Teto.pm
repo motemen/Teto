@@ -1,21 +1,18 @@
 package Teto;
-use Mouse;
-use Teto::Queue;
-use Teto::Buffer;
+use strict;
+use warnings;
 
 our $VERSION = '0.2';
 
-has queue => (
-    is  => 'rw',
-    isa => 'Teto::Queue',
-    default => sub { Teto::Queue->new },
-);
+sub context {
+    require Teto::Context;
+    our $Context ||= Teto::Context->new;
+}
 
-has buffer => (
-    is  => 'rw',
-    isa => 'Teto::Buffer',
-    default => sub { Teto::Buffer->new },
-);
+for my $method qw(playlist buffer) {
+    no strict 'refs';
+    *$method = sub { shift->context->$method };
+}
 
 1;
 
