@@ -10,7 +10,7 @@ use Coro::LWP;
 use Coro::AIO;
 use LWP::UserAgent;
 use HTTP::Request::Common;
-use UNIVERSAL::require;
+use Class::Load;
 use Path::Class;
 use File::Temp ();
 
@@ -173,8 +173,14 @@ sub prepare_headers {
 # FIXME
 sub subclasses {
     my $class = shift;
-    return map { local $_ = "Teto::Track::$_"; $_->require; $_ } qw(NicoVideo NicoVideo::nm);
+    return map {
+        Class::Load::load_class("Teto::Track::$_");
+        "Teto::Track::$_";
+    } qw(NicoVideo NicoVideo::nm YouTube);
 }
+
+sub buildargs_from_url { die }
+sub play { die }
 
 sub from_url {
     my ($class, $url) = @_;
