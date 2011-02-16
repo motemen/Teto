@@ -63,6 +63,7 @@ sub subclasses {
             $pm =~ s/\.pm$// or return;
             $pm =~ s/\//::/g;
             Class::Load::load_class($pm);
+            return unless $pm->meta->get_method('play');
             push @subclasses, $pm;
         },
     );
