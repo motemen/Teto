@@ -3,43 +3,42 @@ use inc::Module::Install;
 name 'Teto';
 all_from 'lib/Teto.pm';
 
+# Core
 requires 'Mouse';
 requires 'MouseX::Types::Path::Class';
-requires 'MouseX::Getopt::Strict';
+requires 'MouseX::Types::URI';
 requires 'MouseX::NativeTraits', '1.04';
 
 requires 'AnyEvent';
-requires 'Guard';
+requires 'AnyEvent::HTTP';
+requires 'AnyEvent::Util';
 
 requires 'Coro';
+requires 'Coro::Signal';
+requires 'Coro::LWP';
 
-requires 'Log::Dispatch';
-requires 'Exporter::Lite';
+requires 'Twiggy';
+requires 'Plack::Runner';
 
-requires 'WWW::NicoVideo::Download';
-requires 'WWW::YouTube::Download', '0.16';
-requires 'HTML::TreeBuilder::XPath';
-requires 'HTTP::Request::Common';
-requires 'Encode';
-requires 'Config::Pit';
-requires 'Crypt::SSLeay';
-
-requires 'File::Util';
-
-requires 'Text::MicroTemplate';
-
-requires 'AnyEvent::HTTP';
-requires 'XML::Feed';
+# Track
+requires 'LWP::UserAgent';
 requires 'WWW::Mechanize';
 requires 'WWW::Mechanize::AutoPager';
+requires 'HTTP::Request::Common';
+requires 'Crypt::SSLeay';
+
+# Track::NicoVideo
+requires 'WWW::NicoVideo::Download';
+requires 'Config::Pit';
+
+# Track::YouTube
+requires 'WWW::YouTube::Download', '0.16';
+
+# Feeder
+requires 'HTML::ResolveLink';
+
 requires 'JSON::XS';
-requires 'Regexp::Common';
-
-requires 'YAML::Tiny';
-
-requires 'Twiggy'; # XXX 本当は Plack だけでいいはず
-
-requires 'Plack';
+requires 'Try::Tiny';
 
 test_requires 'Test::More';
 test_requires 'Test::Base';
@@ -49,7 +48,11 @@ test_requires 'File::Find::Rule';
 tests 't/*.t';
 # author_tests 'xt';
 
+# Track::NicoVideo::sm
 requires_external_bin 'ffmpeg';
+
+# Track::NicoVideo::nm
+requires_external_bin 'swfextract';
 
 auto_include;
 # auto_install;

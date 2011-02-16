@@ -2,6 +2,7 @@ use strict;
 use warnings;
 use lib 'lib';
 use Teto;
+use Teto::Role::Log;
 use Coro;
 use Coro::Debug;
 use Plack::Runner;
@@ -53,6 +54,8 @@ $runner->set_options(
     }
 );
 
-Teto->feeder->feed_by_url($_) for @{ $runner->{argv} };
+async {
+    Teto->feeder->feed_by_url($_) for @{ $runner->{argv} };
+};
 
 $runner->run($app);

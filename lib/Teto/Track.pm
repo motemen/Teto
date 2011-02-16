@@ -230,7 +230,7 @@ sub download_temporary {
 
 sub read_file_to_buffer {
     my ($self, $file) = @_;
-    my $fh = aio_open $file, IO::AIO::O_RDONLY, 0 or die "$file: $!";
+    my $fh = ref $file ? $file : aio_open $file, IO::AIO::O_RDONLY, 0 or die "aio_open $file: $!";
     while (aio_read $fh, undef, 1024 * 1024, my $buf = '', 0) {
         $self->write($buf);
     }

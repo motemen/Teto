@@ -5,7 +5,7 @@ use WWW::Mechanize::AutoPager;
 use Coro::LWP;
 use Try::Tiny;
 use JSON::XS;
-use HTML::TreeBuilder::XPath;
+use HTML::ResolveLink;
 use Teto::Track;
 
 with 'Teto::Role::Log';
@@ -56,6 +56,9 @@ sub feed_by_res {
     if ($url =~ m<^http://www\.nicovideo\.jp/mylist/\d+>) {
         $self->log(debug => "$url seems to be a nicovideo mylist");
         return $self->_feed_by_nicovideo_mylist_res($res);
+    } elsif ($res->content_type =~ m(/x?html\b)) {
+        $self->log(debug => "$url seems to be an HTML page");
+        return $self->_feed_by_html_res($res);
     }
 }
 
@@ -82,19 +85,19 @@ sub _feed_by_nicovideo_mylist_res {
 sub _feed_by_html_res {
     my ($self, $res) = @_;
 
-    my $tree = HTML::TreeBuilder::XPath->new;
-    $tree->parse($res->decoded_content);
-
-    # my ($title) = $res->decoded_content =~ m#<title>(.+?)</title>#s;
-
     my $found = 0;
-    foreach ($tree->findnodes('//a[@href]')) {
-        my $url = $_->attr('href');
-        if (Teto::Track->is_track_url($url)) {
-            $self->playlist->add_url($url);
-            $found++;
-        }
-    }
+    my $resolver = HTML::ResolveLink->new(
+        base => $res->base,
+        callback => sub {
+            my $url = shift;
+            if (Teto::Track->is_track_url($url)) {
+                $self->log(debug => "found $url");
+                $self->playlist->add_url($url);
+                $found++;
+            }
+        },
+    );
+    $resolver->resolve($res->decoded_content);
     return $found;
 }
 

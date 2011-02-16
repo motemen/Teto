@@ -39,7 +39,7 @@ no Mouse;
 sub add_url {
     my ($self, $url) = @_;
     my $track = Teto::Track->from_url($url) or return undef;
-    $self->log(info => "playlist: $url");
+    $self->log(info => "playlist added: $url");
     $self->push_playlist($track);
     $self->waiting_track_signal->broadcast;
     return $track;

@@ -1,5 +1,5 @@
 use strict;
-use Test::More tests => 7;
+use Test::More tests => 8;
 use Test::Deep;
 use Teto::Buffer;
 
@@ -13,7 +13,7 @@ $track->write('xxx');
 is $buf->buffer, 'xxx';
 
 cmp_set [ Teto::Track->subclasses ], [
-    qw(Teto::Track::NicoVideo::sm Teto::Track::NicoVideo::nm Teto::Track::YouTube)
+    qw(Teto::Track::NicoVideo::sm Teto::Track::NicoVideo::nm Teto::Track::YouTube Teto::Track::SoundCloud)
 ], 'subclasses';
 
 subtest nicovideo_sm => sub {
@@ -24,6 +24,11 @@ subtest nicovideo_sm => sub {
 subtest nicovideo_nm => sub {
     my $track = Teto::Track->from_url('http://www.nicovideo.jp/watch/nm3254039');
     isa_ok $track, 'Teto::Track::NicoVideo::nm';
+};
+
+subtest soundcloud => sub {
+    my $track = Teto::Track->from_url('http://soundcloud.com/takuma-hosokawa/darksidenadeko-electro-mix');
+    isa_ok $track, 'Teto::Track::SoundCloud';
 };
 
 subtest 'none handles' => sub {
