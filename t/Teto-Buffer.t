@@ -4,7 +4,7 @@ use Coro;
 
 use_ok 'Teto::Buffer';
 
-my $buffer = new_ok 'Teto::Buffer', [ max_buffer_size => 5 ];
+my $buffer = new_ok 'Teto::Buffer', [ max_buffer_size => 7 ];
 
 is $buffer->buffer, '', q(buffer = '');
 

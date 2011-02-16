@@ -45,7 +45,7 @@ sub _build_user_agent {
     return shift->nicovideo_client->user_agent;
 }
 
-sub play {
+sub get_media_url {
     my $self = shift;
 
     my $res = $self->user_agent->get($self->url);
@@ -63,6 +63,12 @@ sub play {
     }
     $self->log(info => "media: $media_url");
 
+    return $media_url;
+}
+
+sub play {
+    my $self = shift;
+    my $media_url = $self->get_media_url or return;
     my $fh = $self->url_to_fh($media_url);
     $self->ffmpeg($fh);
 }

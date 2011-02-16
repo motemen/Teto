@@ -6,6 +6,8 @@ use AnyEvent::Util;
 use AnyEvent::HTTP;
 use AnyEvent::Handle;
 use Coro;
+use Coro::LWP;
+use Coro::AIO;
 use LWP::UserAgent;
 use HTTP::Request::Common;
 use UNIVERSAL::require;
@@ -21,6 +23,7 @@ has url => (
     coerce   => 1,
 );
 
+# TODO -> fh?
 has write_cb => (
     is  => 'rw',
     isa => 'CodeRef',
@@ -47,11 +50,38 @@ __PACKAGE__->meta->make_immutable;
 
 no Mouse;
 
-sub recv_cv ($) {
-    my $cv = shift;
-    $cv->cb(rouse_cb);
-    rouse_wait;
+sub recv_cv {
+    my ($self, $cv) = @_;
+    $cv->cb(Coro::rouse_cb);
+    Coro::rouse_wait;
     return $cv->recv;
+}
+
+sub run_command {
+    my ($self, $command, $args) = @_;
+
+    my $head = $command->[0];
+
+    $args ||= {};
+    $args->{'>'}  ||= sub {
+        $self->log(debug => "$head: STDOUT: $_[0]") if defined $_[0];
+    };
+    $args->{'2>'} ||= sub {
+        $self->log(debug => "$head: STDERR: $_[0]") if defined $_[0];
+    };
+    $args->{'$$'} = \my $pid;
+
+    $self->log(debug => qq(running '@$command'));
+    my $cmd_cv = run_cmd $command, %{ $args || {} };
+    $self->log(debug => "$head: pid=$pid");
+
+    my $exit_code = $self->recv_cv($cmd_cv);
+    if ($exit_code != 0) {
+        $self->error("$head exited with code $exit_code");
+    } else {
+        $self->log(debug => "$head exited with code $exit_code");
+    }
+    return $exit_code;
 }
 
 sub ffmpeg {
@@ -59,7 +89,6 @@ sub ffmpeg {
     my %args = (
         '>'  => sub { $self->write($_[0]) if defined $_[0] },
         '2>' => sub { $self->log_coro("ffmpeg: @_") },
-        '$$' => \my $pid,
     );
     
     my $filename;
@@ -67,22 +96,13 @@ sub ffmpeg {
         $filename = '-';
         $args{'<'} = $file_or_fh;
     } else {
-        $filename = $file_or_fh;
-        utf8::encode $filename if utf8::is_utf8 $filename;
+        $filename  = $file_or_fh;
     }
 
-    my @command = (qw(ffmpeg -i), $filename, qw(-ab 192k -ar 44100 -acodec libmp3lame -ac 2 -f mp3 -)); # TODO make configurable
-    $self->log(debug => qq(running '@command'));
-
-    my $cmd_cv = run_cmd \@command, %args;
-    $self->log(info => qq(ffmpeg pid: $pid));
-
-    my $exit_code = recv_cv $cmd_cv;
-    $self->log(debug => "ffmpeg exited with code $exit_code");
-
-    if ($exit_code != 0) {
-        $self->error("ffmpeg exited with code $exit_code");
-    }
+    $self->run_command(
+        [ qw(ffmpeg -i), $filename, qw(-ab 192k -ar 44100 -acodec libmp3lame -ac 2 -f mp3 -) ],
+        \%args,
+    );
 }
 
 sub url_to_fh {
@@ -153,7 +173,7 @@ sub prepare_headers {
 # FIXME
 sub subclasses {
     my $class = shift;
-    return map { $_->require; $_ } qw(Teto::Track::NicoVideo);
+    return map { local $_ = "Teto::Track::$_"; $_->require; $_ } qw(NicoVideo NicoVideo::nm);
 }
 
 sub from_url {
@@ -166,12 +186,31 @@ sub from_url {
 
 sub tempfile {
     my $self = shift;
-    return File::Temp->new(UNLINK => 0, @_);
+    return File::Temp::tempfile(UNLINK => 0, @_);
 }
 
-sub tmpnam {
-    my $self = shift;
-    return File::Temp::tmpnam(@_);
+sub temporary_filename {
+    my $self   = shift;
+    my $suffix = shift;
+    my (undef, $filename) = $self->tempfile(OPEN => 0, SUFFIX => $suffix, @_);
+    return $filename;
+}
+
+sub download_temporary {
+    my ($self, $url, $suffix) = @_;
+    my $filename = $self->temporary_filename($suffix);
+    my $res = $self->user_agent->mirror($url, $filename);
+    die $res->message unless $res->is_success;
+    return $filename;
+}
+
+sub read_file_to_buffer {
+    my ($self, $file) = @_;
+    my $fh = aio_open $file, IO::AIO::O_RDONLY, 0 or die "$file: $!";
+    while (aio_read $fh, undef, 1024 * 1024, my $buf = '', 0) {
+        $self->write($buf);
+    }
+    aio_close $fh;
 }
 
 1;
