@@ -1,109 +1,21 @@
 package Teto;
 use Mouse;
+use Teto::Queue;
+use Teto::Buffer;
 
-our $VERSION = '0.01';
+our $VERSION = '0.2';
 
-use Getopt::Long ':config' => qw(pass_through);
-
-with 'MouseX::Getopt::Strict';
-
-# --readonly
-has readonly => (
+has queue => (
     is  => 'rw',
-    isa => 'Bool',
-    default => 0,
-    metaclass => 'Getopt',
+    isa => 'Teto::Queue',
+    default => sub { Teto::Queue->new },
 );
 
-# --cache-dir=.cache
-has cache_dir => (
+has buffer => (
     is  => 'rw',
-    isa => 'Str',
-    default => '.cache',
-    metaclass => 'Getopt',
-    cmd_flag  => 'cache-dir',
+    isa => 'Teto::Buffer',
+    default => sub { Teto::Buffer->new },
 );
-
-# --debug
-has debug => (
-    is  => 'rw',
-    isa => 'Bool',
-    default => 0,
-    metaclass => 'Getopt',
-);
-
-## Components
-
-has file_cache => (
-    is  => 'rw',
-    isa => 'Teto::FileCache',
-    lazy_build => 1,
-);
-
-sub _build_file_cache {
-    my $self = shift;
-    return Teto::FileCache->new(
-        readonly  => $self->readonly,
-        cache_dir => $self->cache_dir,
-    );
-}
-
-has server => (
-    is  => 'rw',
-    isa => 'Teto::Server',
-    lazy_build => 1,
-);
-
-sub _build_server {
-    my $self = shift;
-    return Teto::Server->new(
-        file_cache => $self->file_cache,
-    );
-}
-
-has coro_debug_server_guard => (
-    is  => 'rw',
-    isa => 'Guard',
-);
-
-no Mouse;
-
-__PACKAGE__->meta->make_immutable;
-
-use Teto::Server;
-use Teto::FileCache;
-use Teto::Logger qw($logger);
-
-use AnyEvent;
-use Coro;
-
-sub BUILD {
-    my $self = shift;
-
-    our $instance = $self;
-
-    if ($self->debug) {
-        require Coro::Debug;
-        $self->coro_debug_server_guard(
-            Coro::Debug->new_unix_server('/tmp/teto_debug')
-        );
-    }
-}
-
-sub start_psgi {
-    my $self = shift;
-
-    $logger->add_logger(screen => { min_level => $self->debug ? 'debug' : 'info' });
-
-    foreach (@{ $self->extra_argv || [] }) {
-        next unless $_ =~ m(^https?://);
-        $self->server->enqueue($_);
-    }
-
-    $self->server->queue->start_async;
-
-    return $self->server->to_psgi_app;
-}
 
 1;
 

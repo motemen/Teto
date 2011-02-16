@@ -12,6 +12,8 @@ use UNIVERSAL::require;
 use Path::Class;
 use File::Temp ();
 
+with 'Teto::Role::Log';
+
 has url => (
     is  => 'rw',
     isa => 'URI',
@@ -55,8 +57,8 @@ sub recv_cv ($) {
 sub ffmpeg {
     my ($self, $file_or_fh) = @_;
     my %args = (
-        '>'  => sub { $self->write(@_) },
-        '2>' => sub { $self->log(debug => "ffmpeg: @_") unless "@_" =~ /configuration:/ },
+        '>'  => sub { $self->write($_[0]) if defined $_[0] },
+        '2>' => sub { $self->log_coro("ffmpeg: @_") },
         '$$' => \my $pid,
     );
     
@@ -99,6 +101,9 @@ sub url_to_fh {
         }
     );
 
+    $self->log(debug => "GET $url");
+
+    my $bytes_wrote = 0;
     http_get(
         $url,
         headers => $self->prepare_headers($url),
@@ -111,12 +116,16 @@ sub url_to_fh {
             1;
         },
         on_body => sub {
-            $write_handle->push_write($_[0]);
+            my ($content) = @_;
+            if (defined $content) {
+                $write_handle->push_write($content);
+                $bytes_wrote += length $content;
+            }
             1;
         },
         sub {
             $write_handle->on_drain(sub { close $_[0]->fh; $_[0]->destroy });
-            $self->log(notice => "Done: GET $url");
+            $self->log(info => "GET $url -> $bytes_wrote bytes");
             $cb && $cb->();
         },
     );
@@ -127,21 +136,6 @@ sub url_to_fh {
 sub write {
     my $self = shift;
     $self->write_cb->(@_);
-}
-
-sub log {
-    my ($self, $level, @args) = @_;
-    my ($pkg, $filename) = caller;
-    $pkg =~ s/^Teto:://;
-    $pkg = $filename if $filename !~ /\.pm$/;
-    printf STDERR "[%s] %-6s %s - %s\n",
-        scalar(localtime), uc $level, $pkg,
-        join ' ', map {
-            local $Data::Dumper::Indent = 0;
-            local $Data::Dumper::Maxdepth = 1;
-            local $Data::Dumper::Terse = 1;
-            !ref $_ || overload::Method($_, '""') ? "$_" : Data::Dumper::Dumper($_);
-        } @args;
 }
 
 sub prepare_headers {
