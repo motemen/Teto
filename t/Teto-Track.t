@@ -1,15 +1,16 @@
 use strict;
 use Test::More tests => 6;
 use Test::Deep;
+use Teto::Buffer;
 
 use_ok 'Teto::Track';
 
 my $track = new_ok 'Teto::Track', [ url => '' ];
 
-my $wrote;
-$track->write_cb(sub { $wrote = $_[0] });
+my $buf = Teto::Buffer->new;
+$track->buffer($buf);
 $track->write('xxx');
-is $wrote, 'xxx';
+is $buf->buffer, 'xxx';
 
 cmp_set [ Teto::Track->subclasses ], [
     qw(Teto::Track::NicoVideo Teto::Track::NicoVideo::nm Teto::Track::YouTube)

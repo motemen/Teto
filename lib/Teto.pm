@@ -5,11 +5,29 @@ use warnings;
 our $VERSION = '0.2';
 
 sub context {
-    require Teto::Context;
     our $Context ||= Teto::Context->new;
 }
 
-for my $method qw(playlist buffer) {
+package Teto::Context;
+use Mouse;
+
+has playlist => (
+    is  => 'rw',
+    isa => 'Teto::Playlist',
+    default => sub { require Teto::Playlist; Teto::Playlist->new },
+);
+
+has buffer => (
+    is  => 'rw',
+    isa => 'Teto::Buffer',
+    default => sub { require Teto::Buffer; Teto::Buffer->new },
+);
+
+__PACKAGE__->meta->make_immutable;
+
+package Teto;
+
+for my $method (Teto::Context->meta->get_attribute_list) {
     no strict 'refs';
     *$method = sub { shift->context->$method };
 }

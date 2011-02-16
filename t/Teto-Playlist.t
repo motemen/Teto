@@ -6,7 +6,7 @@ use Coro;
 use_ok 'Teto::Playlist';
 
 subtest basic => sub {
-    my $playlist = new_ok 'Teto::Playlist';
+    my $playlist = new_ok 'Teto::Playlist', [ track_fh => do { my $s = ''; open my $fh, '>', \$s; $fh } ];
 
     cmp_deeply $playlist->playlist, [];
 
@@ -20,7 +20,7 @@ subtest basic => sub {
 };
 
 subtest signal => sub {
-    my $playlist = Teto::Playlist->new;
+    my $playlist = Teto::Playlist->new(track_fh => do { my $s = ''; open my $fh, '>', \$s; $fh });
 
     my @coros;
     my ($waiting, $track);

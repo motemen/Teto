@@ -23,11 +23,10 @@ has url => (
     coerce   => 1,
 );
 
-# TODO -> fh?
-has write_cb => (
+has buffer => (
     is  => 'rw',
-    isa => 'CodeRef',
-    # required => 1,
+    isa => 'Teto::Buffer',
+    default => sub { require Teto; Teto->buffer },
 );
 
 has user_agent => (
@@ -76,6 +75,11 @@ sub from_url {
         my $args = $impl->buildargs_from_url($url) or next;
         return $impl->new(url => $url, %$args);
     }
+}
+
+sub write {
+    my $self = shift;
+    $self->buffer->write(@_);
 }
 
 ### 以下は便利メソッド
@@ -181,11 +185,6 @@ sub url_to_fh {
     );
 
     return $reader;
-}
-
-sub write {
-    my $self = shift;
-    $self->write_cb->(@_);
 }
 
 sub prepare_headers {

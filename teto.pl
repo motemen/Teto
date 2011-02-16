@@ -6,8 +6,6 @@ use Coro;
 use Coro::Debug;
 use Plack::Runner;
 
-Teto->playlist->write_cb(sub { Teto->buffer->write($_[0]) });
-
 my $debug = Coro::Debug->new_unix_server('teto.debug.sock');
 
 async {
@@ -23,6 +21,7 @@ async {
 
 async {
     $Coro::current->desc('player coro');
+    # Coro::Debug::trace;
     Teto->playlist->play_next while 1;
 };
 
