@@ -13,12 +13,14 @@ has buffer => (
     },
 );
 
+# バッファいっぱいになったらこれでブロック
 has full_signal => (
     is  => 'rw',
     isa => 'Coro::Signal',
     default => sub { Coro::Signal->new },
 );
 
+# バッファ少なくなったらこれでブロック
 has low_signal => (
     is  => 'rw',
     isa => 'Coro::Signal',

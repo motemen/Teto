@@ -50,6 +50,36 @@ __PACKAGE__->meta->make_immutable;
 
 no Mouse;
 
+sub buildargs_from_url { die 'override' }
+sub play { die 'override' }
+
+my @subclasses;
+sub subclasses {
+    my $class = shift;
+    return @subclasses if @subclasses;
+    file(__FILE__)->dir->subdir('Track')->recurse(
+        callback => sub {
+            my $pm = shift;
+            $pm = $pm->relative(file(__FILE__)->parent->parent);
+            $pm =~ s/\.pm$// or return;
+            $pm =~ s/\//::/g;
+            Class::Load::load_class($pm);
+            push @subclasses, $pm;
+        },
+    );
+    return @subclasses;
+}
+
+sub from_url {
+    my ($class, $url) = @_;
+    foreach my $impl ($class->subclasses) {
+        my $args = $impl->buildargs_from_url($url) or next;
+        return $impl->new(url => $url, %$args);
+    }
+}
+
+### 以下は便利メソッド
+
 sub recv_cv {
     my ($self, $cv) = @_;
     $cv->cb(Coro::rouse_cb);
@@ -168,26 +198,6 @@ sub prepare_headers {
     $self->user_agent->prepare_request(GET $url)->scan(sub { $headers{$_[0]} = $_[1] });
 
     return \%headers;
-}
-
-# FIXME
-sub subclasses {
-    my $class = shift;
-    return map {
-        Class::Load::load_class("Teto::Track::$_");
-        "Teto::Track::$_";
-    } qw(NicoVideo NicoVideo::nm YouTube);
-}
-
-sub buildargs_from_url { die }
-sub play { die }
-
-sub from_url {
-    my ($class, $url) = @_;
-    foreach my $impl ($class->subclasses) {
-        my $args = $impl->buildargs_from_url($url) or next;
-        return $impl->new(url => $url, %$args);
-    }
 }
 
 sub tempfile {
