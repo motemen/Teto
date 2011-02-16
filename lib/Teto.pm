@@ -23,6 +23,18 @@ has buffer => (
     default => sub { require Teto::Buffer; Teto::Buffer->new },
 );
 
+has feeder => (
+    is  => 'rw',
+    isa => 'Teto::Feeder',
+    lazy_build => 1,
+);
+
+sub _build_feeder {
+    my $self = shift;
+    require Teto::Feeder;
+    return Teto::Feeder->new(playlist => $self->playlist);
+}
+
 __PACKAGE__->meta->make_immutable;
 
 package Teto;

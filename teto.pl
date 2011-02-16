@@ -15,7 +15,7 @@ async {
         my $line = <STDIN>;
         next unless defined $line;
         chomp $line;
-        Teto->playlist->add_url($line);
+        Teto->feeder->feed_by_url($line);
     }
 };
 
@@ -53,6 +53,6 @@ $runner->set_options(
     }
 );
 
-Teto->playlist->add_url($_) for @{ $runner->{argv} };
+Teto->feeder->feed_by_url($_) for @{ $runner->{argv} };
 
 $runner->run($app);

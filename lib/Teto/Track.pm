@@ -70,6 +70,14 @@ sub subclasses {
     return @subclasses;
 }
 
+sub is_track_url {
+    my ($class, $url) = @_;
+    foreach my $impl ($class->subclasses) {
+        $impl->buildargs_from_url($url) and return 1;
+    }
+    return 0;
+}
+
 sub from_url {
     my ($class, $url) = @_;
     foreach my $impl ($class->subclasses) {
@@ -122,7 +130,7 @@ sub run_command {
 sub ffmpeg {
     my ($self, $file_or_fh) = @_;
     my %args = (
-        '>'  => sub { $self->write($_[0]) if defined $_[0] },
+        '>'  => unblock_sub { $self->write($_[0]) if defined $_[0] },
         '2>' => sub { $self->log_coro("ffmpeg: @_") },
     );
     
