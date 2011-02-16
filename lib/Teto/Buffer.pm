@@ -1,7 +1,6 @@
 package Teto::Buffer;
 use Mouse;
-use Coro::Semaphore;
-use Carp;
+use Coro::Signal;
 
 has buffer => (
     is  => 'rw',
@@ -14,10 +13,10 @@ has buffer => (
     },
 );
 
-has write_semaphore => (
+has write_signal => (
     is  => 'rw',
-    isa => 'Coro::Semaphore',
-    default => sub { Coro::Semaphore->new },
+    isa => 'Coro::Signal',
+    default => sub { Coro::Signal->new },
 );
 
 has max_buffer_size => (
@@ -32,14 +31,14 @@ no Mouse;
 
 sub write {
     my ($self, $data) = @_;
-    $self->write_semaphore->down if $self->buffer_length + length $data > $self->max_buffer_size;
+    $self->write_signal->wait if $self->buffer_length + length $data > $self->max_buffer_size;
     $self->append_buffer($data);
 }
 
 sub read {
     my ($self, $length) = @_;
     my $data = substr($self->{buffer}, 0, $length, '');
-    $self->write_semaphore->up if $self->buffer_length <= $self->max_buffer_size && $self->write_semaphore->count <= 0;
+    $self->write_signal->broadcast if $self->buffer_length <= $self->max_buffer_size;
     return $data;
 }
 
