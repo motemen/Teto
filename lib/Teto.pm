@@ -11,16 +11,16 @@ sub context {
 package Teto::Context;
 use Mouse;
 
-has playlist => (
-    is  => 'rw',
-    isa => 'Teto::Playlist',
-    default => sub { require Teto::Playlist; Teto::Playlist->new },
-);
-
 has buffer => (
     is  => 'rw',
     isa => 'Teto::Buffer',
-    default => sub { require Teto::Buffer; Teto::Buffer->new },
+    lazy_build => 1,
+);
+
+has playlist => (
+    is  => 'rw',
+    isa => 'Teto::Playlist',
+    lazy_build => 1,
 );
 
 has feeder => (
@@ -28,6 +28,18 @@ has feeder => (
     isa => 'Teto::Feeder',
     lazy_build => 1,
 );
+
+sub _build_buffer {
+    my $self = shift;
+    require Teto::Buffer;
+    return Teto::Buffer->new;
+}
+
+sub _build_playlist {
+    my $self = shift;
+    require Teto::Playlist;
+    return Teto::Playlist->new(buffer => $self->buffer);
+}
 
 sub _build_feeder {
     my $self = shift;
