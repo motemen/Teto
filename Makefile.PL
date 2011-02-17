@@ -35,7 +35,7 @@ requires 'Config::Pit';
 requires 'WWW::YouTube::Download', '0.16';
 
 # Feeder
-requires 'HTML::ResolveLink';
+requires 'HTML::LinkExtor';
 
 requires 'JSON::XS';
 requires 'Try::Tiny';

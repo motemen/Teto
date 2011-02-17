@@ -5,7 +5,7 @@ use WWW::Mechanize::AutoPager;
 use Coro::LWP;
 use Try::Tiny;
 use JSON::XS;
-use HTML::ResolveLink;
+use HTML::LinkExtor;
 use Teto::Track;
 
 with 'Teto::Role::Log';
@@ -47,17 +47,19 @@ sub feed_by_url {
         return;
     }
 
-    return $self->feed_by_res($res, $url);
+    my $found = $self->feed_by_res($res, $url) || 0;
+    $self->log(info => "found $found track(s)");
+    return $found;
 }
 
 sub feed_by_res {
     my ($self, $res, $url) = @_;
 
     if ($url =~ m<^http://www\.nicovideo\.jp/mylist/\d+>) {
-        $self->log(debug => "$url seems to be a nicovideo mylist");
+        $self->log(info => "$url seems to be a nicovideo mylist");
         return $self->_feed_by_nicovideo_mylist_res($res);
     } elsif ($res->content_type =~ m(/x?html\b)) {
-        $self->log(debug => "$url seems to be an HTML page");
+        $self->log(info => "$url seems to be an HTML page");
         return $self->_feed_by_html_res($res);
     }
 }
@@ -75,7 +77,6 @@ sub _feed_by_nicovideo_mylist_res {
         next unless ref eq 'HASH';
         my $video_id = $_->{video_id} or next;
         my $url = "http://www.nicovideo.jp/watch/$video_id";
-        $self->log(debug => "found $url");
         $self->playlist->add_url($url);
         $found++;
     }
@@ -86,18 +87,20 @@ sub _feed_by_html_res {
     my ($self, $res) = @_;
 
     my $found = 0;
-    my $resolver = HTML::ResolveLink->new(
-        base => $res->base,
-        callback => sub {
-            my $url = shift;
-            if (Teto::Track->is_track_url($url)) {
-                $self->log(debug => "found $url");
+    my %seen;
+    my $extractor = HTML::LinkExtor->new(
+        sub {
+            my ($tag, %attr) = @_;
+            return unless uc $tag eq 'A';
+            my $url = $attr{href} or return;
+            # $self->log(debug => "found $url");
+            if (Teto::Track->is_track_url($url) && !$seen{$url}++) {
                 $self->playlist->add_url($url);
                 $found++;
             }
-        },
+        }, $res->base
     );
-    $resolver->resolve($res->decoded_content);
+    $extractor->parse($res->decoded_content);
     return $found;
 }
 
