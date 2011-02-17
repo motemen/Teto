@@ -15,7 +15,7 @@ override play => sub {
     my $flv = $self->download_temporary($media_url => '.flv');
     my $mp3 = $self->temporary_filename('.mp3');
     $self->run_command([ 'swfextract', $flv, '-m', '-o', $mp3 ]);
-    $self->read_file_to_buffer($mp3);
+    $self->send_file_to_buffer($mp3);
 };
 
 __PACKAGE__->meta->make_immutable;

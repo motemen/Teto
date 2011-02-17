@@ -80,10 +80,10 @@ sub is_track_url {
 }
 
 sub from_url {
-    my ($class, $url) = @_;
+    my ($class, $url, %args) = @_;
     foreach my $impl ($class->subclasses) {
         my $args = $impl->buildargs_from_url($url) or next;
-        return $impl->new(url => $url, %$args);
+        return $impl->new(url => $url, %$args, %args);
     }
 }
 
@@ -235,7 +235,7 @@ sub download_temporary {
     return $filename;
 }
 
-sub read_file_to_buffer {
+sub send_file_to_buffer {
     my ($self, $file) = @_;
     my $fh = ref $file ? $file : aio_open $file, IO::AIO::O_RDONLY, 0 or die "aio_open $file: $!";
     while (aio_read $fh, undef, 1024 * 1024, my $buf = '', 0) {

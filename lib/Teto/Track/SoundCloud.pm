@@ -27,7 +27,7 @@ override play => sub {
 
     # $self->send_url_to_buffer($media_url);
     my $fh = $self->url_to_fh($media_url);
-    $self->read_file_to_buffer($fh);
+    $self->send_file_to_buffer($fh);
 };
 
 __PACKAGE__->meta->make_immutable;
