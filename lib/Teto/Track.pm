@@ -8,6 +8,7 @@ use AnyEvent::Handle;
 use Coro;
 use Coro::LWP;
 use Coro::AIO;
+use Coro::Timer ();
 use LWP::UserAgent;
 use HTTP::Request::Common;
 use Class::Load;
@@ -98,6 +99,12 @@ sub recv_cv {
     $cv->cb(Coro::rouse_cb);
     Coro::rouse_wait;
     return $cv->recv;
+}
+
+sub sleep {
+    my ($self, $n) = @_;
+    $self->log(info => "sleep for $n secs");
+    Coro::Timer::sleep $n;
 }
 
 sub run_command {
