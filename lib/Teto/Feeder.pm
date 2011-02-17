@@ -22,14 +22,22 @@ has user_agent => (
     lazy_build => 1,
 );
 
+has autopagerize => (
+    is  => 'rw',
+    isa => 'Bool',
+    default => 1,
+);
+
 sub _build_user_agent {
     my $self = shift;
     my $ua = WWW::Mechanize->new;
-    try {
-        $ua->autopager->load_siteinfo;
-    } catch {
-        $self->log(warn => $_);
-    };
+    if ($self->autopagerize) {
+        try {
+            $ua->autopager->load_siteinfo;
+        } catch {
+            $self->log(warn => $_);
+        };
+    }
     return $ua;
 }
 
