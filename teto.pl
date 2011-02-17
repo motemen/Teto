@@ -4,6 +4,7 @@ use lib 'lib';
 use Teto;
 use Teto::Role::Log;
 use Coro;
+use Coro::LWP;
 use Coro::Debug;
 use Plack::Runner;
 
@@ -50,7 +51,7 @@ $runner->set_options(
     server_ready => sub {
         my $args = shift;
         Teto::Role::Log->log(notice => "Streaming at http://$args->{host}:$args->{port}/");
-        Teto::Role::Log->log(notice => "Connect to debug coro by 'socat readline teto.debug.sock'");
+        Teto::Role::Log->log(debug  => "Connect to debug coro by 'socat readline teto.debug.sock'");
     }
 );
 

@@ -12,6 +12,7 @@ subtest 'read write' => sub {
     my @coros;
 
     push @coros, async {
+        $buffer->wait_until_writable;
         $buffer->write('abc');
         note q(wrote 'abc');
     };
@@ -20,6 +21,7 @@ subtest 'read write' => sub {
     is $buffer->buffer, 'abc', q(buffer = 'abc');
 
     push @coros, async {
+        $buffer->wait_until_writable;
         $buffer->write('def');
         note q(wrote 'def');
     };
@@ -28,6 +30,7 @@ subtest 'read write' => sub {
     is $buffer->buffer, 'abcdef', q(buffer = 'abcdef');
 
     push @coros, async {
+        $buffer->wait_until_writable;
         $buffer->write('ghi');
         note q(wrote 'ghi');
     };
