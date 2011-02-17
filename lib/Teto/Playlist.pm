@@ -32,13 +32,19 @@ has waiting_track_signal => (
     default => sub { Coro::Signal->new },
 );
 
+has buffer => (
+    is  => 'rw',
+    isa => 'Teto::Buffer',
+    default => sub { require Teto; Teto->buffer },
+);
+
 __PACKAGE__->meta->make_immutable;
 
 no Mouse;
 
 sub add_url {
     my ($self, $url) = @_;
-    my $track = Teto::Track->from_url($url) or return undef;
+    my $track = Teto::Track->from_url($url, buffer => $self->buffer) or return undef;
     $self->log(info => "playlist added: $url");
     $self->push_playlist($track);
     $self->waiting_track_signal->broadcast;
@@ -48,6 +54,7 @@ sub add_url {
 sub next_track {
     my $self = shift;
     $self->increment_index;
+    $self->log(info => 'track#', $self->index - 1, '->', $self->index);
     until ($self->current_track) {
         $self->waiting_track_signal->wait;
     }
@@ -61,6 +68,7 @@ sub current_track {
 
 sub play_next {
     my $self = shift;
+    $self->buffer->wait_until_writable;
     my $track = $self->next_track;
     $self->log(info => "play: $track->{url}");
     $track->play;
