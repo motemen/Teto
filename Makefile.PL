@@ -41,8 +41,8 @@ requires 'JSON::XS';
 requires 'Try::Tiny';
 
 test_requires 'Test::More';
-test_requires 'Test::Base';
 test_requires 'Test::Deep';
+test_requires 'Test::Requires';
 test_requires 'File::Find::Rule';
 
 tests 't/*.t';
