@@ -16,6 +16,14 @@ override buildargs_from_url => sub {
 
 override play => sub {
     my $self = shift;
+    my $media_url = $self->media_url or return;
+    # $self->send_url_to_buffer($media_url);
+    my $fh = $self->url_to_fh($media_url);
+    $self->send_file_to_buffer($fh);
+};
+
+sub _build_media_url {
+    my $self = shift;
 
     my $res = $self->user_agent->get($self->url);
     unless ($res->is_success) {
@@ -23,12 +31,19 @@ override play => sub {
         return;
     }
 
-    my ($media_url) = $res->decoded_content =~ m<"streamUrl":"([^"]+)"> or return;
+    if (defined (my $title = $self->extract_title_from_res($res))) {
+        $self->title($title);
+    }
 
-    # $self->send_url_to_buffer($media_url);
-    my $fh = $self->url_to_fh($media_url);
-    $self->send_file_to_buffer($fh);
-};
+    my ($media_url) = $res->decoded_content =~ m<"streamUrl":"([^"]+)"> or return;
+    return $media_url;
+}
+
+sub extract_title_from_res {
+    my ($self, $res) = @_;
+    my ($title) = $res->decoded_content =~ m#<h1><em>\s*(.+)\s*</em></h1>#;
+    return $title;
+}
 
 __PACKAGE__->meta->make_immutable;
 

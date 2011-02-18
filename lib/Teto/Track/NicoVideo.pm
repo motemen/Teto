@@ -35,7 +35,7 @@ sub _build_user_agent {
     return shift->nicovideo_client->user_agent;
 }
 
-sub get_media_url {
+sub _build_media_url {
     my $self = shift;
 
     my $res = $self->user_agent->get($self->url);
@@ -43,6 +43,10 @@ sub get_media_url {
         $self->error($res->message);
         $self->sleep(60) if $res->code == 403;
         return;
+    }
+
+    if (defined (my $title = $self->extract_title_from_res($res))) {
+        $self->title($title);
     }
 
     my $media_url = eval { $self->nicovideo_client->prepare_download($self->video_id) };
@@ -54,6 +58,14 @@ sub get_media_url {
     $self->log(info => "media: $media_url");
 
     return $media_url;
+}
+
+sub extract_title_from_res {
+    my ($self, $res) = @_;
+    my ($title) = $res->decoded_content =~ m#<title>(.+?)</title># or warn $res->decoded_content;
+    use utf8;
+    $title =~ s/ ‐ ニコニコ動画.*?$//;
+    return $title;
 }
 
 __PACKAGE__->meta->make_immutable;

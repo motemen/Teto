@@ -70,7 +70,8 @@ sub play_next {
     my $self = shift;
     $self->buffer->wait_until_writable;
     my $track = $self->next_track;
-    $self->log(info => "play: $track->{url}");
+    $track->prepare;
+    $self->log(notice => "play: $track");
     $track->play;
 }
 

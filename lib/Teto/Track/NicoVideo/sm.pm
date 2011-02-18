@@ -11,7 +11,7 @@ override buildargs_from_url => sub {
 
 override play => sub {
     my $self = shift;
-    my $media_url = $self->get_media_url or return;
+    my $media_url = $self->media_url or return;
     my $fh = $self->url_to_fh($media_url);
     $self->ffmpeg($fh);
 };

@@ -7,7 +7,7 @@ sub log {
     my ($pkg, $filename) = caller;
     $pkg =~ s/^Teto:://;
     $pkg = $filename if $filename !~ /\.pm$/;
-    printf STDERR "[%s] %-6s %s - %s\n",
+    my $message = sprintf "[%s] %-6s %s - %s\n",
         scalar(localtime), uc $level, $pkg,
         join ' ', map {
             local $Data::Dumper::Indent = 0;
@@ -15,6 +15,8 @@ sub log {
             local $Data::Dumper::Terse = 1;
             !ref $_ || overload::Method($_, '""') ? "$_" : Data::Dumper::Dumper($_);
         } @args;
+    utf8::encode $message if utf8::is_utf8 $message;
+    print STDERR $message;
 }
 
 sub log_coro {

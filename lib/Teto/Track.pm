@@ -15,6 +15,8 @@ use Class::Load;
 use Path::Class;
 use File::Temp ();
 
+use overload '""' => 'as_string', fallback => 1;
+
 with 'Teto::Role::Log';
 
 has url => (
@@ -22,6 +24,18 @@ has url => (
     isa => 'URI',
     required => 1,
     coerce   => 1,
+);
+
+has media_url => (
+    is  => 'rw',
+    isa => 'Maybe[Str]', # Maybe[URI]
+    coerce => 1,
+    lazy_build => 1,
+);
+
+has title => (
+    is  => 'rw',
+    isa => 'Str',
 );
 
 has buffer => (
@@ -52,6 +66,10 @@ no Mouse;
 
 sub buildargs_from_url { die 'override' }
 sub play { die 'override' }
+sub prepare {
+    my $self = shift;
+    $self->media_url; # build
+}
 
 my @subclasses;
 sub subclasses {
@@ -242,6 +260,13 @@ sub send_file_to_buffer {
         $self->write($buf);
     }
     aio_close $fh;
+}
+
+sub as_string {
+    my $self = shift;
+    my $string = "<$self->{url}>";
+    $string = $self->title . ' ' . $string if $self->title;
+    return $string;
 }
 
 1;

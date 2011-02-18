@@ -24,13 +24,19 @@ override buildargs_from_url => sub {
 
 override play => sub {
     my $self = shift;
-    my $video_url = eval { $self->youtube_client->get_video_url($self->video_id) } or do {
+    my $media_url = $self->media_url or return;
+    my $fh = $self->url_to_fh($media_url);
+    $self->ffmpeg($fh);
+};
+
+sub _build_media_url {
+    my $self = shift;
+    my $media_url = eval { $self->youtube_client->get_video_url($self->video_id) } or do {
         $self->error("get_video_url failed: $@");
         return;
     };
-    my $fh = $self->url_to_fh($video_url);
-    $self->ffmpeg($fh);
-};
+    return $media_url;
+}
 
 __PACKAGE__->meta->make_immutable;
 

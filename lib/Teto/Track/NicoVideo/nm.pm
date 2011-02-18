@@ -11,7 +11,7 @@ override buildargs_from_url => sub {
 
 override play => sub {
     my $self = shift;
-    my $media_url = $self->get_media_url or return;
+    my $media_url = $self->media_url or return;
     my $flv = $self->download_temporary($media_url => '.flv');
     my $mp3 = $self->temporary_filename('.mp3');
     $self->run_command([ 'swfextract', $flv, '-m', '-o', $mp3 ]);
