@@ -41,7 +41,7 @@ sub _build_media_url {
 
 sub extract_title_from_res {
     my ($self, $res) = @_;
-    my ($title) = $res->decoded_content =~ m#<h1><em>\s*(.+)\s*</em></h1>#;
+    my ($title) = $res->decoded_content =~ m#<h1[^>]*><em>\s*(.+)\s*</em></h1>#;
     return $title;
 }
 
