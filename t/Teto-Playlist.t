@@ -1,6 +1,7 @@
 use strict;
 use Test::More tests => 3;
 use Test::Deep;
+use Teto::Track;
 use Coro;
 
 use_ok 'Teto::Playlist';
@@ -10,7 +11,7 @@ subtest basic => sub {
 
     cmp_deeply $playlist->playlist, [];
 
-    $playlist->add_url('http://www.nicovideo.jp/watch/sm12441199');
+    $playlist->add_track(Teto::Track->from_url('http://www.nicovideo.jp/watch/sm12441199'));
     cmp_deeply $playlist->playlist, [ isa('Teto::Track') & methods(video_id => 'sm12441199') ];
     is $playlist->index, -1;
 
@@ -36,7 +37,7 @@ subtest signal => sub {
     ok !$track,  'track not got';
 
     push @coros, async {
-        $playlist->add_url('http://www.nicovideo.jp/watch/sm9');
+        $playlist->add_track(Teto::Track->from_url('http://www.nicovideo.jp/watch/sm9'));
     };
 
     $_->join for @coros;
