@@ -23,6 +23,11 @@ has '+user_agent' => (
 
 our $user_agent;
 
+sub log_extra_info {
+    my $self = shift;
+    return $self->video_id;
+}
+
 sub _build_nicovideo_client {
     my $self = shift;
 

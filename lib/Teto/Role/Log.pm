@@ -6,10 +6,11 @@ sub log_extra_info { '' }
 
 sub log {
     my ($self, $level, @args) = @_;
-    my ($pkg, $filename) = caller;
+    my $pkg = ref $self;
     $pkg =~ s/^Teto:://;
-    $pkg = $filename if $filename !~ /\.pm$/;
-    $pkg .= $self->log_extra_info;
+    if (my $extra = $self->log_extra_info) {
+        $pkg .= " <$extra>";
+    }
     my $message = sprintf "[%s] %-6s %s - %s\n",
         scalar(localtime), uc $level, $pkg,
         join ' ', map {

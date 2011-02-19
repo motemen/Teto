@@ -66,7 +66,7 @@ no Mouse;
 
 sub log_extra_info {
     my $self = shift;
-    return ' <' . $self->url->path . '>';
+    return $self->url->path;
 }
 
 sub buildargs_from_url { die 'override' }
