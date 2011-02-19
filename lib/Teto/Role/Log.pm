@@ -2,11 +2,14 @@ package Teto::Role::Log;
 use Mouse::Role;
 use Data::Dumper;
 
+sub log_extra_info { '' }
+
 sub log {
     my ($self, $level, @args) = @_;
     my ($pkg, $filename) = caller;
     $pkg =~ s/^Teto:://;
     $pkg = $filename if $filename !~ /\.pm$/;
+    $pkg .= $self->log_extra_info;
     my $message = sprintf "[%s] %-6s %s - %s\n",
         scalar(localtime), uc $level, $pkg,
         join ' ', map {
