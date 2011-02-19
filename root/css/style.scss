@@ -1,3 +1,63 @@
+h1 {
+  font: {
+    family: "Lucida Grande", sans-serif;
+  }
+}
+
+section.feed {
+  border: 1px solid #BBB;
+  padding: 0.5em;
+  margin-bottom: 1em;
+  h1 {
+    font-weight: normal;
+  }
+}
+
+a {
+  color: #12F;
+}
+
 body {
-    font-family: Verdana, sans-serif;
+  font: {
+    family: Verdana, sans-serif;
+  }
+}
+
+li.track {
+  font-size: 90%;
+  padding: 0.3em;
+  padding-left: 24px;
+  clear: both;
+  min-height: 50px;
+
+  &.even {
+    background-color: #FFF;
+    &:hover {
+      background-color: #EEF;
+    }
+  }
+  &.odd {
+    background-color: #F0F0F0;
+    &:hover {
+      background-color: #EEF;
+    }
+  }
+  &.playing {
+    background: {
+      image: url(/image/speaker-orange.gif);
+      repeat: no-repeat;
+      position: 0.3em center;
+    }
+  }
+
+  .title {
+    // display: block;
+  }
+
+  img {
+    float: right;
+    max-width:  60px;
+    max-height: 45px;
+    margin: 0.2em;
+  }
 }

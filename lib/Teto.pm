@@ -29,6 +29,12 @@ has feeder => (
     lazy_build => 1,
 );
 
+has server => (
+    is  => 'rw',
+    isa => 'Teto::Server',
+    lazy_build => 1,
+);
+
 sub _build_buffer {
     my $self = shift;
     require Teto::Buffer;
@@ -45,6 +51,12 @@ sub _build_feeder {
     my $self = shift;
     require Teto::Feeder;
     return Teto::Feeder->new(playlist => $self->playlist);
+}
+
+sub _build_server {
+    my $self = shift;
+    require Teto::Server;
+    return Teto::Server->new;
 }
 
 __PACKAGE__->meta->make_immutable;

@@ -2,8 +2,6 @@ use strict;
 use warnings;
 use lib 'lib';
 use Teto;
-use Teto::Role::Log;
-use Teto::Server;
 use Coro;
 use Coro::LWP;
 use Coro::Debug;
@@ -35,8 +33,8 @@ $runner->parse_options(@ARGV);
 $runner->set_options(
     server_ready => sub {
         my $args = shift;
-        Teto::Role::Log->log(notice => "Streaming at http://$args->{host}:$args->{port}/stream");
-        Teto::Role::Log->log(debug  => "Connect to debug coro by 'socat readline teto.debug.sock'");
+        Teto->server->log(notice => "Streaming at http://$args->{host}:$args->{port}/stream");
+        Teto->server->log(debug  => "Connect to debug coro by 'socat readline teto.debug.sock'");
     }
 );
 
@@ -50,7 +48,10 @@ my $url_map = builder {
         enable 'File::Sass', syntax => 'scss';
         Plack::App::File->new(root => './root/css');
     };
-    mount '/' => Teto::Server->new->as_psgi;
+    mount '/image' => builder {
+        Plack::App::File->new(root => './root/image');
+    };
+    mount '/' => Teto->server->as_psgi;
 };
 
 $runner->run($url_map->to_app);

@@ -12,7 +12,7 @@
     <h1><a href="/">teto</a><a href="/stream" class="stream-link">stream</a></h1>
 
     <div class="playlist">
-      <ul>
+      <ol>
 ? for (0 .. $#{ Teto->playlist->playlist }) {
 ?   my $track = Teto->playlist->playlist->[$_];
         <li class="track <?= $_ % 2 ? 'odd' : 'even' ?>">
@@ -20,7 +20,7 @@
           <a class="url" href="<?= $track->url ?>"><?= $track->url ?></a>
         </li>
 ? }
-      </ul>
+      </ol>
     </div>
 
     </div>
