@@ -42,10 +42,9 @@ __PACKAGE__->meta->make_immutable;
 
 no Mouse;
 
-sub add_url {
-    my ($self, $url) = @_;
-    my $track = Teto::Track->from_url($url, buffer => $self->buffer) or return undef;
-    $self->log(info => "playlist added: $url");
+sub add_track {
+    my ($self, $track) = @_;
+    $self->log(info => "track added: $track");
     $self->push_playlist($track);
     $self->waiting_track_signal->broadcast;
     return $track;

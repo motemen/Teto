@@ -23,10 +23,10 @@ has playlist => (
     lazy_build => 1,
 );
 
-has feeder => (
+has feeders => (
     is  => 'rw',
-    isa => 'Teto::Feeder',
-    lazy_build => 1,
+    isa => 'HashRef[Teto::Feeder]',
+    default => sub { +{} },
 );
 
 has server => (
@@ -47,16 +47,20 @@ sub _build_playlist {
     return Teto::Playlist->new(buffer => $self->buffer);
 }
 
-sub _build_feeder {
-    my $self = shift;
-    require Teto::Feeder;
-    return Teto::Feeder->new(playlist => $self->playlist);
-}
-
 sub _build_server {
     my $self = shift;
     require Teto::Server;
     return Teto::Server->new;
+}
+
+sub feed_url {
+    my ($self, $url) = @_;
+    require Teto::Feeder;
+    $self->feeders->{$url} ||= do {
+        my $feeder = Teto::Feeder->new(url => $url, playlist => $self->playlist);
+        $feeder->feed;
+        $feeder;
+    };
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -66,6 +70,11 @@ package Teto;
 for my $method (Teto::Context->meta->get_attribute_list) {
     no strict 'refs';
     *$method = sub { shift->context->$method };
+}
+
+sub feed_url {
+    my $self = shift;
+    $self->context->feed_url(@_);
 }
 
 1;

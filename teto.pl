@@ -16,7 +16,7 @@ async {
         my $line = <STDIN>;
         next unless defined $line;
         chomp $line;
-        Teto->feeder->feed_by_url($line);
+        Teto->feed_url($line);
     }
 };
 
@@ -39,9 +39,10 @@ $runner->set_options(
 );
 
 async {
-    Teto->feeder->feed_by_url($_) for @{ $runner->{argv} };
+    Teto->feed_url($_) for @{ $runner->{argv} };
 };
 
+my $w; $w = AE::timer 0, 1, sub { require Module::Reload; Module::Reload->check };
 
 my $url_map = builder {
     mount '/css' => builder {
