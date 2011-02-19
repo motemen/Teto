@@ -21,6 +21,8 @@ has '+user_agent' => (
     lazy_build => 1,
 );
 
+our $user_agent;
+
 sub _build_nicovideo_client {
     my $self = shift;
 
@@ -28,11 +30,12 @@ sub _build_nicovideo_client {
     return WWW::NicoVideo::Download->new(
         email    => $config->{username},
         password => $config->{password},
+        ( $user_agent ? ( user_agent => $user_agent ) : () ),
     );
 }
 
 sub _build_user_agent {
-    return shift->nicovideo_client->user_agent;
+    return $user_agent ||= shift->nicovideo_client->user_agent;
 }
 
 sub _build_media_url {
@@ -52,7 +55,7 @@ sub _build_media_url {
     my $media_url = eval { $self->nicovideo_client->prepare_download($self->video_id) };
     unless ($media_url) {
         $self->error('Could not get media' . ($@ ? ": $@" : ''));
-        $self->sleep(10);
+        $self->sleep($@ && $@ =~ /403/ ? 60 : 10);
         return;
     }
     $self->log(info => "media: $media_url");
