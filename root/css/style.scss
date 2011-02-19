@@ -1,3 +1,7 @@
+body {
+  padding: 0 10%;
+}
+
 h1 {
   font: {
     family: "Lucida Grande", sans-serif;
@@ -6,15 +10,28 @@ h1 {
 
 section.feed {
   border: 1px solid #BBB;
-  padding: 0.5em;
+  padding: 0 1em;
   margin-bottom: 1em;
   h1 {
     font-weight: normal;
+    img {
+      vertical-align: middle;
+      max-height: 36px;
+    }
+    a.url {
+      font-size: small;
+      text-decoration: none;
+      color: #999;
+    }
   }
 }
 
 a {
-  color: #12F;
+  $color: #12F;
+  color: $color;
+  &:hover {
+    color: lighten($color, 15%);
+  }
 }
 
 body {
@@ -31,22 +48,25 @@ li.track {
   min-height: 50px;
 
   &.even {
-    background-color: #FFF;
-    &:hover {
-      background-color: #EEF;
-    }
+    background-color: #FAFAFA;
   }
   &.odd {
-    background-color: #F0F0F0;
-    &:hover {
-      background-color: #EEF;
-    }
+    background-color: #FFF;
   }
   &.playing {
     background: {
       image: url(/image/speaker-orange.gif);
       repeat: no-repeat;
       position: 0.3em center;
+    }
+  }
+  &.load-more {
+    font-size: larger;
+    text-align: center;
+    list-style: none;
+    &:hover {
+      background-color: #D8D9F4;
+      cursor: pointer;
     }
   }
 
