@@ -35,6 +35,10 @@ sub _build_media_url {
         $self->title($title);
     }
 
+    if (defined (my $image = $self->extract_image_from_res($res))) {
+        $self->image($image);
+    }
+
     my ($media_url) = $res->decoded_content =~ m<"streamUrl":"([^"]+)"> or return;
     return $media_url;
 }
@@ -43,6 +47,12 @@ sub extract_title_from_res {
     my ($self, $res) = @_;
     my ($title) = $res->decoded_content =~ m#<h1[^>]*><em>\s*(.+)\s*</em></h1>#;
     return $title;
+}
+
+sub extract_image_from_res {
+    my ($self, $res) = @_;
+    my ($image) = $res->decoded_content =~ m#<meta content="([^"]+)" property="og:image" />#;
+    return $image;
 }
 
 __PACKAGE__->meta->make_immutable;

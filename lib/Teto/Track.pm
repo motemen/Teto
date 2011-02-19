@@ -38,6 +38,11 @@ has title => (
     isa => 'Str',
 );
 
+has image => (
+    is  => 'rw',
+    isa => 'Maybe[Str]',
+);
+
 has buffer => (
     is  => 'rw',
     isa => 'Teto::Buffer',

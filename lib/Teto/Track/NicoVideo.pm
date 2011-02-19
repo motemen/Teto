@@ -17,6 +17,10 @@ has nicovideo_client => (
     lazy_build => 1,
 );
 
+has '+image' => (
+    lazy_build => 1,
+);
+
 has '+user_agent' => (
     lazy_build => 1,
 );
@@ -37,6 +41,12 @@ sub _build_nicovideo_client {
         password => $config->{password},
         ( $user_agent ? ( user_agent => $user_agent ) : () ),
     );
+}
+
+sub _build_image {
+    my $self = shift;
+    my ($id) = $self->video_id =~ /(\d+)$/;
+    return "http://tn-skr3.smilevideo.jp/smile?i=$id";
 }
 
 sub _build_user_agent {
