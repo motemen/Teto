@@ -59,6 +59,14 @@ sub _build_server {
     return Teto::Server->new;
 }
 
+sub _build_control {
+    my $self = shift;
+    require Teto::Control;
+    return Teto::Control->new(buffer => $self->buffer);
+}
+
+use Coro;
+
 sub feed_url {
     my ($self, $url) = @_;
     require Teto::Feeder;
