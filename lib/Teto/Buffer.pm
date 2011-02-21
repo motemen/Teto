@@ -12,6 +12,7 @@ has buffer => (
     handles => {
         append_buffer => 'append',
         buffer_length => 'length',
+        clear_buffer  => 'clear',
     },
 );
 
@@ -32,7 +33,7 @@ has low_signal => (
 has max_buffer_size => (
     is  => 'rw',
     isa => 'Int',
-    default => 16 * 1024 * 1024,
+    default => 8 * 1024 * 1024,
 );
 
 has min_buffer_size => (
