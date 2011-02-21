@@ -9,7 +9,7 @@ override buildargs_from_url => sub {
     return { video_id => $1 };
 };
 
-override play => sub {
+override _play => sub {
     my $self = shift;
     my $media_url = $self->media_url or return;
     my $fh = $self->url_to_fh($media_url);

@@ -58,7 +58,7 @@ sub _build_media_url {
 
     my $res = $self->user_agent->get($self->url);
     unless ($res->is_success) {
-        $self->error($res->message);
+        $self->error($self->url . ': ' . $res->code . ' ' . $res->message);
         $self->sleep(60) if $res->code == 403;
         return;
     }

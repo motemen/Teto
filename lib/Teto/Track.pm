@@ -9,6 +9,7 @@ use Coro;
 use Coro::LWP;
 use Coro::AIO;
 use Coro::Timer ();
+use Coro::Signal;
 use LWP::UserAgent;
 use HTTP::Request::Common;
 use Class::Load;
@@ -45,8 +46,13 @@ has image => (
 
 has buffer => (
     is  => 'rw',
-    isa => 'Teto::Buffer',
-    default => sub { require Teto; Teto->buffer },
+    isa => 'Str',
+    default => '',
+    traits  => [ 'String' ],
+    handles => {
+        append_buffer => 'append',
+        buffer_length => 'length',
+    }
 );
 
 has user_agent => (
@@ -60,9 +66,27 @@ has error => (
     isa => 'Str',
 );
 
+has playing => (
+    is  => 'rw',
+    isa => 'Bool',
+    default => 0,
+);
+
+has done => (
+    is  => 'rw',
+    isa => 'Bool',
+    default => 0,
+);
+
+has buffer_signal => (
+    is  => 'rw',
+    isa => 'Coro::Signal',
+    default => sub { Coro::Signal->new },
+);
+
 before error => sub {
     my $self = shift;
-    $self->log(error => @_);
+    $self->log(error => @_) if @_;
 };
 
 __PACKAGE__->meta->make_immutable;
@@ -71,14 +95,37 @@ no Mouse;
 
 sub log_extra_info {
     my $self = shift;
-    return $self->url->path;
+    return $self->url->path_query;
 }
 
-sub buildargs_from_url { die 'override' }
-sub play { die 'override' }
+sub buildargs_from_url { my $class = shift; die 'override' }
+sub _play { my $self = shift; die 'override' }
+
 sub prepare {
     my $self = shift;
     $self->media_url; # build
+}
+
+sub play {
+    my $self = shift;
+
+    if ($self->playing) {
+        $self->log(debug => "already playing");
+        return $self->error ? 0 : 1;
+    }
+
+    $self->log(info => 'play');
+    $self->playing(1);
+    $self->_play;
+
+    if ($self->error) {
+        $self->playing(0);
+        $self->done(1);
+        $self->buffer_signal->broadcast;
+        return 0;
+    }
+
+    return 1;
 }
 
 my @subclasses;
@@ -92,7 +139,7 @@ sub subclasses {
             $pm =~ s/\.pm$// or return;
             $pm =~ s/\//::/g;
             Class::Load::load_class($pm);
-            return unless $pm->meta->get_method('play');
+            return unless $pm->meta->get_method('_play');
             push @subclasses, $pm;
         },
     );
@@ -117,7 +164,13 @@ sub from_url {
 
 sub write {
     my $self = shift;
-    $self->buffer->write(@_);
+    $self->append_buffer($_[0]);
+    $self->buffer_signal->broadcast;
+}
+
+sub buffer_read_fh {
+    my $self = shift;
+    open my $fh, '<', \$self->{buffer};
 }
 
 ### 以下は便利メソッド
@@ -181,6 +234,7 @@ sub ffmpeg {
         [ qw(ffmpeg -i), $filename, qw(-ab 192k -ar 44100 -acodec libmp3lame -ac 2 -f mp3 -) ],
         \%args,
     );
+    $self->done(1);
 }
 
 sub url_to_fh {
@@ -273,6 +327,7 @@ sub send_file_to_buffer {
         $self->write($buf);
     }
     aio_close $fh;
+    $self->done(1);
 }
 
 sub as_string {
