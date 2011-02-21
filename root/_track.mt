@@ -10,4 +10,5 @@
 ?           }
             <br>
             <a class="url" href="<?= $track->url ?>"><?= $track->url ?></a>
+            <span class="meta"><?= $track->buffer_length ?> bytes</span>
           </li>
