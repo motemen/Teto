@@ -17,9 +17,9 @@ has buffer => (
     lazy_build => 1,
 );
 
-has playlist => (
+has queue => (
     is  => 'rw',
-    isa => 'Teto::Playlist',
+    isa => 'Teto::Queue',
     lazy_build => 1,
 );
 
@@ -35,16 +35,22 @@ has server => (
     lazy_build => 1,
 );
 
+has control => (
+    is  => 'rw',
+    isa => 'Teto::Control',
+    lazy_build => 1,
+);
+
 sub _build_buffer {
     my $self = shift;
     require Teto::Buffer;
     return Teto::Buffer->new;
 }
 
-sub _build_playlist {
+sub _build_queue {
     my $self = shift;
-    require Teto::Playlist;
-    return Teto::Playlist->new(buffer => $self->buffer);
+    require Teto::Queue;
+    return Teto::Queue->new(buffer => $self->buffer);
 }
 
 sub _build_server {
