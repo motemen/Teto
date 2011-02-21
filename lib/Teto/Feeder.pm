@@ -1,6 +1,7 @@
 package Teto::Feeder;
 use Mouse;
 use MouseX::Types::URI;
+use AnyEvent;
 use WWW::Mechanize;
 use WWW::Mechanize::AutoPager;
 use Coro::LWP;
@@ -38,12 +39,6 @@ has tracks => (
     },
 );
 
-has playlist => (
-    is  => 'rw',
-    isa => 'Teto::Playlist',
-    default => sub { require Teto; Teto->playlist },
-);
-
 has user_agent => (
     is  => 'rw',
     isa => 'LWP::UserAgent',
@@ -53,7 +48,13 @@ has user_agent => (
 has autopagerize => (
     is  => 'rw',
     isa => 'Bool',
-    default => 1,
+    default => 0,
+);
+
+has cv => (
+    is  => 'rw',
+    isa => 'AnyEvent::CondVar',
+    default => sub { AE::cv },
 );
 
 sub _build_user_agent {
@@ -78,9 +79,11 @@ sub feed {
         return 1;
     }
 
-    my $res = $self->user_agent->get($url);
-    if ($res->is_error) {
-        $self->log(error => "$url: " . $res->message);
+    $self->log(info => "fetching $url");
+
+    my $res = eval { $self->user_agent->get($url) };
+    if (!$res || $res->is_error) {
+        $self->log(error => "$url: " . ($res ? $res->code . ' ' . $res->message : $@));
         return;
     }
 
@@ -93,11 +96,12 @@ sub feed {
     return $found;
 }
 
+after feed => sub { $_[0]->cv->send };
+
 sub push_track_url {
     my ($self, $url) = @_;
     my $track = Teto::Track->from_url($url) or return;
     $self->push_track($track);
-    $self->playlist->add_track($track);
 }
 
 sub feed_by_res {

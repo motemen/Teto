@@ -63,8 +63,9 @@ sub feed_url {
     my ($self, $url) = @_;
     require Teto::Feeder;
     $self->feeders->{$url} ||= do {
-        my $feeder = Teto::Feeder->new(url => $url, playlist => $self->playlist);
-        $feeder->feed;
+        my $feeder = Teto::Feeder->new(url => $url);
+        $self->control->set_feeder($feeder);
+        async { $feeder->feed };
         $feeder;
     };
 }

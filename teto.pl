@@ -16,15 +16,16 @@ async {
         my $line = <STDIN>;
         next unless defined $line;
         chomp $line;
+        next unless $line;
         Teto->feed_url($line);
     }
 };
 
-async {
-    $Coro::current->desc('player coro');
-    # Coro::Debug::trace;
-    Teto->playlist->play_next while 1;
-};
+# async {
+#     $Coro::current->desc('queue coro');
+#     Coro::Debug::trace;
+#     Teto->queue->play_next while 1;
+# };
 
 my $debug = Coro::Debug->new_unix_server('teto.debug.sock');
 
@@ -38,9 +39,7 @@ $runner->set_options(
     }
 );
 
-async {
-    Teto->feed_url($_) for @{ $runner->{argv} };
-};
+Teto->feed_url($_) for @{ $runner->{argv} };
 
 my $w; $w = AE::timer 0, 1, sub { require Module::Reload; Module::Reload->check };
 
