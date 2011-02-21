@@ -11,6 +11,14 @@ has video_id => (
     required => 1,
 );
 
+has '+image' => (
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        return "http://i.ytimg.com/vi/$self->{video_id}/0.jpg";
+    },
+);
+
 has youtube_client => (
     is  => 'rw',
     isa => 'WWW::YouTube::Download',

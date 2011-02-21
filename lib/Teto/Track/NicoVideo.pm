@@ -1,5 +1,7 @@
 package Teto::Track::NicoVideo;
 use Mouse;
+use AnyEvent;
+use Coro::Semaphore;
 use WWW::NicoVideo::Download;
 use Config::Pit;
 
@@ -18,12 +20,28 @@ has nicovideo_client => (
 );
 
 has '+image' => (
-    lazy_build => 1,
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        my ($id) = $self->video_id =~ /(\d+)$/;
+        return "http://tn-skr3.smilevideo.jp/smile?i=$id";
+    }
 );
 
 has '+user_agent' => (
     lazy_build => 1,
 );
+
+has 'semaphore' => (
+    is  => 'rw',
+    isa => 'Coro::Semaphore',
+    default => sub {
+        our $semaphore ||= Coro::Semaphore->new;
+    },
+);
+
+override prepare => sub {
+};
 
 our $user_agent;
 
@@ -43,20 +61,28 @@ sub _build_nicovideo_client {
     );
 }
 
-sub _build_image {
-    my $self = shift;
-    my ($id) = $self->video_id =~ /(\d+)$/;
-    return "http://tn-skr3.smilevideo.jp/smile?i=$id";
-}
-
 sub _build_user_agent {
-    return $user_agent ||= shift->nicovideo_client->user_agent;
+    $user_agent ||= shift->nicovideo_client->user_agent;
+    $user_agent->show_progress(1);
+    return $user_agent;
 }
 
 sub _build_media_url {
     my $self = shift;
 
+    if ($self->semaphore->count == 0) {
+        $self->log(info => 'semaphore locked; wait until unlocked');
+    }
+    $self->semaphore->down;
+
     my $res = $self->user_agent->get($self->url);
+
+    my $w; $w = AE::timer 30, 0, sub {
+        $self->log(debug => 'unlock semaphore');
+        $self->semaphore->up;
+        undef $w;
+    };
+
     unless ($res->is_success) {
         $self->error($self->url . ': ' . $res->code . ' ' . $res->message);
         $self->sleep(60) if $res->code == 403;
