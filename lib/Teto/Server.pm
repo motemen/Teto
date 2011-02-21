@@ -67,11 +67,15 @@ sub stream {
         async {
             $Coro::current->desc('streamer coro');
             my $writer = $respond->([ 200, [ 'Content-Type' => 'audio/mp3' ] ]);
-            my $bytes_sent = 0;
             $writer->{handle}->on_drain(unblock_sub {
-                my $bytes = Teto->buffer->read(8 * 1024);
+#               $self->log(debug => 'on_drain');
+                my $bytes = Teto->queue->read_buffer;
                 $writer->write($bytes);
-                $bytes_sent += length $bytes;
+#               $self->log(debug => 'sent', length $bytes, 'bytes');
+            });
+            $writer->{handle}->on_error(sub {
+                my ($handle, $fatal, $msg) = @_;
+                $self->log($fatal ? 'error' : 'warn', $msg);
             });
         };
     };
