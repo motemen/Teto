@@ -1,5 +1,6 @@
 package Teto::Queue;
 use Mouse;
+use Coro;
 use Coro::Signal;
 use Teto::Track;
 
@@ -53,8 +54,12 @@ sub next_track {
     $self->log(debug => 'next_track');
     $self->dequeue_track;
     my $track = $self->wait_current_track;
-    $self->log(info => "next_track: $track");
-    $_->prepare for $track, $self->succeeding_tracks;
+    $track->prepare;
+    $self->log(info => "next track: $track");
+    # Track::NicoVideo がブロックすることがあるので
+    async {
+        $_->prepare for $self->succeeding_tracks;
+    };
     return $track;
 }
 
