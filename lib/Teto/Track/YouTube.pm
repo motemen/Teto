@@ -1,6 +1,7 @@
 package Teto::Track::YouTube;
 use Mouse;
 use WWW::YouTube::Download;
+use Encode;
 
 extends 'Teto::Track';
 
@@ -22,9 +23,12 @@ override buildargs_from_url => sub {
     return { video_id => $1 };
 };
 
-override play => sub {
+override _play => sub {
     my $self = shift;
-    my $media_url = $self->media_url or return;
+    my $media_url = $self->media_url or do {
+        $self->error('no media url');
+        return;
+    };
     my $fh = $self->url_to_fh($media_url);
     $self->ffmpeg($fh);
 };
@@ -33,8 +37,9 @@ sub _build_media_url {
     my $self = shift;
     my $media_url = eval { $self->youtube_client->get_video_url($self->video_id) } or do {
         $self->error("get_video_url failed: $@");
-        return;
+        return undef;
     };
+    $self->title(Encode::decode_utf8 $self->youtube_client->get_title($self->video_id));
     return $media_url;
 }
 

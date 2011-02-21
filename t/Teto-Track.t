@@ -1,16 +1,10 @@
 use strict;
 use Test::More tests => 8;
 use Test::Deep;
-use Teto::Buffer;
 
 use_ok 'Teto::Track';
 
 my $track = new_ok 'Teto::Track', [ url => '' ];
-
-my $buf = Teto::Buffer->new;
-$track->buffer($buf);
-$track->write('xxx');
-is $buf->buffer, 'xxx';
 
 cmp_set [ Teto::Track->subclasses ], [
     qw(Teto::Track::NicoVideo::sm Teto::Track::NicoVideo::nm Teto::Track::YouTube Teto::Track::SoundCloud)
@@ -35,3 +29,22 @@ subtest 'none handles' => sub {
     my $track = Teto::Track->from_url('http://www.example.com/');
     ok not $track;
 };
+
+subtest play => sub {
+    my $track = new_ok 't::Track', [ url => '' ];
+    $track->play;
+    $track->play;
+    is $track->{play_count}, 1;
+};
+
+BEGIN {
+    package t::Track;
+    use Mouse;
+
+    extends 'Teto::Track';
+
+    override _play => sub {
+        my $self = shift;
+        $self->{play_count}++;
+    };
+}
