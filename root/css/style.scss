@@ -2,18 +2,20 @@ body {
   padding: 0 10%;
 }
 
-h1 {
+h1, h2 {
   font: {
     family: "Lucida Grande", sans-serif;
   }
 }
 
-section.feed {
+section {
   border: 1px solid #BBB;
   padding: 0 1em;
   margin-bottom: 1em;
-  h1 {
+  h1, h2 {
     font-weight: normal;
+  }
+  h1 {
     img {
       vertical-align: middle;
       max-height: 36px;
@@ -70,10 +72,13 @@ li.track {
     }
   }
 
-  .title {
-    // display: block;
+  .title.not-loaded {
+    color: #666;
   }
-
+  a.url {
+    text-decoration: none;
+    color: #999;
+  }
   img {
     float: right;
     max-width:  60px;
