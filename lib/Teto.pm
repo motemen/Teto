@@ -8,6 +8,11 @@ sub context {
     our $Context ||= Teto::Context->new;
 }
 
+sub reload {
+    require Module::Reload;
+    Module::Reload->check;
+}
+
 package Teto::Context;
 use Mouse;
 

@@ -3,7 +3,7 @@ use warnings;
 use lib 'lib';
 use Teto;
 use Coro;
-use Coro::LWP;
+use Coro::LWP; # load as fast as possible
 use Coro::Debug;
 use Plack::Runner;
 use Plack::Builder;
@@ -21,14 +21,8 @@ async {
     }
 };
 
-# async {
-#     $Coro::current->desc('queue coro');
-#     Coro::Debug::trace;
-#     Teto->queue->play_next while 1;
-# };
-
-my $debug = Coro::Debug->new_unix_server('teto.debug.sock');
-
+my $app    = Teto->server->as_psgi;
+my $debug  = Coro::Debug->new_unix_server('teto.debug.sock');
 my $runner = Plack::Runner->new(server => 'Twiggy', env => 'production');
 $runner->parse_options(@ARGV);
 $runner->set_options(
@@ -41,8 +35,6 @@ $runner->set_options(
 
 Teto->feed_url($_) for @{ $runner->{argv} };
 
-my $w; $w = AE::timer 0, 1, sub { require Module::Reload; Module::Reload->check };
-
 my $url_map = builder {
     mount '/css' => builder {
         enable 'File::Sass', syntax => 'scss';
@@ -51,7 +43,7 @@ my $url_map = builder {
     mount '/image' => builder {
         Plack::App::File->new(root => './root/image');
     };
-    mount '/' => Teto->server->as_psgi;
+    mount '/' => $app;
 };
 
 $runner->run($url_map->to_app);
