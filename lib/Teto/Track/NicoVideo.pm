@@ -41,10 +41,28 @@ has 'semaphore' => (
     },
 );
 
-override prepare => sub {
-};
+our @RequestQueue;
+our $UserAgent;
 
-our $user_agent;
+sub wait_in_queue {
+    my $self = shift;
+    push @RequestQueue, $Coro::current;
+
+    if (@RequestQueue > 1) {
+        $self->log(info => 'another track is doing request; wait in queue');
+        $self->log(debug => "queue: @RequestQueue");
+        schedule;
+    }
+}
+
+sub leave_from_queue {
+    my $self = shift;
+    shift @RequestQueue; # XXX must be self
+    $self->log(debug => 'release queue');
+    if (my $coro = $RequestQueue[0]) {
+        $coro->cede_to;
+    }
+}
 
 sub log_extra_info {
     my $self = shift;
@@ -58,31 +76,22 @@ sub _build_nicovideo_client {
     return WWW::NicoVideo::Download->new(
         email    => $config->{username},
         password => $config->{password},
-        ( $user_agent ? ( user_agent => $user_agent ) : () ),
+        ( $UserAgent ? ( user_agent => $UserAgent ) : () ),
     );
 }
 
 sub _build_user_agent {
-    $user_agent ||= shift->nicovideo_client->user_agent;
-    # $user_agent->show_progress(1);
-    return $user_agent;
+    return $UserAgent ||= shift->nicovideo_client->user_agent;
 }
 
 sub _build_media_url {
     my $self = shift;
 
-    if ($self->semaphore->count == 0) {
-        $self->log(info => 'semaphore locked; wait until unlocked');
-    }
-    $self->semaphore->down;
+    $self->log_coro('_build_media_url');
+
+    $self->wait_in_queue;
 
     my $res = $self->user_agent->get($self->url);
-
-    my $w; $w = AE::timer 30, 0, sub {
-        $self->log(debug => 'unlock semaphore');
-        $self->semaphore->up;
-        undef $w;
-    };
 
     unless ($res->is_success) {
         $self->error($self->url . ': ' . $res->code . ' ' . $res->message);
@@ -101,6 +110,12 @@ sub _build_media_url {
         return;
     }
     $self->log(info => "media: $media_url");
+
+    # release after 60 secs
+    my $w; $w = AE::timer 60, 0, sub {
+        $self->leave_from_queue;
+        undef $w;
+    };
 
     return $media_url;
 }
