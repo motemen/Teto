@@ -122,7 +122,11 @@ sub open_fh {
         $self->next_track;
         return $self->open_fh;
     };
-    open $self->{fh}, '<', \$track->{buffer} or do {
+    # preload
+    async {
+        $_->play for $self->succeeding_tracks;
+    };
+    open $self->{fh}, '<', $track->buffer_ref or do {
         $self->log(error => $!);
         return undef;
     };
@@ -133,36 +137,5 @@ sub close_fh {
     close $self->fh or $self->log(warn => $!);
     $self->clear_fh;
 }
-
-=cut
-
-sub play_next {
-    my $self = shift;
-    $self->log(debug => 'play_next');
-    $self->buffer->wait_until_writable;
-    my $track = $self->next_track;
-    $_->prepare for $track, $self->succeeding_tracks;
-    $self->log(notice => "play: $track");
-    $track->play;
-    $self->write_track($track);
-}
-
-sub write_track {
-    my ($self, $track) = @_;
-
-    open my $fh, '<', \$track->{buffer} or die $!;
-    while (1) {
-        my $bytes_left = length($track->buffer) - tell($fh);
-        if ($bytes_left == 0) {
-            last if $track->done;
-            Coro::Timer::sleep 1; # XXX
-        }
-        read $fh, my ($buf), $bytes_left;
-        $self->buffer->write($buf);
-    }
-    close $fh;
-}
-
-=cut
 
 1;
