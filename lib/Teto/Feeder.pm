@@ -180,6 +180,15 @@ sub guess_image_from_res {
             return;
         }
     }
+
+    if ($res->base->host eq 'www.nicovideo.jp') {
+        # 左上
+        $self->image(sprintf 'http://res.nimg.jp/img/base/head/icon/nico/%03d.gif', int rand 960);
+        return;
+    }
+
+    use URI::Escape;
+    $self->image('http://cdn-ak.favicon.st-hatena.com/?url=' . uri_escape($res->base));
 }
 
 no Mouse;
