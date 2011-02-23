@@ -9,7 +9,6 @@ use Coro;
 use Coro::LWP;
 use Coro::AIO;
 use Coro::Timer ();
-use Coro::Signal;
 use LWP::UserAgent;
 use HTTP::Request::Common;
 use Class::Load;
@@ -46,7 +45,7 @@ has image => (
     isa => 'Maybe[Str]',
 );
 
-our $BufferCache = Cache::LRU->new(size => 10);
+our $BufferCache = Cache::LRU->new(size => 20);
 
 sub _buffer_key { refaddr $_[0] }
 
@@ -87,19 +86,6 @@ has error => (
     isa => 'Str',
 );
 
-# TODO status => ('', 'playing', 'done') にして play() 時に not has_buffer なら で普通 に戻す
-has playing => (
-    is  => 'rw',
-    isa => 'Bool',
-    default => 0,
-);
-
-has done => (
-    is  => 'rw',
-    isa => 'Bool',
-    default => 0,
-);
-
 has buffer_signal => (
     is  => 'rw',
     isa => 'Coro::Signal',
@@ -108,8 +94,42 @@ has buffer_signal => (
 
 before error => sub {
     my $self = shift;
-    $self->log(error => @_) if @_;
+    if (@_) {
+        $self->log(error => @_);
+        $self->done;
+    }
 };
+
+use constant {
+    TRACK_STATUS_STANDBY => 'standby',
+    TRACK_STATUS_PLAYING => 'playing',
+    TRACK_STATUS_DONE    => 'done',
+};
+
+has status => (
+    is  => 'rw',
+    isa => 'Str',
+    default => 'standby',
+);
+
+sub is_playing {
+    my $self = shift;
+    return 0 unless $self->status eq TRACK_STATUS_PLAYING;
+    return 0 unless $self->has_buffer;
+    return 1;
+}
+
+sub is_done {
+    my $self = shift;
+    return 0 unless $self->status eq TRACK_STATUS_DONE;
+    return 0 unless $self->has_buffer;
+    return 1;
+}
+
+sub done {
+    my $self = shift;
+    $self->status(TRACK_STATUS_DONE);
+}
 
 __PACKAGE__->meta->make_immutable;
 
@@ -125,24 +145,28 @@ sub log_extra_info {
 
 sub prepare {
     my $self = shift;
+    $self->log(debug => 'prepare');
     $self->media_url; # build
 }
 
 sub play {
     my $self = shift;
 
-    if ($self->playing) {
-        $self->log(debug => "already playing");
+    if ($self->is_playing) {
+        $self->log(debug => 'already playing');
+        return $self->error ? 0 : 1;
+    } elsif ($self->is_done) {
+        $self->log(debug => 'already done');
         return $self->error ? 0 : 1;
     }
 
-    $self->log(info => 'play');
-    $self->playing(1);
+    $self->log(info => 'start playing');
+    $self->status(TRACK_STATUS_PLAYING);
+    $self->buffer; # initialize
     $self->_play;
 
     if ($self->error) {
-        $self->playing(0);
-        $self->done(1);
+        $self->done;
         $self->buffer_signal->broadcast;
         return 0;
     }
@@ -257,7 +281,7 @@ sub ffmpeg {
         [ qw(ffmpeg -i), $filename, qw(-ab 192k -ar 44100 -acodec libmp3lame -ac 2 -f mp3 -) ],
         \%args,
     );
-    $self->done(1);
+    $self->done;
     $self->buffer_signal->broadcast;
 }
 
@@ -273,7 +297,6 @@ sub url_to_fh {
              my ($handle, $fatal, $msg) = @_;
              $self->error("AnyEvent::Handle: $msg");
              $handle->destroy;
-             # TODO 即座に write を終える
         }
     );
 
@@ -346,12 +369,15 @@ sub download_temporary {
 
 sub send_file_to_buffer {
     my ($self, $file) = @_;
-    my $fh = ref $file ? $file : aio_open $file, IO::AIO::O_RDONLY, 0 or die "aio_open $file: $!";
+    my $fh = ref $file ? $file : aio_open $file, IO::AIO::O_RDONLY, 0 or do {
+        $self->error("aio_open $file: $!");
+        return;
+    };
     while (aio_read $fh, undef, 1024 * 1024, my $buf = '', 0) {
         $self->write($buf);
     }
     aio_close $fh;
-    $self->done(1);
+    $self->done;
     $self->buffer_signal->broadcast;
 }
 

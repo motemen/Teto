@@ -93,6 +93,15 @@ li.track {
     color: #999;
     font-size: 90%;
   }
+  span.error {
+    color: #F88;
+    font-size: smaller;
+    border: 1px solid #FCC;
+    padding: 2px 4px;
+    &:before {
+      content: "error: ";
+    }
+  }
 }
 
 #select-feeder {

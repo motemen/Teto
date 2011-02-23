@@ -100,7 +100,7 @@ sub read_buffer {
 
     read $self->fh, my ($buf), $bytes_to_read;
 
-    if ($track->done) {
+    if ($track->is_done) {
         $self->close_fh;
         $self->next_track;
         return $buf || $self->read_buffer;

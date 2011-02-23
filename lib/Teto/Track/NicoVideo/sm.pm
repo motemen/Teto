@@ -16,6 +16,13 @@ override _play => sub {
     $self->ffmpeg($fh);
 };
 
+after done => sub {
+    my $self = shift;
+    if (my $e = $self->error) {
+        $self->sleep($e =~ /403/ ? 30 : 10);
+    }
+};
+
 __PACKAGE__->meta->make_immutable;
 
 no Mouse;

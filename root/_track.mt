@@ -13,5 +13,8 @@
     <br>
     <a class="url" href="<?= $track->url ?>"><?= $track->url ?></a>
     <span class="meta"><?= $track->has_buffer ? $track->buffer_length : '-' ?> bytes</span>
+?   if ($track->error) {
+      <span class="error"><?= $track->error ?></span>
+?   }
   </li>
 ? }

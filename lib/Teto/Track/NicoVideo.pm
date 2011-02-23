@@ -1,6 +1,7 @@
 package Teto::Track::NicoVideo;
 use Mouse;
 use AnyEvent;
+use Coro;
 use Coro::Semaphore;
 use WWW::NicoVideo::Download;
 use Config::Pit;
