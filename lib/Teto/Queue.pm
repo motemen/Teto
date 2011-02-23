@@ -4,6 +4,11 @@ use Coro;
 use Coro::Signal;
 use Teto::Track;
 
+# isa
+# - queue of tracks
+# does
+# - supply track byte sequence
+
 with 'Teto::Role::Log';
 
 has queue => (
@@ -53,13 +58,10 @@ sub next_track {
     my $self = shift;
     $self->log(debug => 'next_track');
     $self->dequeue_track;
+
     my $track = $self->wait_current_track;
     $track->prepare;
     $self->log(info => "next track: $track");
-    # Track::NicoVideo がブロックすることがあるので
-    async {
-        $_->prepare for $self->succeeding_tracks;
-    };
     return $track;
 }
 
@@ -78,7 +80,7 @@ sub wait_current_track {
 
 sub succeeding_tracks {
     my $self = shift;
-    my $n = shift || 3;
+    my $n = shift || 2;
     return grep { $_ } map { $self->queue->[$_] } (1 .. $n);
 }
 
@@ -104,7 +106,7 @@ sub read_buffer {
         return $buf || $self->read_buffer;
     }
 
-    if ($bytes_to_read == 0) {
+    if (length $buf == 0 || $bytes_to_read == 0) {
         $track->buffer_signal->wait;
         return $self->read_buffer;
     }
