@@ -63,7 +63,7 @@ sub _build_nicovideo_client {
 
 sub _build_user_agent {
     $user_agent ||= shift->nicovideo_client->user_agent;
-    $user_agent->show_progress(1);
+    # $user_agent->show_progress(1);
     return $user_agent;
 }
 

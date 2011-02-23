@@ -1,5 +1,5 @@
 use strict;
-use Test::More tests => 8;
+use Test::More tests => 9;
 use Test::Deep;
 
 use_ok 'Teto::Track';
@@ -35,6 +35,25 @@ subtest play => sub {
     $track->play;
     $track->play;
     is $track->{play_count}, 1;
+};
+
+subtest buffer_gc => sub {
+    $Teto::Track::BufferCache = Cache::LRU->new(size => 2);
+    my @tracks;
+    for (0 .. 9) {
+        my $track = Teto::Track->new(url => '');
+        $track->append_buffer("track $_");
+        is $track->buffer, "track $_";
+        push @tracks, $track;
+    }
+    foreach (0 .. 7) {
+        ok !$tracks[$_]->has_buffer;
+        # is $tracks[$_]->buffer, '' # XXX calling $track->buffer confuses underlying LRU cache
+    }
+    foreach (8 .. 9) {
+        ok $tracks[$_]->has_buffer;
+        # is $tracks[$_]->buffer, "track $_";
+    }
 };
 
 BEGIN {
