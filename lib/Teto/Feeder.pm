@@ -5,6 +5,7 @@ use AnyEvent;
 use WWW::Mechanize;
 use WWW::Mechanize::AutoPager;
 use Coro::LWP;
+use Coro::Signal;
 use Try::Tiny;
 use JSON::XS;
 use HTML::LinkExtor;
@@ -37,6 +38,7 @@ has tracks => (
     handles => {
         push_track => 'push',
     },
+    auto_deref => 1,
 );
 
 has user_agent => (
@@ -48,13 +50,13 @@ has user_agent => (
 has autopagerize => (
     is  => 'rw',
     isa => 'Bool',
-    default => 0,
+    default => 0, # TODO
 );
 
-has cv => (
+has signal => (
     is  => 'rw',
-    isa => 'AnyEvent::CondVar',
-    default => sub { AE::cv },
+    isa => 'Coro::Signal',
+    default => sub { Coro::Signal->new },
 );
 
 sub _build_user_agent {
@@ -96,7 +98,7 @@ sub feed {
     return $found;
 }
 
-after feed => sub { $_[0]->cv->send };
+after feed => sub { $_[0]->signal->broadcast };
 
 sub push_track_url {
     my ($self, $url) = @_;

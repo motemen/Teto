@@ -75,12 +75,16 @@ use Coro;
 sub feed_url {
     my ($self, $url) = @_;
     require Teto::Feeder;
-    $self->feeders->{$url} ||= do {
+    my $feeder = $self->feeders->{$url} ||= do {
         my $feeder = Teto::Feeder->new(url => $url);
-        $self->control->set_feeder($feeder);
         async { $feeder->feed };
         $feeder;
     };
+    unless ($self->control->feeder) {
+        $self->control->set_feeder($feeder);
+        $self->control->update;
+    }
+    return $feeder;
 }
 
 __PACKAGE__->meta->make_immutable;
