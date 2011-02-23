@@ -15,6 +15,8 @@ use HTTP::Request::Common;
 use Class::Load;
 use Path::Class;
 use File::Temp ();
+use Cache::LRU;
+use Scalar::Util qw(refaddr);
 
 use overload '""' => 'as_string', fallback => 1;
 
@@ -44,16 +46,35 @@ has image => (
     isa => 'Maybe[Str]',
 );
 
-has buffer => (
-    is  => 'rw',
-    isa => 'Str',
-    default => '',
-    traits  => [ 'String' ],
-    handles => {
-        append_buffer => 'append',
-        buffer_length => 'length',
-    }
-);
+our $BufferCache = Cache::LRU->new(size => 10);
+
+sub _buffer_key { refaddr $_[0] }
+
+sub buffer_ref {
+    my $self = shift;
+    return $BufferCache->get($self->_buffer_key) || $BufferCache->set($self->_buffer_key, \(my $s = ''));
+}
+
+sub buffer {
+    my $self = shift;
+    return ${ $self->buffer_ref };
+}
+
+sub append_buffer {
+    my ($self, $buf) = @_;
+    my $ref = $self->buffer_ref;
+    $$ref .= $buf;
+}
+
+sub buffer_length {
+    my $self = shift;
+    return length $self->buffer
+}
+
+sub has_buffer {
+    my $self = shift;
+    return !! $BufferCache->get($self->_buffer_key);
+}
 
 has user_agent => (
     is  => 'rw',
@@ -66,6 +87,7 @@ has error => (
     isa => 'Str',
 );
 
+# TODO status => ('', 'playing', 'done') にして play() 時に not has_buffer なら で普通 に戻す
 has playing => (
     is  => 'rw',
     isa => 'Bool',
@@ -93,13 +115,13 @@ __PACKAGE__->meta->make_immutable;
 
 no Mouse;
 
+sub buildargs_from_url { my $class = shift; die 'override' }
+sub _play { my $self = shift; die 'override' }
+
 sub log_extra_info {
     my $self = shift;
     return $self->url->path_query;
 }
-
-sub buildargs_from_url { my $class = shift; die 'override' }
-sub _play { my $self = shift; die 'override' }
 
 sub prepare {
     my $self = shift;
@@ -173,7 +195,7 @@ sub buffer_read_fh {
     open my $fh, '<', \$self->{buffer};
 }
 
-### 以下は便利メソッド
+### Utility methods
 
 sub recv_cv {
     my ($self, $cv) = @_;
@@ -215,6 +237,7 @@ sub run_command {
     return $exit_code;
 }
 
+# transcode file or fh to buffer
 sub ffmpeg {
     my ($self, $file_or_fh) = @_;
     my %args = (
@@ -235,6 +258,7 @@ sub ffmpeg {
         \%args,
     );
     $self->done(1);
+    $self->buffer_signal->broadcast;
 }
 
 sub url_to_fh {
@@ -328,6 +352,7 @@ sub send_file_to_buffer {
     }
     aio_close $fh;
     $self->done(1);
+    $self->buffer_signal->broadcast;
 }
 
 sub as_string {
