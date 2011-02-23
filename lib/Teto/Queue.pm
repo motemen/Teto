@@ -54,6 +54,7 @@ sub add_track {
     return $track;
 }
 
+# blocks
 sub next_track {
     my $self = shift;
     $self->log(debug => 'next_track');
@@ -102,7 +103,7 @@ sub read_buffer {
 
     if ($track->is_done) {
         $self->close_fh;
-        $self->next_track;
+        $self->dequeue_track; # $self->next_track;
         return $buf || $self->read_buffer;
     }
 
