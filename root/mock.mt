@@ -7,7 +7,6 @@
   <body>
     <div id="container">
 
-?= $_mt;
     <h1><a href="/">teto</a><a href="/stream" class="stream-link">stream</a></h1>
 
     <section class="feed">
