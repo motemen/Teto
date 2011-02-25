@@ -15,6 +15,7 @@ sub reload {
 
 package Teto::Context;
 use Mouse;
+use Coro;
 
 has buffer => (
     is  => 'rw',
@@ -70,12 +71,10 @@ sub _build_control {
     return Teto::Control->new(buffer => $self->buffer);
 }
 
-use Coro;
-
 sub feed_url {
     my ($self, $url) = @_;
     require Teto::Feeder;
-    my $feeder = $self->feeders->{$url} ||= do {
+    my $feeder = $self->feeders->{ Teto::Feeder->uri_canonical($url) } ||= do {
         my $feeder = Teto::Feeder->new(url => $url);
         async { $feeder->feed };
         $feeder;
