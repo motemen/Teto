@@ -24,12 +24,6 @@ has queue => (
     },
 );
 
-has buffer => (
-    is  => 'rw',
-    isa => 'Teto::Buffer',
-    default => sub { require Teto; Teto->buffer },
-);
-
 has fh => (
     is  => 'rw',
     isa => 'FileHandle',
@@ -85,10 +79,11 @@ sub succeeding_tracks {
     return grep { $_ } map { $self->queue->[$_] } (1 .. $n);
 }
 
+# XXX make blocking as least as possible
 sub read_buffer {
     my $self = shift;
 
-    my $track = $self->wait_current_track;
+    my $track = $self->wait_current_track; # blocks
 
     unless ($self->has_fh) {
         $self->open_fh or do {
@@ -103,7 +98,7 @@ sub read_buffer {
 
     if ($track->is_done) {
         $self->close_fh;
-        $self->dequeue_track; # $self->next_track;
+        $self->dequeue_track;
         return $buf || $self->read_buffer;
     }
 
@@ -118,14 +113,15 @@ sub read_buffer {
 sub open_fh {
     my $self = shift;
     my $track = $self->wait_current_track;
-    $track->play or do {
-        $self->log(warn => "playing $track failed");
-        $self->next_track;
-        return $self->open_fh;
-    };
+    # XXX blocks
+    # $track->play or do {
+    #     $self->log(warn => "playing $track failed");
+    #     $self->next_track;
+    #     return $self->open_fh;
+    # };
     # preload
     async {
-        $_->play for $self->succeeding_tracks;
+        $_->play for $track, $self->succeeding_tracks;
     };
     open $self->{fh}, '<', $track->buffer_ref or do {
         $self->log(error => $!);
