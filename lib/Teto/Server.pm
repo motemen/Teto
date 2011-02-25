@@ -6,6 +6,7 @@ use Text::MicroTemplate::File;
 use Encode;
 use Teto;
 use Plack::Request;
+use Data::Interleave::IcecastMetadata;
 
 with 'Teto::Role::Log';
 
@@ -67,21 +68,44 @@ sub stream {
 
     return sub {
         my $respond = shift;
+        my $icemeta = $env->{HTTP_ICY_METADATA} ? Data::Interleave::IcecastMetadata->new : undef;
         async {
             $Coro::current->desc('streamer coro');
-            my $writer = $respond->([ 200, [ 'Content-Type' => 'audio/mp3' ] ]);
-            $writer->{handle}->on_drain(unblock_sub {
-                $self->log(debug => 'on_drain');
-                Coro::Debug::trace();
-                my $bytes = Teto->queue->read_buffer;
-                $writer->write($bytes);
-                $self->log(debug => 'sent', length $bytes, 'bytes');
-            });
-            $writer->{handle}->on_error(sub {
-                my ($handle, $fatal, $msg) = @_;
-                $self->log($fatal ? 'error' : 'warn', $msg);
-                $writer->close;
-            });
+            my $writer = $respond->([
+                200, [
+                    'Content-Type' => 'audio/mp3',
+                    $icemeta ? ( 'Icy-Metaint'  => $icemeta->interval ) : (),
+                    'Icy-Name'       => 'tetocast',
+                    'Icy-Url'        => $env->{REQUEST_URI},
+                    'Ice-Audio-Info' => 'ice-samplerate=44100;ice-bitrate=192000;ice-channels=2',
+                ]
+            ]);
+            if (ref $writer eq 'Twiggy::Writer') {
+                $writer->{handle}->on_drain(unblock_sub {
+                    $self->log(debug => 'on_drain');
+                    Coro::Debug::trace();
+                    my $bytes = Teto->queue->read_buffer;
+                    if ($icemeta) {
+                        $icemeta->metadata->{title} = Teto->queue->current_track->title;
+                        $bytes = $icemeta->interleave($bytes);
+                    }
+                    $writer->write($bytes);
+                    $self->log(debug => 'sent', length $bytes, 'bytes');
+                });
+                $writer->{handle}->on_error(sub {
+                    my ($handle, $fatal, $msg) = @_;
+                    $self->log($fatal ? 'error' : 'warn', $msg);
+                    $writer->close;
+                });
+            } else {
+                while (1) {
+                    my $bytes = Teto->queue->read_buffer;
+                    while (length (my $chunk = substr $bytes, 0, 1024, '')) {
+                        $writer->write($bytes);
+                        cede;
+                    }
+                }
+            }
         };
     };
 }
