@@ -1,5 +1,5 @@
 use strict;
-use Test::More tests => 9;
+use Test::More tests => 10;
 use Test::Deep;
 
 use_ok 'Teto::Track';
@@ -35,6 +35,12 @@ subtest play => sub {
     $track->play;
     $track->play;
     is $track->{play_count}, 1;
+};
+
+subtest track_id => sub {
+    my $track = new_ok 't::Track', [ url => '' ];
+    ok $track->track_id;
+    is $track, Teto::Track->of_track_id($track->track_id);
 };
 
 subtest buffer_gc => sub {

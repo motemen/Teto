@@ -31,6 +31,7 @@ sub _build_router {
     $router->connect('/mock'       => { action => 'mock' });
     $router->connect('/api/feeder' => { action => 'api_feeder' });
     $router->connect('/api/track'  => { action => 'api_track' });
+    $router->connect('/api/skip'   => { action => 'api_skip' });
     $router->connect('/'           => { action => 'index' });
     return $router;
 }
@@ -138,6 +139,21 @@ sub api_track {
         }
         Teto->control->index($index);
         async { Teto->control->update };
+    }
+
+    return $self->render_html('_feeder.mt', Teto->control->feeder);
+}
+
+sub api_skip {
+    my ($self, $env) = @_;
+    my $req = Plack::Request->new($env);
+
+    if ($req->method eq 'POST') {
+        my $url = $req->param('url');
+        if ($url && (my $track = Teto::Track->of_url($url))) {
+            $track->done;
+            $track->buffer_signal->broadcast;
+        }
     }
 
     return $self->render_html('_feeder.mt', Teto->control->feeder);

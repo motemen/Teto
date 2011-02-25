@@ -15,7 +15,7 @@ use Class::Load;
 use Path::Class;
 use File::Temp ();
 use Cache::LRU;
-use Scalar::Util qw(refaddr);
+use Scalar::Util qw(refaddr weaken);
 
 use overload '""' => 'as_string', fallback => 1;
 
@@ -45,13 +45,18 @@ has image => (
     isa => 'Maybe[Str]',
 );
 
+### Buffers
+# buffers are stored in Cache::LRU as reference, so recently
+# unused buffers are automatically purged.
+# TODO currently playing track's buffer should not be purged
+
 our $BufferCache = Cache::LRU->new(size => 20);
 
-sub _buffer_key { refaddr $_[0] }
+sub track_id { refaddr $_[0] }
 
 sub buffer_ref {
     my $self = shift;
-    return $BufferCache->get($self->_buffer_key) || $BufferCache->set($self->_buffer_key, \(my $s = ''));
+    return $BufferCache->get($self->track_id) || $BufferCache->set($self->track_id, \(my $s = ''));
 }
 
 sub buffer {
@@ -72,7 +77,7 @@ sub buffer_length {
 
 sub has_buffer {
     my $self = shift;
-    return !! $BufferCache->get($self->_buffer_key);
+    return !! $BufferCache->get($self->track_id);
 }
 
 has user_agent => (
@@ -100,6 +105,8 @@ before error => sub {
     }
 };
 
+### Track status
+
 use constant {
     TRACK_STATUS_STANDBY => 'standby',
     TRACK_STATUS_PLAYING => 'playing',
@@ -111,6 +118,13 @@ has status => (
     isa => 'Str',
     default => 'standby',
 );
+
+sub is_standby {
+    my $self = shift;
+    return 1 if not $self->has_buffer;
+    return 1 if $self->status eq TRACK_STATUS_STANDBY;
+    return 0;
+}
 
 sub is_playing {
     my $self = shift;
@@ -129,11 +143,23 @@ sub is_done {
 sub done {
     my $self = shift;
     $self->status(TRACK_STATUS_DONE);
+    # TODO buffer_signal->broadcast?
 }
 
 __PACKAGE__->meta->make_immutable;
 
 no Mouse;
+
+our $UrlToInstance;
+our $IdToInstance;
+
+sub BUILD {
+    my $self = shift;
+    weaken($UrlToInstance->{ $self->url } = $self);
+    weaken($IdToInstance->{ $self->track_id } = $self);
+}
+
+sub is_system { 0 }
 
 sub buildargs_from_url { my $class = shift; die 'override' }
 sub _play { my $self = shift; die 'override' }
@@ -202,10 +228,24 @@ sub is_track_url {
 
 sub from_url {
     my ($class, $url, %args) = @_;
+    if (my $track = $class->of_url($url)) {
+        return $track;
+    }
     foreach my $impl ($class->subclasses) {
         my $args = $impl->buildargs_from_url($url) or next;
         return $impl->new(url => $url, %$args, %args);
     }
+}
+
+# does not create instance
+sub of_url {
+    my ($class, $url) = @_;
+    return $UrlToInstance->{$url};
+}
+
+sub of_track_id {
+    my ($class, $id) = @_;
+    return $IdToInstance->{ $id };
 }
 
 sub write {

@@ -4,7 +4,7 @@ use Mouse;
 extends 'Teto::Track';
 
 my $NON_USER = qr/^(tags|tracks|people|groups|tour|you|settings|pages|developers|premium|login|followings)$/;
-my $NON_MIX  = qr/^(following|groups|follow|tracks|comments|favorites)$/;
+my $NON_MIX  = qr/^(following|groups|follow|tracks|comments|favorites|sets)$/;
 
 override buildargs_from_url => sub {
     my ($class, $url) = @_;
