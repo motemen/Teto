@@ -1,7 +1,10 @@
 ? my ($track, $index) = @_;
 ? my $current_track_url = Teto->queue->current_track && Teto->queue->current_track->url || '';
 ? if ($track) {
-  <li class="track <?= $_ % 2 ? 'odd' : 'even' ?> <? if ($track->url eq $current_track_url) { ?>playing<? } ?>" data-track-index="<?= $index ?>" tabindex="0">
+  <li class="track <?= $_ % 2 ? 'odd' : 'even' ?> <? if ($track->url eq $current_track_url) { ?>playing<? } ?> <? if ($track->is_system) { ?>system<? } ?>" data-track-index="<?= $index ?>" tabindex="0">
+?   if ($track->is_system) {
+      <span class="title"><?= $track->title ?></span>
+?   } else {
 ?   if ($track->image) {
       <img src="<?= $track->image ?>">
 ?   }
@@ -13,8 +16,10 @@
     <br>
     <a class="url" href="<?= $track->url ?>"><?= $track->url ?></a>
     <span class="meta"><?= $track->has_buffer ? $track->buffer_length : '-' ?> bytes</span>
+    <span class="status"><?= $track->status ?></span>
 ?   if ($track->error) {
       <span class="error"><?= $track->error ?></span>
+?   }
 ?   }
   </li>
 ? }

@@ -7,7 +7,7 @@ use_ok 'Teto::Track';
 my $track = new_ok 'Teto::Track', [ url => '' ];
 
 cmp_set [ Teto::Track->subclasses ], [
-    qw(Teto::Track::NicoVideo::sm Teto::Track::NicoVideo::nm Teto::Track::YouTube Teto::Track::SoundCloud)
+    qw(Teto::Track::NicoVideo::sm Teto::Track::NicoVideo::nm Teto::Track::YouTube Teto::Track::SoundCloud Teto::Track::System)
 ], 'subclasses';
 
 subtest nicovideo_sm => sub {

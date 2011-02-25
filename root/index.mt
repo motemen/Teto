@@ -30,9 +30,11 @@ $(function () {
   $('#select-feeder li').live('click', function () {
     Teto.selectFeeder($(this).attr('data-feeder-url'));
   }).live('keypress', function (e) { if (e.keyCode == 13) $(this).click() });
-  $('#feeder li.track').live('click', function () {
-    Teto.selectTrack($(this).attr('data-track-index'));
-  }).live('keypress', function (e) { if (e.keyCode == 13) $(this).click() });
+  $('#feeder li.track').live('click', function (e) {
+    if (e.target == this) Teto.selectTrack($(this).attr('data-track-index'));
+  }).live('keypress', function (e) {
+    if (e.target == this && e.keyCode == 13) Teto.selectTrack($(this).attr('data-track-index'));
+    });
 });
     </script>
   </head>

@@ -56,8 +56,17 @@ li.track {
   &.odd {
     background-color: #FFF;
   }
-  &:hover {
-    background-color: #EEE;
+  &.system {
+    color: #999;
+    background-color: #EAEAFA;
+    min-height: 0;
+    list-style: none;
+    span.title {
+      font-size: 90%;
+    }
+  }
+  &:hover, &:focus {
+    background-color: #EFEFF5;
   }
   &.playing {
     background: {
@@ -93,6 +102,13 @@ li.track {
     color: #999;
     font-size: 90%;
   }
+  span.status {
+    color: #AAA;
+    font-size: smaller;
+    &:before {
+      content: "status: ";
+    }
+  }
   span.error {
     color: #F88;
     font-size: smaller;
@@ -118,11 +134,13 @@ li.track {
     margin-right: 2px;
     border: 1px solid #DDD;
     cursor: pointer;
+    opacity: 0.5;
     &.selected {
       border-color: #BBB;
+      opacity: 1;
     }
     &:hover, &:focus {
-      background-color: #EEE;
+      background-color: #EFEFF5;
     }
     .icon-container {
       display: inline-block;
