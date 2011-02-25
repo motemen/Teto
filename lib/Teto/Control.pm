@@ -61,10 +61,19 @@ sub feed_tracks_to_queue {
     $self->queue->add_track($_) for @tracks;
     $self->queue->current_track->play if $self->queue->current_track;
     $_->prepare for $self->queue->succeeding_tracks;
+    $self->_feed_tracks_to_queue_after($num_tracks);
+}
+
+sub _feed_tracks_to_queue_after {
+    my ($self, $after) = @_;
+    $self->log(debug => 'wait for feeder signal');
     $self->feeder->signal->wait(sub {
         my @tracks = $self->feeder->tracks;
-        splice @tracks, 0, $num_tracks;
+        $self->log(debug => "feeder signal: @tracks");
+        splice @tracks, 0, $after;
+        $self->log(debug => "-> @tracks");
         $self->queue->add_track($_) for @tracks;
+        $self->_feed_tracks_to_queue_after($after + @tracks);
         $self->queue->current_track->play if $self->queue->current_track;
     });
 }
