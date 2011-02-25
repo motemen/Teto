@@ -88,7 +88,7 @@ sub stream {
                     my $bytes = Teto->queue->read_buffer;
                     if ($icemeta) {
                         $icemeta->metadata->{title} = Teto->queue->current_track->title;
-                        $bytes = $icemeta->interleave($bytes);
+                        $bytes = $icemeta->interleave($bytes); # FIXME bytes and track may differ
                     }
                     $writer->write($bytes);
                     $self->log(debug => 'sent', length $bytes, 'bytes');
@@ -99,6 +99,7 @@ sub stream {
                     $writer->close;
                 });
             } else {
+                # XXX not sure this works
                 while (1) {
                     my $bytes = Teto->queue->read_buffer;
                     while (length (my $chunk = substr $bytes, 0, 1024, '')) {

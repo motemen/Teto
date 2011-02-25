@@ -2,6 +2,8 @@ package Teto::Buffer;
 use Mouse;
 use Coro::Signal;
 
+# XXX THIS MODULE IS NOT USED
+
 with 'Teto::Role::Log';
 
 has buffer => (

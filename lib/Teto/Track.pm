@@ -45,41 +45,6 @@ has image => (
     isa => 'Maybe[Str]',
 );
 
-### Buffers
-# buffers are stored in Cache::LRU as reference, so recently
-# unused buffers are automatically purged.
-# TODO currently playing track's buffer should not be purged
-
-our $BufferCache = Cache::LRU->new(size => 20);
-
-sub track_id { refaddr $_[0] }
-
-sub buffer_ref {
-    my $self = shift;
-    return $BufferCache->get($self->track_id) || $BufferCache->set($self->track_id, \(my $s = ''));
-}
-
-sub buffer {
-    my $self = shift;
-    return ${ $self->buffer_ref };
-}
-
-sub append_buffer {
-    my ($self, $buf) = @_;
-    my $ref = $self->buffer_ref;
-    $$ref .= $buf;
-}
-
-sub buffer_length {
-    my $self = shift;
-    return length $self->buffer
-}
-
-sub has_buffer {
-    my $self = shift;
-    return !! $BufferCache->get($self->track_id);
-}
-
 has user_agent => (
     is  => 'rw',
     isa => 'LWP::UserAgent',
@@ -150,6 +115,43 @@ __PACKAGE__->meta->make_immutable;
 
 no Mouse;
 
+### Buffers
+# buffers are stored in Cache::LRU as reference, so recently
+# unused buffers are automatically purged.
+# TODO FIXME currently playing track's buffer should not be purged!!!
+
+our $BufferCache = Cache::LRU->new(size => 20);
+
+sub track_id { refaddr $_[0] }
+
+sub buffer_ref {
+    my $self = shift;
+    return $BufferCache->get($self->track_id) || $BufferCache->set($self->track_id, \(my $s = ''));
+}
+
+sub buffer {
+    my $self = shift;
+    return ${ $self->buffer_ref };
+}
+
+sub append_buffer {
+    my ($self, $buf) = @_;
+    my $ref = $self->buffer_ref;
+    $$ref .= $buf;
+}
+
+sub buffer_length {
+    my $self = shift;
+    return length $self->buffer
+}
+
+sub has_buffer {
+    my $self = shift;
+    return !! $BufferCache->get($self->track_id);
+}
+
+### Instantiation
+
 our $UrlToInstance;
 our $IdToInstance;
 
@@ -159,10 +161,69 @@ sub BUILD {
     weaken($IdToInstance->{ $self->track_id } = $self);
 }
 
-sub is_system { 0 }
+my @subclasses;
+sub subclasses {
+    my $class = shift;
+    return @subclasses if @subclasses;
+    file(__FILE__)->dir->subdir('Track')->recurse(
+        callback => sub {
+            my $pm = shift;
+            $pm = $pm->relative(file(__FILE__)->parent->parent);
+            $pm =~ s/\.pm$// or return;
+            $pm =~ s/\//::/g;
+            Class::Load::load_class($pm);
+            return unless $pm->meta->get_method('_play');
+            push @subclasses, $pm;
+        },
+    );
+    return @subclasses;
+}
 
-sub buildargs_from_url { my $class = shift; die 'override' }
-sub _play { my $self = shift; die 'override' }
+# below does not create instance
+sub of_url {
+    my ($class, $url) = @_;
+    return $UrlToInstance->{$url};
+}
+
+sub of_track_id {
+    my ($class, $id) = @_;
+    return $IdToInstance->{ $id };
+}
+
+sub from_url {
+    my ($class, $url, %args) = @_;
+    if (my $track = $class->of_url($url)) {
+        return $track;
+    }
+    foreach my $impl ($class->subclasses) {
+        my $args = $impl->buildargs_from_url($url) or next;
+        return $impl->new(url => $url, %$args, %args);
+    }
+}
+
+### Subclass must implement these
+
+sub buildargs_from_url {
+    my $class = shift;
+    die 'override';
+}
+
+sub _play {
+    my $self = shift;
+    die 'override';
+}
+
+###
+
+sub is_track_url {
+    my ($class, $url) = @_;
+    foreach my $impl ($class->subclasses) {
+        $impl->buildargs_from_url($url) and return 1;
+    }
+    return 0;
+}
+
+sub is_system { 0 }
 
 sub log_extra_info {
     my $self = shift;
@@ -198,54 +259,6 @@ sub play {
     }
 
     return 1;
-}
-
-my @subclasses;
-sub subclasses {
-    my $class = shift;
-    return @subclasses if @subclasses;
-    file(__FILE__)->dir->subdir('Track')->recurse(
-        callback => sub {
-            my $pm = shift;
-            $pm = $pm->relative(file(__FILE__)->parent->parent);
-            $pm =~ s/\.pm$// or return;
-            $pm =~ s/\//::/g;
-            Class::Load::load_class($pm);
-            return unless $pm->meta->get_method('_play');
-            push @subclasses, $pm;
-        },
-    );
-    return @subclasses;
-}
-
-sub is_track_url {
-    my ($class, $url) = @_;
-    foreach my $impl ($class->subclasses) {
-        $impl->buildargs_from_url($url) and return 1;
-    }
-    return 0;
-}
-
-sub from_url {
-    my ($class, $url, %args) = @_;
-    if (my $track = $class->of_url($url)) {
-        return $track;
-    }
-    foreach my $impl ($class->subclasses) {
-        my $args = $impl->buildargs_from_url($url) or next;
-        return $impl->new(url => $url, %$args, %args);
-    }
-}
-
-# does not create instance
-sub of_url {
-    my ($class, $url) = @_;
-    return $UrlToInstance->{$url};
-}
-
-sub of_track_id {
-    my ($class, $id) = @_;
-    return $IdToInstance->{ $id };
 }
 
 sub write {
