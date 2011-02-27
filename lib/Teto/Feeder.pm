@@ -13,6 +13,8 @@ use URI;
 use Teto::Track;
 use Teto::Track::System;
 
+$WWW::Mechanize::HAS_ZLIB = 0; # XXX to detect $res->base correctly
+
 with 'Teto::Role::Log';
 
 has url => (
@@ -65,12 +67,13 @@ sub _build_user_agent {
     my $self = shift;
     return our $ua ||= do {
         my $ua = WWW::Mechanize->new;
-        $ua->show_progress(1);
-        try {
-            $ua->autopager->load_siteinfo;
-        } catch {
-            $self->log(warn => $_);
-        };
+        if ($self->autopagerize) {
+            try {
+                $ua->autopager->load_siteinfo;
+            } catch {
+                $self->log(warn => $_);
+            };
+        }
         $ua;
     }
 }
@@ -101,7 +104,7 @@ sub feed_url {
     my $found = $self->feed_by_res($res, $url) || 0;
     $self->log(info => "found $found track(s)");
 
-    if (my $next_link = $self->user_agent->next_link) {
+    if ($self->autopagerize && (my $next_link = $self->user_agent->next_link)) {
         $self->log(info => "found next page $next_link");
         $self->push_track(
             Teto::Track::System->new(title => "next page: $next_link", code => sub { $self->feed_next_url })
