@@ -6,13 +6,7 @@ with 'Teto::Role::Log';
 has queue => (
     is  => 'rw',
     isa => 'Teto::Queue',
-    default => sub { require Teto; Teto->queue },
-);
-
-has buffer => (
-    is  => 'rw',
-    isa => 'Teto::Buffer',
-    default => sub { require Teto; Teto->buffer },
+    default => sub { require Teto::Queue; Teto::Queue->new },
 );
 
 has feeder => (
@@ -35,6 +29,15 @@ __PACKAGE__->meta->make_immutable;
 
 no Mouse;
 
+sub BUILD {
+    my $self = shift;
+    require Teto;
+    if (my $feeder = [ values %{ Teto->feeders } ]->[0]) {
+        $self->set_feeder($feeder);
+        $self->update;
+    }
+}
+
 sub set_feeder {
     my ($self, $feeder) = @_;
     $self->feeder($feeder);
@@ -49,6 +52,11 @@ sub set_index {
 sub update {
     my $self = shift;
     $self->feed_tracks_to_queue;
+}
+
+sub reset {
+    my $self = shift;
+    $self->queue->icemeta->reset_position if $self->queue->icemeta;
 }
 
 sub feed_tracks_to_queue {

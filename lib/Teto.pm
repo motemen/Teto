@@ -23,12 +23,6 @@ has buffer => (
     lazy_build => 1,
 );
 
-has queue => (
-    is  => 'rw',
-    isa => 'Teto::Queue',
-    lazy_build => 1,
-);
-
 has feeders => (
     is  => 'rw',
     isa => 'HashRef[Teto::Feeder]',
@@ -41,22 +35,10 @@ has server => (
     lazy_build => 1,
 );
 
-has control => (
-    is  => 'rw',
-    isa => 'Teto::Control',
-    lazy_build => 1,
-);
-
 sub _build_buffer {
     my $self = shift;
     require Teto::Buffer;
     return Teto::Buffer->new;
-}
-
-sub _build_queue {
-    my $self = shift;
-    require Teto::Queue;
-    return Teto::Queue->new(buffer => $self->buffer);
 }
 
 sub _build_server {
@@ -74,16 +56,11 @@ sub _build_control {
 sub feed_url {
     my ($self, $url) = @_;
     require Teto::Feeder;
-    my $feeder = $self->feeders->{ Teto::Feeder->uri_canonical($url) } ||= do {
+    return $self->feeders->{ Teto::Feeder->uri_canonical($url) } ||= do {
         my $feeder = Teto::Feeder->new(url => $url);
         async { $feeder->feed };
         $feeder;
     };
-    unless ($self->control->feeder) {
-        $self->control->set_feeder($feeder);
-        $self->control->update;
-    }
-    return $feeder;
 }
 
 __PACKAGE__->meta->make_immutable;

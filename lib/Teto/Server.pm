@@ -1,11 +1,12 @@
 package Teto::Server;
 use Mouse;
-use Coro;
-use Router::Simple;
-use Text::MicroTemplate::File;
-use Encode;
 use Teto;
+use Teto::Control;
+use Coro;
+use Encode;
+use Router::Simple;
 use Plack::Request;
+use Text::MicroTemplate::File;
 use Data::Interleave::IcecastMetadata;
 
 with 'Teto::Role::Log';
@@ -24,6 +25,16 @@ has mt => (
     },
 );
 
+has controls => (
+    is  => 'rw',
+    isa => 'HashRef[Teto::Control]', # REMOTE_ADDR => Teto::Control,
+    default => sub { +{ } },
+);
+
+__PACKAGE__->meta->make_immutable;
+
+no Mouse;
+
 sub _build_router {
     my $self = shift;
     my $router = Router::Simple->new;
@@ -34,6 +45,11 @@ sub _build_router {
     $router->connect('/api/skip'   => { action => 'api_skip' });
     $router->connect('/'           => { action => 'index' });
     return $router;
+}
+
+sub build_control_for_remote_addr {
+    my ($self, $remote_host) = @_;
+    return $self->controls->{$remote_host} ||= Teto::Control->new;
 }
 
 sub as_psgi {
@@ -56,7 +72,8 @@ sub render_html {
 
 sub index {
     my ($self, $env) = @_;
-    return $self->render_html('index.mt');
+    my $control = $self->build_control_for_remote_addr($env->{REMOTE_ADDR});
+    return $self->render_html('index.mt', control => $control);
 }
 
 sub mock {
@@ -67,15 +84,18 @@ sub mock {
 sub stream {
     my ($self, $env) = @_;
 
+    my $control = $self->build_control_for_remote_addr($env->{REMOTE_ADDR});
     return sub {
         my $respond = shift;
-        my $icemeta = $env->{HTTP_ICY_METADATA} ? Data::Interleave::IcecastMetadata->new : undef;
+        unless ($env->{HTTP_ICY_METADATA}) {
+            $control->queue->icemeta(undef);
+        }
         async {
             $Coro::current->desc('streamer coro');
             my $writer = $respond->([
                 200, [
                     'Content-Type' => 'audio/mp3',
-                    $icemeta ? ( 'Icy-Metaint'  => $icemeta->interval ) : (),
+                    $control->queue->icemeta ? ( 'Icy-Metaint'  => $control->queue->icemeta->interval ) : (),
                     'Icy-Name'       => 'tetocast',
                     'Icy-Url'        => $env->{REQUEST_URI},
                     'Ice-Audio-Info' => 'ice-samplerate=44100;ice-bitrate=192000;ice-channels=2',
@@ -83,25 +103,22 @@ sub stream {
             ]);
             if (ref $writer eq 'Twiggy::Writer') {
                 $writer->{handle}->on_drain(unblock_sub {
-                    $self->log(debug => 'on_drain');
-                    Coro::Debug::trace();
-                    my $bytes = Teto->queue->read_buffer;
-                    if ($icemeta) {
-                        $icemeta->metadata->{title} = Teto->queue->current_track->title;
-                        $bytes = $icemeta->interleave($bytes); # FIXME bytes and track may differ
-                    }
+                    # $self->log(debug => 'on_drain');
+                    # Coro::Debug::trace();
+                    my $bytes = $control->queue->read_buffer;
                     $writer->write($bytes);
-                    $self->log(debug => 'sent', length $bytes, 'bytes');
+                    # $self->log(debug => 'sent', length $bytes, 'bytes');
                 });
                 $writer->{handle}->on_error(sub {
                     my ($handle, $fatal, $msg) = @_;
                     $self->log($fatal ? 'error' : 'warn', $msg);
                     $writer->close;
+                    $control->reset;
                 });
             } else {
                 # XXX not sure this works
                 while (1) {
-                    my $bytes = Teto->queue->read_buffer;
+                    my $bytes = $control->queue->read_buffer;
                     while (length (my $chunk = substr $bytes, 0, 1024, '')) {
                         $writer->write($bytes);
                         cede;
@@ -114,39 +131,41 @@ sub stream {
 
 sub api_feeder {
     my ($self, $env) = @_;
+    my $control = $self->build_control_for_remote_addr($env->{REMOTE_ADDR});
     my $req = Plack::Request->new($env);
-
     my $url = $req->param('url') || '';
     my $feeder = Teto->feeders->{$url};
     if ($req->method eq 'POST') {
         if ($feeder) {
-            Teto->control->set_feeder($feeder);
-            Teto->control->update;
+            $control->set_feeder($feeder);
+            $control->update;
         }
     }
 
-    return $self->render_html('_feeder.mt', $feeder || Teto->control->feeder);
+    return $self->render_html('_feeder.mt', $feeder || $control->feeder, $control);
 }
 
 sub api_track {
     my ($self, $env) = @_;
+    my $control = $self->build_control_for_remote_addr($env->{REMOTE_ADDR});
     my $req = Plack::Request->new($env);
 
     if ($req->method eq 'POST') {
         my $index = $req->param('index');
         my $url = $req->param('feeder');
         if ($url && (my $feeder = Teto->feeders->{$url})) {
-            Teto->control->set_feeder($feeder);
+            $control->set_feeder($feeder);
         }
-        Teto->control->index($index);
-        async { Teto->control->update };
+        $control->index($index);
+        async { $control->update };
     }
 
-    return $self->render_html('_feeder.mt', Teto->control->feeder);
+    return $self->render_html('_feeder.mt', $control->feeder, $control);
 }
 
 sub api_skip {
     my ($self, $env) = @_;
+    my $control = $self->build_control_for_remote_addr($env->{REMOTE_ADDR});
     my $req = Plack::Request->new($env);
 
     if ($req->method eq 'POST') {
@@ -157,7 +176,7 @@ sub api_skip {
         }
     }
 
-    return $self->render_html('_feeder.mt', Teto->control->feeder);
+    return $self->render_html('_feeder.mt', $control->feeder, $control);
 }
 
 1;

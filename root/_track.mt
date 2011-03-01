@@ -1,5 +1,5 @@
-? my ($track, $index) = @_;
-? my $current_track_url = Teto->queue->current_track && Teto->queue->current_track->url || '';
+? my ($track, $index, $control) = @_;
+? my $current_track_url = $control->queue->current_track && $control->queue->current_track->url || '';
 ? if ($track) {
   <li class="track <?= $_ % 2 ? 'odd' : 'even' ?> <? if ($track->url eq $current_track_url) { ?>playing<? } ?> <? if ($track->is_system) { ?>system<? } ?>" data-track-index="<?= $index ?>" tabindex="0">
 ?   if ($track->is_system) {

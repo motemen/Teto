@@ -36,6 +36,12 @@ has track_signal => (
     default => sub { Coro::Signal->new },
 );
 
+has icemeta => (
+    is  => 'rw',
+    isa => 'Maybe[Data::Interleave::IcecastMetadata]',
+    default => sub { Data::Interleave::IcecastMetadata->new },
+);
+
 __PACKAGE__->meta->make_immutable;
 
 no Mouse;
@@ -70,6 +76,7 @@ sub wait_current_track {
     until ($self->current_track) {
         $self->track_signal->wait;
     }
+    $self->icemeta->metadata->{title} = $self->current_track->title if $self->icemeta;
     return $self->current_track;
 }
 
@@ -79,8 +86,15 @@ sub succeeding_tracks {
     return grep { $_ } map { $self->queue->[$_] } (1 .. $n);
 }
 
-# XXX make blocking as least as possible
 sub read_buffer {
+    my $self = shift;
+    my $data = $self->_read_buffer;
+    $data = $self->icemeta->interleave($data) if $self->icemeta;
+    return $data;
+}
+
+# XXX make blocking as least as possible
+sub _read_buffer {
     my $self = shift;
 
     my $track = $self->wait_current_track; # blocks
@@ -88,7 +102,7 @@ sub read_buffer {
     unless ($self->has_fh) {
         $self->open_fh or do {
             $self->next_track;
-            return $self->read_buffer;
+            return $self->_read_buffer;
         }
     }
 
@@ -99,12 +113,12 @@ sub read_buffer {
     if ($track->is_done) {
         $self->close_fh;
         $self->dequeue_track;
-        return $buf || $self->read_buffer;
+        return $buf || $self->_read_buffer;
     }
 
     if (length $buf == 0 || $bytes_to_read == 0) {
         $track->buffer_signal->wait;
-        return $self->read_buffer;
+        return $self->_read_buffer;
     }
 
     return $buf;

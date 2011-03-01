@@ -1,4 +1,5 @@
 ? local %_ = @_;
+? my $control = $_{control};
 <!DOCTYPE html>
 <html>
   <head>
@@ -45,7 +46,7 @@ $(function () {
 
     <nav>
       <ul id="select-feeder">
-? my $feeder_url = Teto->control->feeder && Teto->control->feeder->url || '';
+? my $feeder_url = $control->feeder && $control->feeder->url || '';
 ? for my $feeder (values %{ Teto->feeders }) {
         <li class="<? if ($feeder->url eq $feeder_url) { ?>selected<? } ?>" tabindex="0" data-feeder-url="<?= $feeder->url ?>"><? if ($feeder->image) { ?><span class="icon-container"><img src="<?= $feeder->image ?>"></span> <? } ?><?= $feeder->title || $feeder->url ?></li>
 ? }
@@ -53,17 +54,17 @@ $(function () {
     </nav>
 
     <section id="feeder" class="feeder">
-? if (my $feeder = Teto->control->feeder) {
-?=  $_mt->render_file('_feeder.mt', $feeder);
+? if (my $feeder = $control->feeder) {
+?=  $_mt->render_file('_feeder.mt', $feeder, $control);
 ? }
     </section>
 
     <section class="queue">
       <h1>Queue</h1>
       <ol>
-? for (0 .. $#{ Teto->queue->queue }) {
-?   my $track = Teto->queue->queue->[$_];
-?=  $_mt->render_file('_track.mt', $track, $_);
+? for (0 .. $#{ $control->queue->queue }) {
+?   my $track = $control->queue->queue->[$_];
+?=  $_mt->render_file('_track.mt', $track, $_, $control);
 ? }
       </ol>
     </section>
