@@ -3,6 +3,7 @@ use Mouse;
 use Coro;
 use Coro::Signal;
 use Teto::Track;
+use Data::Interleave::IcecastMetadata;
 
 # isa
 # - queue of tracks

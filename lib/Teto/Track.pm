@@ -152,9 +152,8 @@ sub has_buffer {
 
 sub peek_buffer_length {
     my $self = shift;
-    no warnings 'once';
-    local *Cache::LRU::Peekable::get = \&Cache::LRU::Peekable::peek;
-    return $self->buffer_length;
+    my $buffer_ref = $BufferCache->peek($self->track_id) or return 0;
+    return length $$buffer_ref;
 }
 
 ### Instantiation
