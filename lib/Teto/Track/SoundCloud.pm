@@ -27,7 +27,7 @@ sub _build_media_url {
 
     my $res = $self->user_agent->get($self->url);
     unless ($res->is_success) {
-        $self->error($res->message);
+        $self->add_error($res->message);
         return;
     }
 

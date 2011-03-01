@@ -222,6 +222,12 @@ sub _play {
 
 ###
 
+sub add_error {
+    my ($self, $error) = @_;
+    $self->log(error => $error);
+    $self->{error} = $self->{error} ? "$self->{error}; $error" : $error;
+}
+
 sub is_track_url {
     my ($class, $url) = @_;
     foreach my $impl ($class->subclasses) {
@@ -314,7 +320,7 @@ sub run_command {
 
     my $exit_code = $self->recv_cv($cmd_cv);
     if ($exit_code != 0) {
-        $self->error("$head exited with code $exit_code");
+        $self->add_error("$head exited with code $exit_code");
     } else {
         $self->log(debug => "$head exited with code $exit_code");
     }
@@ -355,7 +361,7 @@ sub url_to_fh {
         fh => $writer,
         on_error => sub {
              my ($handle, $fatal, $msg) = @_;
-             $self->error("AnyEvent::Handle: $msg");
+             $self->add_error("AnyEvent::Handle: $msg");
              $handle->destroy;
         }
     );
@@ -369,7 +375,7 @@ sub url_to_fh {
         on_header => sub {
             my ($headers) = @_;
             if ($headers->{Status} != 200) {
-                $self->error("$url: $headers->{Status} $headers->{Reason}");
+                $self->add_error("$url: $headers->{Status} $headers->{Reason}");
                 return;
             }
             1;
@@ -430,7 +436,7 @@ sub download_temporary {
 sub send_file_to_buffer {
     my ($self, $file) = @_;
     my $fh = ref $file ? $file : aio_open $file, IO::AIO::O_RDONLY, 0 or do {
-        $self->error("aio_open $file: $!");
+        $self->add_error("aio_open $file: $!");
         return;
     };
     while (aio_read $fh, undef, 1024 * 1024, my $buf = '', 0) {

@@ -94,7 +94,7 @@ sub _build_media_url {
     my $res = $self->user_agent->get($self->url);
 
     unless ($res->is_success) {
-        $self->error($self->url . ': ' . $res->code . ' ' . $res->message);
+        $self->add_error($self->url . ': ' . $res->code . ' ' . $res->message);
         $self->sleep(60) if $res->code == 403;
         return;
     }
@@ -105,7 +105,7 @@ sub _build_media_url {
 
     my $media_url = eval { $self->nicovideo_client->prepare_download($self->video_id) };
     unless ($media_url) {
-        $self->error('Could not get media' . ($@ ? ": $@" : ''));
+        $self->add_error('Could not get media' . ($@ ? ": $@" : ''));
         $self->sleep($@ && $@ =~ /403/ ? 60 : 10);
         return;
     }

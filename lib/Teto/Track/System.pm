@@ -24,7 +24,7 @@ override _play => sub {
     try {
         $self->code->();
     } catch {
-        $self->error($_);
+        $self->add_error($_);
     };
 
     $self->done;
