@@ -5,20 +5,33 @@ all_from 'lib/Teto.pm';
 
 # Core
 requires 'Mouse';
+reuqires 'Mouse::Role';
 requires 'MouseX::Types::Path::Class';
 requires 'MouseX::Types::URI';
 requires 'MouseX::NativeTraits', '1.04';
+requires 'parent';
+requires 'POSIX';
 
 requires 'AnyEvent';
 requires 'AnyEvent::HTTP';
 requires 'AnyEvent::Util';
+requires 'AnyEvent::Handle';
 
 requires 'Coro';
 requires 'Coro::Signal';
 requires 'Coro::LWP';
+requires 'Coro::AIO';
+requires 'Coro::Timer';
+requires 'Coro::Semaphore';
 
 requires 'Twiggy';
 requires 'Plack::Runner';
+
+requires 'URI';
+requires 'Encode';
+requires 'Try::Tiny';
+requires 'JSON::XS';
+requires 'Scalar::Util';
 
 # Track
 requires 'LWP::UserAgent';
@@ -27,6 +40,9 @@ requires 'WWW::Mechanize::AutoPager';
 requires 'HTTP::Request::Common';
 requires 'Crypt::SSLeay';
 requires 'Cache::LRU';
+requires 'Class::Load';
+requires 'Path::Class';
+requires 'File::Temp';
 
 # Track::NicoVideo
 requires 'WWW::NicoVideo::Download';
@@ -38,8 +54,9 @@ requires 'WWW::YouTube::Download', '0.16';
 # Feeder
 requires 'HTML::LinkExtor';
 
-requires 'JSON::XS';
-requires 'Try::Tiny';
+# Server
+requires 'Router::Simple';
+requires 'Text::MicroTemplate::File';
 
 test_requires 'Test::More';
 test_requires 'Test::Deep';
