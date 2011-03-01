@@ -15,7 +15,7 @@
 ?   }
     <br>
     <a class="url" href="<?= $track->url ?>"><?= $track->url ?></a>
-    <span class="meta"><?= $track->has_buffer ? $track->buffer_length : '-' ?> bytes</span>
+    <span class="meta"><?= $track->has_buffer ? $track->peek_buffer_length : '-' ?> bytes</span>
     <span class="status"><?= $track->status ?></span>
 ?   if ($track->error) {
       <span class="error"><?= $track->error ?></span>

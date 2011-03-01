@@ -14,7 +14,7 @@ use HTTP::Request::Common;
 use Class::Load;
 use Path::Class;
 use File::Temp ();
-use Cache::LRU;
+use Cache::LRU::Peekable;
 use Scalar::Util qw(refaddr weaken);
 
 use overload '""' => 'as_string', fallback => 1;
@@ -120,7 +120,7 @@ no Mouse;
 # unused buffers are automatically purged.
 # TODO FIXME currently playing track's buffer should not be purged!!!
 
-our $BufferCache = Cache::LRU->new(size => 20);
+our $BufferCache = Cache::LRU::Peekable->new(size => 20);
 
 sub track_id { refaddr $_[0] }
 
@@ -142,12 +142,19 @@ sub append_buffer {
 
 sub buffer_length {
     my $self = shift;
-    return length $self->buffer
+    return length $self->buffer;
 }
 
 sub has_buffer {
     my $self = shift;
-    return !! $BufferCache->get($self->track_id);
+    return !! $BufferCache->peek($self->track_id);
+}
+
+sub peek_buffer_length {
+    my $self = shift;
+    no warnings 'once';
+    local *Cache::LRU::Peekable::get = \&Cache::LRU::Peekable::peek;
+    return $self->buffer_length;
 }
 
 ### Instantiation
@@ -201,7 +208,7 @@ sub from_url {
     }
 }
 
-### Subclass must implement these
+### Subclasses must implement these
 
 sub buildargs_from_url {
     my $class = shift;

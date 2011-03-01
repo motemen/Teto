@@ -26,6 +26,7 @@ requires 'WWW::Mechanize';
 requires 'WWW::Mechanize::AutoPager';
 requires 'HTTP::Request::Common';
 requires 'Crypt::SSLeay';
+requires 'Cache::LRU';
 
 # Track::NicoVideo
 requires 'WWW::NicoVideo::Download';
