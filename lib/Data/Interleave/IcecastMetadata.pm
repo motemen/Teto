@@ -45,12 +45,17 @@ sub interleave {
     while (length($data) >= $self->pos) {
         $interleaved .= substr $data, 0, $self->pos, '';
         $interleaved .= $meta;
-        $self->pos($self->interval);
+        $self->reset_position;
     }
     $interleaved .= $data;
     $self->{pos} -= length $data;
 
     return $interleaved;
+}
+
+sub reset_position {
+    my $self = shift;
+    $self->pos($self->interval);
 }
 
 1;
