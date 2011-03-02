@@ -44,6 +44,7 @@ requires 'Cache::LRU';
 requires 'Class::Load';
 requires 'Path::Class';
 requires 'File::Temp';
+requires 'IO::AIO';
 
 # Track::NicoVideo
 requires 'WWW::NicoVideo::Download';
@@ -58,11 +59,13 @@ requires 'HTML::TreeBuilder::XPath';
 # Server
 requires 'Router::Simple';
 requires 'Text::MicroTemplate::File';
+requires 'Plack::Middleware::File::Sass';
 
 test_requires 'Test::More';
 test_requires 'Test::Deep';
 test_requires 'Test::Requires';
 test_requires 'File::Find::Rule';
+test_requires 'LWPx::Record::DataSection';
 
 tests 't/*.t';
 # author_tests 'xt';
@@ -72,11 +75,6 @@ requires_external_bin 'ffmpeg';
 
 # Track::NicoVideo::nm
 requires_external_bin 'swfextract';
-
-# Addition
-requires 'IO::AIO';
-requires 'LWPx::Record::DataSection';
-requires 'Plack::Middleware::File::Sass';
 
 auto_include;
 # auto_install;
