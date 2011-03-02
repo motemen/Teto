@@ -83,6 +83,7 @@ sub mock {
 
 sub stream {
     my ($self, $env) = @_;
+    my $req = Plack::Request->new($env);
 
     my $control = $self->build_control_for_remote_addr($env->{REMOTE_ADDR});
     return sub {
@@ -97,7 +98,7 @@ sub stream {
                     'Content-Type' => 'audio/mp3',
                     $control->queue->icemeta ? ( 'Icy-Metaint'  => $control->queue->icemeta->interval ) : (),
                     'Icy-Name'       => 'tetocast',
-                    'Icy-Url'        => $env->{REQUEST_URI},
+                    'Icy-Url'        => $req->uri,
                     'Ice-Audio-Info' => 'ice-samplerate=44100;ice-bitrate=192000;ice-channels=2',
                 ]
             ]);
