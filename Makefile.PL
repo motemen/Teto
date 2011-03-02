@@ -53,7 +53,7 @@ requires 'Config::Pit';
 requires 'WWW::YouTube::Download', '0.16';
 
 # Feeder
-requires 'HTML::LinkExtor';
+requires 'HTML::TreeBuilder::XPath';
 
 # Server
 requires 'Router::Simple';

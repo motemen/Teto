@@ -6,7 +6,7 @@ use AnyEvent::Util;
 use AnyEvent::HTTP;
 use AnyEvent::Handle;
 use Coro;
-use Coro::LWP;
+# use Coro::LWP; # load in teto.pl
 use Coro::AIO;
 use Coro::Timer ();
 use LWP::UserAgent;
@@ -37,7 +37,7 @@ has media_url => (
 
 has title => (
     is  => 'rw',
-    isa => 'Str',
+    isa => 'Maybe[Str]',
 );
 
 has image => (

@@ -4,12 +4,13 @@ use MouseX::Types::URI;
 use AnyEvent;
 use WWW::Mechanize;
 use WWW::Mechanize::AutoPager;
-use Coro::LWP;
+# use Coro::LWP; # load in teto.pl
 use Coro::Signal;
 use Try::Tiny;
 use JSON::XS;
-use HTML::LinkExtor;
+use HTML::TreeBuilder::XPath;
 use URI;
+use URI::Escape;
 use Teto::Track;
 use Teto::Track::System;
 
@@ -97,7 +98,7 @@ sub feed_url {
 
     my $res = eval { $self->user_agent->get($url) };
     if (!$res || $res->is_error) {
-        $self->log(error => "$url: " . ($res ? $res->code . ' ' . $res->message : $@));
+        $self->log(error => "$url: " . ($res ? $res->status_line : $@));
         return;
     }
 
@@ -131,9 +132,10 @@ sub feed_next_url {
 }
 
 sub push_track_url {
-    my ($self, $url) = @_;
-    my $track = Teto::Track->from_url($url) or return;
+    my ($self, $url, %args) = @_;
+    my $track = Teto::Track->from_url($url, %args) or return;
     $self->push_track($track);
+    return $track;
 }
 
 sub feed_by_res {
@@ -161,7 +163,7 @@ sub _feed_by_nicovideo_mylist_res {
         next unless ref eq 'HASH';
         my $video_id = $_->{video_id} or next;
         my $url = "http://www.nicovideo.jp/watch/$video_id";
-        $self->push_track_url($url);
+        $self->push_track_url($url, title => $_->{title});
         $found++;
     }
     return $found;
@@ -170,21 +172,28 @@ sub _feed_by_nicovideo_mylist_res {
 sub _feed_by_html_res {
     my ($self, $res) = @_;
 
+    my $tree = HTML::TreeBuilder::XPath->new;
+    $tree->parse($res->decoded_content);
+
+    my $base = $tree->findvalue('//base/@href') || $res->base; # workaround for AnyEvent::HTTP::LWP::UserAgent
+
     my $found = 0;
     my %seen;
-    my $extractor = HTML::LinkExtor->new(
-        sub {
-            my ($tag, %attr) = @_;
-            return unless uc $tag eq 'A';
-            my $url = $attr{href} or return;
-            # $self->log(debug => "found $url");
-            if (Teto::Track->is_track_url($url) && !$seen{$url}++) {
-                $self->push_track_url($url);
-                $found++;
-            }
-        }, $res->base
-    );
-    $extractor->parse($res->decoded_content);
+    my @links = $tree->findnodes('//a');
+    foreach my $link (@links) {
+        my $url = URI->new_abs($link->attr('href'), $base);
+        if ($seen{$url}) {
+            $seen{$url}->{title} ||= $link->as_text;
+            next;
+        }
+        if (Teto::Track->is_track_url($url) && !$seen{$url}) {
+            $seen{$url} = $self->push_track_url($url, title => $link->as_text);
+            $found++;
+        }
+    }
+
+    $tree->delete;
+
     return $found;
 }
 
@@ -217,7 +226,6 @@ sub guess_image_from_res {
         return;
     }
 
-    use URI::Escape;
     $self->image('http://cdn-ak.favicon.st-hatena.com/?url=' . uri_escape($res->base));
 }
 
