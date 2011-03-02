@@ -3,11 +3,21 @@ use warnings;
 use lib 'lib';
 use Teto;
 use Coro;
-use Coro::LWP; # load as fast as possible
 use Coro::Debug;
 use Plack::Runner;
 use Plack::Builder;
 use Plack::App::File;
+
+my $runner = Plack::Runner->new(server => 'Twiggy', env => 'production');
+$runner->parse_options(@ARGV);
+
+if ({ @{ $runner->{options} } }->{daap}) {
+    require Teto::DAAP;
+    Teto::DAAP->import;
+} else {
+    # load as fast as possible
+    require Coro::LWP;
+}
 
 async {
     $Coro::current->desc('stdin coro');
@@ -23,8 +33,6 @@ async {
 
 my $app    = Teto->server->as_psgi;
 my $debug  = Coro::Debug->new_unix_server('teto.debug.sock');
-my $runner = Plack::Runner->new(server => 'Twiggy', env => 'production');
-$runner->parse_options(@ARGV);
 $runner->set_options(
     server_ready => sub {
         my $args = shift;
