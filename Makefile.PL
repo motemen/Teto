@@ -5,7 +5,7 @@ all_from 'lib/Teto.pm';
 
 # Core
 requires 'Mouse';
-reuqires 'Mouse::Role';
+requires 'Mouse::Role';
 requires 'MouseX::Types::Path::Class';
 requires 'MouseX::Types::URI';
 requires 'MouseX::NativeTraits', '1.04';
@@ -13,6 +13,7 @@ requires 'parent';
 requires 'POSIX';
 
 requires 'AnyEvent';
+requires 'AnyEvent::AIO';
 requires 'AnyEvent::HTTP';
 requires 'AnyEvent::Util';
 requires 'AnyEvent::Handle';
@@ -71,6 +72,11 @@ requires_external_bin 'ffmpeg';
 
 # Track::NicoVideo::nm
 requires_external_bin 'swfextract';
+
+# Addition
+requires 'IO::AIO';
+requires 'LWPx::Record::DataSection';
+requires 'Plack::Middleware::File::Sass';
 
 auto_include;
 # auto_install;
