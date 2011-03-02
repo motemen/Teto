@@ -1,5 +1,6 @@
 package Teto::Control;
 use Mouse;
+use Coro;
 
 with 'Teto::Role::Log';
 
@@ -34,7 +35,7 @@ sub BUILD {
     require Teto;
     if (my $feeder = [ values %{ Teto->feeders } ]->[0]) {
         $self->set_feeder($feeder);
-        $self->update;
+        async { $self->update };
     }
 }
 
