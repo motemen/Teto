@@ -107,7 +107,18 @@ sub _read_buffer {
         }
     }
 
+    # check negative length???
+    # TODO avoid current track's buffer got GC'ed
     my $bytes_to_read = length($track->buffer) - tell($self->fh);
+    if ($bytes_to_read < 0) {
+        $track->add_error(q(BUG: buffer got GC'ed));
+        $self->log(error => q(track buffer got GC'ed));
+        $track->done;
+        $track->buffer_signal->broadcast;
+        $self->close_fh;
+        $self->dequeue_track;
+        return '';
+    }
 
     read $self->fh, my ($buf), $bytes_to_read;
 
