@@ -3,6 +3,7 @@ use warnings;
 use lib 'lib';
 use Teto;
 use Coro;
+use Coro::LWP; # load as fast as possible
 use Coro::Debug;
 use Plack::Runner;
 use Plack::Builder;
@@ -13,10 +14,7 @@ $runner->parse_options(@ARGV);
 
 if ({ @{ $runner->{options} } }->{daap}) {
     require Teto::DAAP;
-    Teto::DAAP->import;
-} else {
-    # load as fast as possible
-    require Coro::LWP;
+    Teto->context->{daap} = Teto::DAAP->new;
 }
 
 async {

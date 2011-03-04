@@ -1,103 +1,127 @@
 package Teto::DAAP;
-use strict;
-use warnings;
-use parent 'Net::DAAP::Server';
-use Coro;
-use Net::DAAP::Server::Track;
-use AnyEvent::Impl::POE;
-use AnyEvent::HTTP::LWP::UserAgent;
+use Mouse;
+use Teto::Feeder;
+use Teto::Track;
+use AnyEvent::DAAP::Server;
+
+has daap_server => (
+    is  => 'rw',
+    isa => 'AnyEvent::DAAP::Server',
+    default => sub { AnyEvent::DAAP::Server->new(port => 13689, name => 'teto') },
+);
+
+__PACKAGE__->meta->make_immutable;
+
+no Mouse;
 
 ### XXX experimental. to enable this, run teto.pl with --enable_daap.
-# not in Makefile.PL:
-# - Net::DAAP::Server
-# - AnyEvent::Impl::POE
-# - AnyEvent::HTTP::LWP::UserAgent
+# https://github.com/motemen/AnyEvent-DAAP-Server
 
-# TODO - preload tracks
-# TODO - AnyEvent::DAAP::Server ??
+# TODO
+# - preload tracks
+# - update track length
+# - show feeders as playlists
 
-die if defined $AnyEvent::MODEL && $AnyEvent::MODEL eq 'POE';
-
-sub import {
-    our $Instance = __PACKAGE__->new;
-
-#   our $LWP_UserAgent_new = \&LWP::UserAgent::new;
-#   *LWP::UserAgent::new = sub {
-#       my $ua = &$LWP_UserAgent_new(@_);
-#       return bless $ua, 'AnyEvent::HTTP::LWP::UserAgent';
-#   };
-
-    @WWW::Mechanize::ISA = AnyEvent::HTTP::LWP::UserAgent::;
-
-    require Teto::Feeder;
-    Teto::Feeder->meta->add_after_method_modifier(
-        feed_url => sub { $Instance->find_tracks }
-    );
-
-    async { POE::Kernel->run };
+sub BUILD {
+    my $self = shift;
+    $self->daap_server->setup;
+    Teto::Feeder->meta->add_after_method_modifier(feed_url => sub { $self->find_tracks });
 }
-
-sub default_port { 13689 }
 
 sub find_tracks {
     my $self = shift;
+    # TODO tracks delta
     while (my ($id, $track) = each %$Teto::Track::IdToInstance) {
-        $self->tracks->{$track->dmap_track_id} = $track->as_net_daap_server_track;
+        $self->daap_server->add_track($track->as_daap_track);
     }
+    $self->daap_server->database_updated;
 }
 
-package Teto::DAAP::Track;
-use parent 'Net::DAAP::Server::Track';
-use Net::DAAP::DMAP qw(dmap_to_hash_ref dmap_pack);
+package AnyEvent::DAAP::Server::Track::Teto;
+use Mouse;
+use Coro;
 
-sub data {
-    my $self = shift;
-    my $track = $self->{track};
-    $track->play;
-    return $track->buffer;
+with 'Teto::Role::Log';
+
+extends 'AnyEvent::DAAP::Server::Track';
+
+has track => (
+    is  => 'rw',
+    isa => 'Teto::Track',
+    required => 1,
+);
+
+__PACKAGE__->meta->make_immutable;
+
+no Mouse;
+
+use Coro::Debug;
+
+# TODO ugly
+sub stream {
+    my ($self, $connection) = @_;
+
+    my $track = $self->track;
+    $track->log(info => 'daap: start streaming');
+    $track->buffer; # prepare
+    $connection->handle->push_write(
+        join "\r\n", (
+            'HTTP/1.1 200 OK',
+            'Content-Type: audio/mp3',
+            'Connection: close',
+            '',
+        )
+    );
+    async {
+        $Coro::current->{desc} = 'daap stream play';
+        $track->prepare;
+        $track->play;
+    };
+    async {
+        $Coro::current->{desc} = 'daap stream write';
+        open my $fh, '<', $track->buffer_ref or die $!;
+        while (1) {
+            read $fh, my $buf, 1024;
+            if (length $buf == 0) {
+                last if $track->is_done;
+                $track->buffer_signal->wait;
+            } else {
+                $connection->handle->push_write($buf);
+            }
+            cede;
+        }
+        close $fh;
+        $connection->handle->push_shutdown;
+    };
 }
 
-sub Teto::Track::dmap_track_id {
+package Teto::Track;
+
+sub dmap_track_id {
     my $self = shift;
     return $self->track_id & 0xFFFFFF;
 }
 
-sub Teto::Track::as_net_daap_server_track {
+sub as_daap_track {
     my $self = shift;
-    my $track = Teto::DAAP::Track->new({ track => $self });
+    my $track = AnyEvent::DAAP::Server::Track::Teto->new(track => $self);
 
     $track->dmap_itemid($self->dmap_track_id);
     $track->dmap_containeritemid($self->track_id);
 
     $track->dmap_itemkind(2);
     $track->dmap_persistentid($self->track_id);
-    $track->daap_songbeatsperminute(0);
 
     $track->daap_songbitrate(192000);
     $track->daap_songsamplerate(44100 * 1000);
     $track->daap_songtime(180);
 
     $track->dmap_itemname($self->title || $self->track_id);
-    # $track->daap_songtrackcount( $count || 0);
-    # $track->daap_songtracknumber( $number || 0 );
 
-    $track->daap_songcompilation(0);
     $track->daap_songdateadded(time());
     $track->daap_songdatemodified(time());
-    $track->daap_songdisccount(0);
-    $track->daap_songdiscnumber(0);
-    $track->daap_songdisabled(0);
-    $track->daap_songeqpreset('');
     $track->daap_songformat('mp3');
-    $track->daap_songgenre('');
-    $track->daap_songgrouping('');
     $track->daap_songsize($self->peek_buffer_length);
-    $track->daap_songstarttime(0);
-    $track->daap_songstoptime(0);
-
-    $track->daap_songuserrating(0);
-    $track->daap_songdatakind(0);
-    $track->com_apple_itunes_norm_volume(17502);
 
     return $track;
 }
