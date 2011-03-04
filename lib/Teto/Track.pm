@@ -108,7 +108,7 @@ sub is_done {
 sub done {
     my $self = shift;
     $self->status(TRACK_STATUS_DONE);
-    # TODO buffer_signal->broadcast?
+    $self->buffer_signal->broadcast;
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -266,7 +266,6 @@ sub play {
 
     if ($self->error) {
         $self->done;
-        $self->buffer_signal->broadcast;
         return 0;
     }
 
@@ -347,7 +346,6 @@ sub ffmpeg {
         \%args,
     );
     $self->done;
-    $self->buffer_signal->broadcast;
 }
 
 sub url_to_fh {
@@ -443,7 +441,6 @@ sub send_file_to_buffer {
     }
     aio_close $fh;
     $self->done;
-    $self->buffer_signal->broadcast;
 }
 
 sub as_string {

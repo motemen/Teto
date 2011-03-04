@@ -28,7 +28,9 @@ override _play => sub {
     };
 
     $self->done;
-    $self->buffer_signal->broadcast;
+};
+
+override prepare => sub {
 };
 
 __PACKAGE__->meta->make_immutable;
