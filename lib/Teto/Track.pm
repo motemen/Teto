@@ -424,7 +424,7 @@ sub download_temporary {
     my $filename = $self->temporary_filename($suffix);
     my $res = $self->user_agent->mirror($url, $filename);
     unless ($res->is_success) {
-        $self->log(error => "mirroring $url to $filename:", $res->code, $res->message);
+        $self->add_error("mirroring $url to $filename: " .  $res->status_line);
         return undef;
     }
     return $filename;

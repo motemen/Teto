@@ -2,12 +2,13 @@ package Teto::DAAP;
 use Mouse;
 use Teto::Feeder;
 use Teto::Track;
+use Sys::Hostname;
 use AnyEvent::DAAP::Server;
 
 has daap_server => (
     is  => 'rw',
     isa => 'AnyEvent::DAAP::Server',
-    default => sub { AnyEvent::DAAP::Server->new(port => 13689, name => 'teto') },
+    default => sub { AnyEvent::DAAP::Server->new(port => 13689, name => 'teto ' . hostname) },
 );
 
 __PACKAGE__->meta->make_immutable;
@@ -25,23 +26,19 @@ no Mouse;
 sub BUILD {
     my $self = shift;
     $self->daap_server->setup;
-    Teto::Feeder->meta->add_after_method_modifier(feed_url => sub { $self->find_tracks });
-}
 
-sub find_tracks {
-    my $self = shift;
-    # TODO tracks delta
-    while (my ($id, $track) = each %$Teto::Track::IdToInstance) {
-        $self->daap_server->add_track($track->as_daap_track);
-    }
-    $self->daap_server->database_updated;
+    Teto::Feeder->meta->add_after_method_modifier(
+        feed_url => sub {
+            my $feeder = shift;
+            $self->daap_server->add_track($_->as_daap_track) for $feeder->tracks;
+            $self->daap_server->add_playlist($feeder->as_daap_playlist);
+        }
+    );
 }
 
 package AnyEvent::DAAP::Server::Track::Teto;
 use Mouse;
 use Coro;
-
-with 'Teto::Role::Log';
 
 extends 'AnyEvent::DAAP::Server::Track';
 
@@ -55,43 +52,31 @@ __PACKAGE__->meta->make_immutable;
 
 no Mouse;
 
-use Coro::Debug;
+sub allow_range { 1 }
 
-# TODO ugly
-sub stream {
-    my ($self, $connection) = @_;
+sub data {
+    my ($self, $start) = @_;
 
     my $track = $self->track;
     $track->log(info => 'daap: start streaming');
-    $track->buffer; # prepare
-    $connection->handle->push_write(
-        join "\r\n", (
-            'HTTP/1.1 200 OK',
-            'Content-Type: audio/mp3',
-            'Connection: close',
-            '',
-        )
-    );
-    async {
-        $Coro::current->{desc} = 'daap stream play';
-        $track->prepare;
-        $track->play;
-    };
-    async {
-        $Coro::current->{desc} = 'daap stream write';
-        open my $fh, '<', $track->buffer_ref or die $!;
-        while (1) {
-            read $fh, my $buf, 1024;
-            if (length $buf == 0) {
-                last if $track->is_done;
+
+    return sub {
+        my $cb = shift;
+
+        async {
+            $Coro::current->{desc} = 'daap stream play';
+            $track->prepare;
+            $track->play;
+
+            until ($track->is_done) {
                 $track->buffer_signal->wait;
-            } else {
-                $connection->handle->push_write($buf);
             }
-            cede;
-        }
-        close $fh;
-        $connection->handle->push_shutdown;
+
+            open my $fh, '<', $track->buffer_ref or die $!; # FIXME
+            my $buf = substr $track->buffer, $start || 0;
+            $cb->($buf);
+            close $fh;
+        };
     };
 }
 
@@ -99,7 +84,7 @@ package Teto::Track;
 
 sub dmap_track_id {
     my $self = shift;
-    return $self->track_id & 0xFFFFFF;
+    return $self->track_id & 0xFFFFFF; # XXX this field is 3 byte long
 }
 
 sub as_daap_track {
@@ -112,18 +97,36 @@ sub as_daap_track {
     $track->dmap_itemkind(2);
     $track->dmap_persistentid($self->track_id);
 
-    $track->daap_songbitrate(192000);
+    $track->daap_songbitrate(192 * 1000);
     $track->daap_songsamplerate(44100 * 1000);
-    $track->daap_songtime(180);
 
     $track->dmap_itemname($self->title || $self->track_id);
 
     $track->daap_songdateadded(time());
     $track->daap_songdatemodified(time());
     $track->daap_songformat('mp3');
-    $track->daap_songsize($self->peek_buffer_length);
+    $track->daap_songsize($self->peek_buffer_length || (59 * 60 + 59) * 192 / 8);
+
+    $track->daap_songtime((59 * 60 + 59) * 1000); # 59:99 dummy, to enable seek
 
     return $track;
+}
+
+package Teto::Feeder;
+use AnyEvent::DAAP::Server::Playlist;
+
+sub dmap_playlist_id {
+    my $self = shift;
+    return 0+$self & 0xFFFFFF;
+}
+
+sub as_daap_playlist {
+    my $self = shift;
+    my $playlist = AnyEvent::DAAP::Server::Playlist->new;
+    $playlist->dmap_itemname($self->title);
+    $playlist->dmap_itemid($self->dmap_playlist_id);
+    $playlist->tracks([ map { $_->as_daap_track } $self->tracks ]);
+    return $playlist;
 }
 
 1;
