@@ -64,19 +64,26 @@ has signal => (
     default => sub { Coro::Signal->new },
 );
 
+# share HTML::AutoPagerize
+
+our $AutoPager;
+
 sub _build_user_agent {
     my $self = shift;
-    return our $ua ||= do {
-        my $ua = WWW::Mechanize->new;
-        if ($self->autopagerize) {
+    my $ua = WWW::Mechanize->new;
+    if ($self->autopagerize) {
+        if ($AutoPager) {
+            $ua->autopager->{autopager} = $AutoPager;
+        } else {
             try {
                 $ua->autopager->load_siteinfo;
+                $AutoPager = $ua->autopager->{autopager};
             } catch {
                 $self->log(warn => $_);
             };
         }
-        $ua;
     }
+    return $ua;
 }
 
 sub feed {
