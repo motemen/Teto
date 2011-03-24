@@ -2,8 +2,8 @@ package Teto::DAAP;
 use Mouse;
 use Teto::Feeder;
 use Teto::Track;
-use Sys::Hostname;
 use AnyEvent::DAAP::Server;
+use Sys::Hostname;
 
 has daap_server => (
     is  => 'rw',
@@ -16,12 +16,11 @@ __PACKAGE__->meta->make_immutable;
 no Mouse;
 
 ### XXX experimental. to enable this, run teto.pl with --enable_daap.
-# https://github.com/motemen/AnyEvent-DAAP-Server
+# depends on https://github.com/motemen/AnyEvent-DAAP-Server
 
 # TODO
 # - preload tracks
 # - update track length
-# - show feeders as playlists
 
 sub BUILD {
     my $self = shift;
@@ -32,6 +31,7 @@ sub BUILD {
             my $feeder = shift;
             $self->daap_server->add_track($_->as_daap_track) for $feeder->tracks;
             $self->daap_server->add_playlist($feeder->as_daap_playlist);
+            $self->daap_server->database_updated;
         }
     );
 }
@@ -54,29 +54,29 @@ no Mouse;
 
 sub allow_range { 1 }
 
-sub data {
-    my ($self, $start) = @_;
+sub write_data {
+    my ($self, $connection, $res, $pos) = @_;
 
     my $track = $self->track;
-    $track->log(info => 'daap: start streaming');
+    $track->log(debug => 'daap: start streaming');
 
-    return sub {
-        my $cb = shift;
+    async {
+        $Coro::current->{desc} = 'daap track play';
+        $track->prepare;
+        $track->play;
+    };
 
-        async {
-            $Coro::current->{desc} = 'daap stream play';
-            $track->prepare;
-            $track->play;
+    async {
+        $Coro::current->{desc} = 'daap track write';
 
-            until ($track->is_done) {
-                $track->buffer_signal->wait;
-            }
+        until ($track->is_done) {
+            $track->buffer_signal->wait;
+        }
 
-            open my $fh, '<', $track->buffer_ref or die $!; # FIXME
-            my $buf = substr $track->buffer, $start || 0;
-            $cb->($buf);
-            close $fh;
-        };
+        my $buf = substr $track->buffer, $pos || 0;
+        $res->content_length(length $buf);
+        $res->content($buf);
+        $self->push_response($connection, $res);
     };
 }
 
@@ -105,9 +105,9 @@ sub as_daap_track {
     $track->daap_songdateadded(time());
     $track->daap_songdatemodified(time());
     $track->daap_songformat('mp3');
-    $track->daap_songsize($self->peek_buffer_length || (59 * 60 + 59) * 192 / 8);
+    $track->daap_songsize($self->peek_buffer_length || (59 * 60 + 59) * 192 / 8); 
 
-    $track->daap_songtime((59 * 60 + 59) * 1000); # 59:99 dummy, to enable seek
+    $track->daap_songtime((59 * 60 + 59) * 1000); # 59:59 dummy, to enable seek
 
     return $track;
 }
