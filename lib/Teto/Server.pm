@@ -132,11 +132,13 @@ sub stream {
 
 sub api_feeder {
     my ($self, $env) = @_;
+
     my $control = $self->build_control_for_remote_addr($env->{REMOTE_ADDR});
     my $req = Plack::Request->new($env);
     my $url = $req->param('url') || '';
     my $feeder = Teto->feeders->{$url};
     if ($req->method eq 'POST') {
+        $feeder ||= Teto->feed_url($url);
         if ($feeder) {
             $control->set_feeder($feeder);
             $control->update;

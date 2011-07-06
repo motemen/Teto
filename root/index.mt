@@ -5,7 +5,7 @@
   <head>
     <title>Teto</title>
     <link rel="stylesheet" href="/css/style.css">
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
     <script type="text/javascript">
 var Teto = {};
 Teto.feederURL = null;
@@ -27,10 +27,21 @@ Teto.selectTrack = function (index) {
     }
   );
 };
+Teto.addNewFeeder = function () {
+  var url = prompt('Enter playlist URL', '');
+  if (url) {
+    $.post('/api/feeder', { url: url });
+  }
+};
 $(function () {
   $('#select-feeder li').live('click', function () {
-    Teto.selectFeeder($(this).attr('data-feeder-url'));
+    if (this.id == 'add-new-feeder') {
+      Teto.addNewFeeder();
+    } else {
+      Teto.selectFeeder($(this).attr('data-feeder-url'));
+    }
   }).live('keypress', function (e) { if (e.keyCode == 13) $(this).click() });
+
   $('#feeder li.track').live('click', function (e) {
     if (e.target == this) Teto.selectTrack($(this).attr('data-track-index'));
   }).live('keypress', function (e) {
@@ -50,6 +61,7 @@ $(function () {
 ? for my $feeder (values %{ Teto->feeders }) {
         <li class="<? if ($feeder->url eq $feeder_url) { ?>selected<? } ?>" tabindex="0" data-feeder-url="<?= $feeder->url ?>"><? if ($feeder->image) { ?><span class="icon-container"><img src="<?= $feeder->image ?>"></span> <? } ?><?= $feeder->title || $feeder->url ?></li>
 ? }
+        <li id="add-new-feeder">&nbsp;+&nbsp;</li>
       </ul>
     </nav>
 
