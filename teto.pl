@@ -52,4 +52,4 @@ my $url_map = builder {
     mount '/' => $app;
 };
 
-$runner->run($url_map->to_app);
+$runner->run($url_map);
