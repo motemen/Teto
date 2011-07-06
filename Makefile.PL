@@ -26,13 +26,14 @@ requires 'Coro::Timer';
 requires 'Coro::Semaphore';
 
 requires 'Twiggy';
-requires 'Plack::Runner';
+requires 'Plack', '0.998';
 
 requires 'URI';
 requires 'Encode';
 requires 'Try::Tiny';
 requires 'JSON::XS';
 requires 'Scalar::Util';
+requires 'POSIX';
 
 # Track
 requires 'LWP::UserAgent';

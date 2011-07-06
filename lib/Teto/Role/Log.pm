@@ -1,6 +1,7 @@
 package Teto::Role::Log;
 use Mouse::Role;
 use Data::Dumper;
+use POSIX qw(strftime);
 
 sub log_extra_info { '' }
 
@@ -11,8 +12,8 @@ sub log {
     if (my $extra = $self->log_extra_info) {
         $pkg .= " <$extra>";
     }
-    my $message = sprintf "[%s] %-6s %s - %s\n",
-        scalar(localtime), uc $level, $pkg,
+    my $message = sprintf "[%d %s] %-6s %s - %s\n",
+        0+$Coro::current, strftime('%T', localtime()), uc $level, $pkg,
         join ' ', map {
             local $Data::Dumper::Indent = 0;
             local $Data::Dumper::Maxdepth = 1;
