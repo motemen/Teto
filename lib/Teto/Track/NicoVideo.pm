@@ -91,11 +91,13 @@ sub _build_media_url {
 
     $self->wait_in_queue;
 
+    $self->log(debug => 'GET ' . $self->url);
     my $res = $self->user_agent->get($self->url);
 
     unless ($res->is_success) {
         $self->add_error($self->url . ': ' . $res->code . ' ' . $res->message);
         $self->sleep(60) if $res->code == 403;
+        $self->leave_from_queue;
         return;
     }
 
@@ -107,6 +109,7 @@ sub _build_media_url {
     unless ($media_url) {
         $self->add_error('Could not get media' . ($@ ? ": $@" : ''));
         $self->sleep($@ && $@ =~ /403/ ? 60 : 10);
+        $self->leave_from_queue;
         return;
     }
     $self->log(info => "media: $media_url");
