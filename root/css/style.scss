@@ -1,5 +1,5 @@
 body {
-  padding: 0 10%;
+  // padding: 0 10px;
 }
 
 h1, h2 {
@@ -9,7 +9,7 @@ h1, h2 {
 }
 
 section {
-  clear: both;
+  // clear: both;
   border: 1px solid #BBB;
   padding: 0 1em;
   margin-bottom: 1em;
@@ -29,6 +29,36 @@ section {
   }
 }
 
+#container {
+  width: 1080px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+section#feeder {
+  width: 840px;
+  float: left;
+}
+
+section#queue {
+  width: 190px;
+  float: left;
+  font-size: smaller;
+  margin-left: 10px;
+  padding: 0;
+
+  h1 {
+    font-size: medium;
+    padding: 0.5em;
+    margin: 0;
+    text-align: center;
+  }
+
+  li {
+    padding: 0.5em;
+  }
+}
+
 a {
   $color: #12F;
   color: $color;
@@ -43,12 +73,17 @@ body {
   }
 }
 
+#feeder {
+  li.track {
+    min-height: 50px;
+  }
+}
+
 li.track {
   font-size: 90%;
   padding: 0.3em;
   padding-left: 24px;
   clear: both;
-  min-height: 50px;
 
   &.even {
     background-color: #FAFAFA;
@@ -119,6 +154,14 @@ li.track {
     &:before {
       content: "error: ";
     }
+  }
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  li {
+    margin: 0;
   }
 }
 

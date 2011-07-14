@@ -61,7 +61,7 @@ $(function () {
 ? for my $feeder (values %{ Teto->feeders }) {
         <li class="<? if ($feeder->url eq $feeder_url) { ?>selected<? } ?>" tabindex="0" data-feeder-url="<?= $feeder->url ?>"><? if ($feeder->image) { ?><span class="icon-container"><img src="<?= $feeder->image ?>"></span> <? } ?><?= $feeder->title || $feeder->url ?></li>
 ? }
-        <li id="add-new-feeder">&nbsp;+&nbsp;</li>
+        <li id="add-new-feeder" tabindex="0">&nbsp;+&nbsp;</li>
       </ul>
     </nav>
 
@@ -71,14 +71,27 @@ $(function () {
 ? }
     </section>
 
-    <section class="queue">
+    <section id="queue" class="queue">
       <h1>Queue</h1>
-      <ol>
+      <ul>
 ? for (0 .. $#{ $control->queue->queue }) {
 ?   my $track = $control->queue->queue->[$_];
-?=  $_mt->render_file('_track.mt', $track, $_, $control);
+  <li class="track <?= $_ % 2 ? 'odd' : 'even' ?> <? if ($track->is_system) { ?>system<? } ?>" data-track-index="<?= $_ ?>" tabindex="0">
+?   if ($track->is_system) {
+      <span class="title"><?= $track->title ?></span>
+?   } else {
+?     if (0 && $track->image) {
+      <img src="<?= $track->image ?>">
+?     }
+?     if (defined $track->title) {
+      <span class="title"><?= $track->title ?></span>
+?     } else {
+      <span class="title not-loaded">(not loaded)</span>
+?     }
+?   }
 ? }
-      </ol>
+  </li>
+      </ul>
     </section>
 
     </div>
