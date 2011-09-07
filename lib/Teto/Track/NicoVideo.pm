@@ -95,7 +95,7 @@ sub _build_media_url {
     my $res = $self->user_agent->get($self->url);
 
     unless ($res->is_success) {
-        $self->add_error($self->url . ': ' . $res->code . ' ' . $res->message);
+        $self->add_error('_build_media_url ' . $self->url . ': ' . $res->code . ' ' . $res->message);
         $self->sleep(60) if $res->code == 403;
         $self->leave_from_queue;
         return;

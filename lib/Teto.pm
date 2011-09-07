@@ -17,6 +17,8 @@ package Teto::Context;
 use Mouse;
 use Coro;
 
+use constant URL_SCRATCH => 'teto:scrath';
+
 has buffer => (
     is  => 'rw',
     isa => 'Teto::Buffer',
@@ -26,7 +28,12 @@ has buffer => (
 has feeders => (
     is  => 'rw',
     isa => 'HashRef[Teto::Feeder]',
-    default => sub { +{} },
+    default => sub {
+        require Teto::Feeder;
+        return +{
+            URL_SCRATCH() => Teto::Feeder->new(url => URL_SCRATCH, title => '*scratch*'),
+        };
+    },
 );
 
 has server => (
@@ -55,12 +62,19 @@ sub _build_control {
 
 sub feed_url {
     my ($self, $url) = @_;
+
     require Teto::Feeder;
-    return $self->feeders->{ Teto::Feeder->uri_canonical($url) } ||= do {
+    require Teto::Track;
+
+    if (Teto::Track->is_track_url($url)) {
+        my $feeder = $self->feeders->{+URL_SCRATCH};
+        async { $feeder->push_track_url($url); $feeder->signal->broadcast };
+        return $feeder;
+    } else {
         my $feeder = Teto::Feeder->new(url => $url);
         async { $feeder->feed };
-        $feeder;
-    };
+        return $self->feeders->{ Teto::Feeder->uri_canonical($url) } ||= $feeder;
+    }
 }
 
 __PACKAGE__->meta->make_immutable;

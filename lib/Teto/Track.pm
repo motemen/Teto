@@ -372,7 +372,7 @@ sub url_to_fh {
         on_header => sub {
             my ($headers) = @_;
             if ($headers->{Status} != 200) {
-                $self->add_error("$url: $headers->{Status} $headers->{Reason}");
+                $self->add_error("http_get $url: $headers->{Status} $headers->{Reason}");
                 return;
             }
             1;

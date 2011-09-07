@@ -65,14 +65,11 @@ has signal => (
 );
 
 # share HTML::AutoPagerize
-
-our $AutoPager;
-
 sub _build_user_agent {
     my $self = shift;
     my $ua = WWW::Mechanize->new;
     if ($self->autopagerize) {
-        if ($AutoPager) {
+        if (our $AutoPager) {
             $ua->autopager->{autopager} = $AutoPager;
         } else {
             try {
