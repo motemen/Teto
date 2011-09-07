@@ -48,11 +48,12 @@ __PACKAGE__->meta->make_immutable;
 no Mouse;
 
 sub add_track {
-    my ($self, $track) = @_;
-    $self->log(info => "track added: $track");
-    $self->enqueue_track($track);
+    my ($self, @tracks) = @_;
+    foreach my $track (@tracks) {
+        $self->log(info => "track added: $track");
+        $self->enqueue_track($track);
+    }
     $self->track_signal->broadcast;
-    return $track;
 }
 
 # blocks
