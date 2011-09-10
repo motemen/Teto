@@ -11,6 +11,9 @@
 
     <section class="feed">
       <h1><img src="http://www.st-hatena.com/users/mo/motemen/profile.gif"> <a href="http://b.hatena.ne.jp/motemen/" class="title">はてなブックマーク - en.vio.us</a> <a href="http://b.hatena.ne.jp/motemen/" class="url">b.hatena.ne.jp/motemen/?url=http://www.nicovideo.jp/</a></h1>
+      <div class="control">
+        <a class="button">Play this list</a>
+      </div>
       <div class="playlist">
         <ol>
           <li class="track even playing">

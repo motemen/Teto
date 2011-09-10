@@ -36,15 +36,16 @@ section {
 }
 
 section#feeder {
-  width: 840px;
+  width: 690px;
   float: left;
 }
 
 section#queue {
-  width: 190px;
+  width: 340px;
   float: left;
-  font-size: smaller;
-  margin-left: 10px;
+  font-size: 90%;
+  // margin-left: 10px;
+  margin-right: 10px;
   padding: 0;
 
   h1 {
@@ -55,7 +56,8 @@ section#queue {
   }
 
   li {
-    padding: 0.5em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
   }
 }
 
@@ -109,7 +111,7 @@ li.track {
     background: {
       image: url(/image/speaker-orange.gif);
       repeat: no-repeat;
-      position: 0.3em center;
+      position: 8px center;
     }
   }
   &.load-more {
@@ -199,5 +201,26 @@ ul {
         max-height: 16px;
       }
     }
+  }
+}
+
+a.button {
+  border: 1px solid #DDD;
+  font-size: small;
+  padding: 0.2em 0.5em;
+
+  &:hover {
+    border-color: #999;
+  }
+}
+
+span.button {
+  cursor: pointer;
+}
+
+#queue span.button {
+  color: #DDD;
+  &:hover {
+  color: #999;
   }
 }

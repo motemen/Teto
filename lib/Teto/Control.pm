@@ -39,6 +39,12 @@ sub BUILD {
     }
 }
 
+sub play_feeder {
+    my ($self, $feeder) = @_;
+    $self->set_feeder($feeder);
+    $self->update;
+}
+
 sub set_feeder {
     my ($self, $feeder) = @_;
     $self->feeder($feeder);

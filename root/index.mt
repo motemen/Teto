@@ -48,12 +48,43 @@ $(function () {
     if (e.target == this && e.keyCode == 13) Teto.selectTrack($(this).attr('data-track-index'));
     });
 });
+
+$(function () {
+  $('#queue .track span.delete').live('click', function () {
+    $.post('/api/delete_track', { i: $(this).parent('li.track').attr('data-track-index') });
+  });
+});
     </script>
   </head>
   <body>
     <div id="container">
 
     <h1><a href="/">teto</a><a href="/stream" class="stream-link">stream</a></h1>
+
+    <section id="queue" class="queue">
+      <h1>Queue</h1>
+      <ul>
+? for (0 .. $#{ $control->queue->queue }) {
+?   my $track = $control->queue->queue->[$_];
+?   my $current_track_url = $control->queue->current_track && $control->queue->current_track->url || '';
+  <li class="track <?= $_ % 2 ? 'odd' : 'even' ?> <? if ($track->is_system) { ?>system<? } ?> <? if ($track->url eq $current_track_url) { ?>playing<? } ?>" data-track-index="<?= $_ ?>" tabindex="0">
+?   if ($track->is_system) {
+      <span class="title"><?= $track->title ?></span>
+?   } else {
+?     if (0 && $track->image) {
+      <img src="<?= $track->image ?>">
+?     }
+?     if (defined $track->title) {
+      <span class="title"><?= $track->title ?></span>
+?     } else {
+      <span class="title not-loaded">(not loaded)</span>
+?     }
+?   }
+    <span class="button delete" tabindex="0">×</span>
+  </li>
+? }
+      </ul>
+    </section>
 
     <nav>
       <ul id="select-feeder">
@@ -69,29 +100,6 @@ $(function () {
 ? if (my $feeder = $control->feeder) {
 ?=  $_mt->render_file('_feeder.mt', $feeder, $control);
 ? }
-    </section>
-
-    <section id="queue" class="queue">
-      <h1>Queue</h1>
-      <ul>
-? for (0 .. $#{ $control->queue->queue }) {
-?   my $track = $control->queue->queue->[$_];
-  <li class="track <?= $_ % 2 ? 'odd' : 'even' ?> <? if ($track->is_system) { ?>system<? } ?>" data-track-index="<?= $_ ?>" tabindex="0">
-?   if ($track->is_system) {
-      <span class="title"><?= $track->title ?></span>
-?   } else {
-?     if (0 && $track->image) {
-      <img src="<?= $track->image ?>">
-?     }
-?     if (defined $track->title) {
-      <span class="title"><?= $track->title ?></span>
-?     } else {
-      <span class="title not-loaded">(not loaded)</span>
-?     }
-?   }
-? }
-  </li>
-      </ul>
     </section>
 
     </div>

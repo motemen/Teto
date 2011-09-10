@@ -126,7 +126,7 @@ sub feed_url {
 after feed_url => sub {
     my $self = shift;
     $self->log(debug => 'broadcast after feed_url');
-    $self->signal->broadcast;
+    $self->signal->broadcast; # Control が受け取ってトラックを Queue に渡す
 };
 
 sub feed_next_url {

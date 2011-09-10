@@ -1,3 +1,4 @@
+#!/usr/bin/env perl
 use strict;
 use warnings;
 use lib 'lib';
@@ -10,7 +11,7 @@ use Plack::Builder;
 use Plack::App::File;
 
 my $runner = Plack::Runner->new(server => 'Twiggy', env => 'production');
-$runner->parse_options(@ARGV);
+$runner->parse_options(-port => 1925, @ARGV);
 
 if ({ @{ $runner->{options} } }->{daap}) {
     require Teto::DAAP;

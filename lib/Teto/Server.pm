@@ -43,6 +43,7 @@ sub _build_router {
     $router->connect('/api/feeder' => { action => 'api_feeder' });
     $router->connect('/api/track'  => { action => 'api_track' });
     $router->connect('/api/skip'   => { action => 'api_skip' });
+    $router->connect('/api/delete_track' => { action => 'api_delete_track' });
     $router->connect('/'           => { action => 'index' });
     return $router;
 }
@@ -180,6 +181,21 @@ sub api_skip {
     }
 
     return $self->render_html('_feeder.mt', $control->feeder, $control);
+}
+
+sub api_delete_track {
+    my ($self, $env) = @_;
+    my $control = $self->build_control_for_remote_addr($env->{REMOTE_ADDR});
+    my $req = Plack::Request->new($env);
+
+    if ($req->method eq 'POST') {
+        my $i = $req->param('i');
+        if ($i > 0) {
+            splice @{ $control->queue->queue }, $i, 1;
+        }
+    }
+
+    return [ 204, [], [] ];
 }
 
 1;

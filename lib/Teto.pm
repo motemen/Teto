@@ -71,9 +71,11 @@ sub feed_url {
         async { $feeder->push_track_url($url); $feeder->signal->broadcast };
         return $feeder;
     } else {
-        my $feeder = Teto::Feeder->new(url => $url);
-        async { $feeder->feed };
-        return $self->feeders->{ Teto::Feeder->uri_canonical($url) } ||= $feeder;
+        return $self->feeders->{ Teto::Feeder->uri_canonical($url) } ||= do {
+            my $feeder = Teto::Feeder->new(url => $url);
+            async { $feeder->feed };
+            $feeder;
+        };
     }
 }
 
