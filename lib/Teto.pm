@@ -54,12 +54,6 @@ sub _build_server {
     return Teto::Server->new;
 }
 
-sub _build_control {
-    my $self = shift;
-    require Teto::Control;
-    return Teto::Control->new(buffer => $self->buffer);
-}
-
 sub feed_url {
     my ($self, $url) = @_;
 
@@ -71,11 +65,12 @@ sub feed_url {
         async { $feeder->push_track_url($url); $feeder->signal->broadcast };
         return $feeder;
     } else {
-        return $self->feeders->{ Teto::Feeder->uri_canonical($url) } ||= do {
+        my $feeder = $self->feeders->{ Teto::Feeder->uri_canonical($url) } ||= do {
             my $feeder = Teto::Feeder->new(url => $url);
             async { $feeder->feed };
             $feeder;
         };
+        return $feeder;
     }
 }
 

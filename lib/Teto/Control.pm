@@ -1,6 +1,7 @@
 package Teto::Control;
 use Mouse;
 use Coro;
+use List::MoreUtils qw(first_value);
 
 with 'Teto::Role::Log';
 
@@ -33,7 +34,9 @@ no Mouse;
 sub BUILD {
     my $self = shift;
     require Teto;
-    if (my $feeder = [ values %{ Teto->feeders } ]->[0]) {
+    my $url = first_value { $_ ne Teto::Context->URL_SCRATCH } keys %{ Teto->feeders };
+       $url ||= Teto::Context->URL_SCRATCH;
+    if (my $feeder = Teto->feeders->{$url}) {
         $self->set_feeder($feeder);
         async { $self->update };
     }
