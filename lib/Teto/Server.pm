@@ -2,7 +2,7 @@ package Teto::Server;
 use Mouse;
 use Teto;
 use Teto::Control;
-use Teto::Feeder;
+use Teto::Playlist;
 use Teto::Worker::ReadBuffer;
 use Coro;
 use Encode;
@@ -42,7 +42,7 @@ sub _build_router {
     my $router = Router::Simple->new;
     $router->connect('/stream'     => { action => 'stream' });
     $router->connect('/mock'       => { action => 'mock' });
-    $router->connect('/api/feeder' => { action => 'api_feeder' });
+    $router->connect('/api/playlist' => { action => 'api_playlist' });
     $router->connect('/api/track'  => { action => 'api_track' });
     $router->connect('/api/skip'   => { action => 'api_skip' });
     $router->connect('/api/delete_track' => { action => 'api_delete_track' });
@@ -137,22 +137,22 @@ sub stream {
     };
 }
 
-sub api_feeder {
+sub api_playlist {
     my ($self, $env) = @_;
 
     my $control = $self->build_control_for_remote_addr($env->{REMOTE_ADDR});
     my $req = Plack::Request->new($env);
     my $url = $req->param('url') || '';
-    my $feeder = Teto->feeders->{$url};
+    my $playlist = Teto->playlists->{$url};
     if ($req->method eq 'POST') {
-        $feeder ||= Teto::Feeder->feed_async($url);
-        if ($feeder) {
-            $control->set_feeder($feeder);
+        $playlist ||= Teto::Playlist->feed_async($url);
+        if ($playlist) {
+            $control->set_playlist($playlist);
             # $control->update;
         }
     }
 
-    return $self->render_html('_feeder.mt', $feeder || $control->feeder, $control);
+    return $self->render_html('_playlist.mt', $playlist || $control->playlist, $control);
 }
 
 # sub api_track {
@@ -162,15 +162,15 @@ sub api_feeder {
 # 
 #     if ($req->method eq 'POST') {
 #         my $index = $req->param('index');
-#         my $url = $req->param('feeder');
-#         if ($url && (my $feeder = Teto->feeders->{$url})) {
-#             $control->set_feeder($feeder);
+#         my $url = $req->param('playlist');
+#         if ($url && (my $playlist = Teto->playlists->{$url})) {
+#             $control->set_playlist($playlist);
 #         }
 #         $control->index($index);
 #         async { $control->update };
 #     }
 # 
-#     return $self->render_html('_feeder.mt', $control->feeder, $control);
+#     return $self->render_html('_playlist.mt', $control->playlist, $control);
 # }
 
 sub api_skip {
@@ -186,7 +186,7 @@ sub api_skip {
         }
     }
 
-    return $self->render_html('_feeder.mt', $control->feeder, $control);
+    return $self->render_html('_playlist.mt', $control->playlist, $control);
 }
 
 sub api_delete_track {

@@ -1,6 +1,6 @@
 package Teto::DAAP;
 use Mouse;
-use Teto::Feeder;
+use Teto::Playlist;
 use Teto::Track;
 use AnyEvent::DAAP::Server;
 use Sys::Hostname;
@@ -26,11 +26,11 @@ sub BUILD {
     my $self = shift;
     $self->daap_server->setup;
 
-    Teto::Feeder->meta->add_after_method_modifier(
+    Teto::Playlist->meta->add_after_method_modifier(
         feed_url => sub {
-            my $feeder = shift;
-            $self->daap_server->add_track($_->as_daap_track) for $feeder->tracks;
-            $self->daap_server->add_playlist($feeder->as_daap_playlist);
+            my $playlist = shift;
+            $self->daap_server->add_track($_->as_daap_track) for $playlist->tracks;
+            $self->daap_server->add_playlist($playlist->as_daap_playlist);
             $self->daap_server->database_updated;
         }
     );
@@ -112,7 +112,7 @@ sub as_daap_track {
     return $track;
 }
 
-package Teto::Feeder;
+package Teto::Playlist;
 use AnyEvent::DAAP::Server::Playlist;
 
 sub dmap_playlist_id {

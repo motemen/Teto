@@ -17,12 +17,12 @@ package Teto::Context;
 use Mouse;
 use Coro;
 
-has feeders => (
+has playlists => (
     is  => 'rw',
-    isa => 'HashRef[Teto::Feeder]',
+    isa => 'HashRef[Teto::Playlist]',
     default => sub {
-        require Teto::Feeder;
-        return  Teto::Feeder->all;
+        require Teto::Playlist;
+        return  Teto::Playlist->all;
     },
 );
 

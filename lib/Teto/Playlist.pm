@@ -1,4 +1,4 @@
-package Teto::Feeder;
+package Teto::Playlist;
 use Mouse;
 use MouseX::Types::URI;
 use AnyEvent;

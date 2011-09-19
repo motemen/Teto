@@ -8,41 +8,41 @@
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
     <script type="text/javascript">
 var Teto = {};
-Teto.feederURL = null;
-Teto.selectFeeder = function (url) {
-  $.get('/api/feeder', { url: url }).success(
+Teto.playlistURL = null;
+Teto.selectplaylist = function (url) {
+  $.get('/api/playlist', { url: url }).success(
     function (html) {
-    Teto.feederURL = url;
-    $('#feeder').html(html);
-      $('#select-feeder li').each(function () {
-        $(this).attr('data-feeder-url') == url ? $(this).addClass('selected') : $(this).removeClass('selected');
+    Teto.playlistURL = url;
+    $('#playlist').html(html);
+      $('#select-playlist li').each(function () {
+        $(this).attr('data-playlist-url') == url ? $(this).addClass('selected') : $(this).removeClass('selected');
       });
     }
   );
 };
 Teto.selectTrack = function (index) {
-  $.post('/api/track', { feeder: Teto.feederURL, index: index }).success(
+  $.post('/api/track', { playlist: Teto.playlistURL, index: index }).success(
     function (html) {
-      $('#feeder').html(html);
+      $('#playlist').html(html);
     }
   );
 };
-Teto.addNewFeeder = function () {
+Teto.addNewplaylist = function () {
   var url = prompt('Enter playlist URL', '');
   if (url) {
-    $.post('/api/feeder', { url: url });
+    $.post('/api/playlist', { url: url });
   }
 };
 $(function () {
-  $('#select-feeder li').live('click', function () {
-    if (this.id == 'add-new-feeder') {
-      Teto.addNewFeeder();
+  $('#select-playlist li').live('click', function () {
+    if (this.id == 'add-new-playlist') {
+      Teto.addNewplaylist();
     } else {
-      Teto.selectFeeder($(this).attr('data-feeder-url'));
+      Teto.selectplaylist($(this).attr('data-playlist-url'));
     }
   }).live('keypress', function (e) { if (e.keyCode == 13) $(this).click() });
 
-  $('#feeder li.track').live('click', function (e) {
+  $('#playlist li.track').live('click', function (e) {
     if (e.target == this) Teto.selectTrack($(this).attr('data-track-index'));
   }).live('keypress', function (e) {
     if (e.target == this && e.keyCode == 13) Teto.selectTrack($(this).attr('data-track-index'));
@@ -87,18 +87,18 @@ $(function () {
     </section>
 
     <nav>
-      <ul id="select-feeder">
-? my $feeder_url = $control->feeder && $control->feeder->url || '';
-? for my $feeder (values %{ Teto->feeders }) {
-        <li class="<? if ($feeder->url eq $feeder_url) { ?>selected<? } ?>" tabindex="0" data-feeder-url="<?= $feeder->url ?>"><? if ($feeder->image) { ?><span class="icon-container"><img src="<?= $feeder->image ?>"></span> <? } ?><?= $feeder->title || $feeder->url ?></li>
+      <ul id="select-playlist">
+? my $playlist_url = $control->playlist && $control->playlist->url || '';
+? for my $playlist (values %{ Teto->playlists }) {
+        <li class="<? if ($playlist->url eq $playlist_url) { ?>selected<? } ?>" tabindex="0" data-playlist-url="<?= $playlist->url ?>"><? if ($playlist->image) { ?><span class="icon-container"><img src="<?= $playlist->image ?>"></span> <? } ?><?= $playlist->title || $playlist->url ?></li>
 ? }
-        <li id="add-new-feeder" tabindex="0">&nbsp;+&nbsp;</li>
+        <li id="add-new-playlist" tabindex="0">&nbsp;+&nbsp;</li>
       </ul>
     </nav>
 
-    <section id="feeder" class="feeder">
-? if (my $feeder = $control->feeder) {
-?=  $_mt->render_file('_feeder.mt', $feeder, $control);
+    <section id="playlist" class="playlist">
+? if (my $playlist = $control->playlist) {
+?=  $_mt->render_file('_playlist.mt', $playlist, $control);
 ? }
     </section>
 

@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use lib 'lib';
 use Teto;
-use Teto::Feeder;
+use Teto::Playlist;
 use Coro;
 use Coro::LWP; # load as fast as possible
 use Coro::Debug;
@@ -27,7 +27,7 @@ async {
         next unless defined $line;
         chomp $line;
         next unless $line;
-        Teto::Feeder->feed_async($line);
+        Teto::Playlist->feed_async($line);
     }
 };
 
@@ -41,7 +41,7 @@ $runner->set_options(
     }
 );
 
-Teto::Feeder->feed_async($_) for @{ $runner->{argv} };
+Teto::Playlist->feed_async($_) for @{ $runner->{argv} };
 
 my $url_map = builder {
     mount '/css' => builder {

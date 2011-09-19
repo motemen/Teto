@@ -7,7 +7,7 @@ with 'Teto::Role::Log';
 
 has playlist => (
     is  => 'rw',
-    isa => 'Teto::Feeder',
+    isa => 'Teto::Playlist',
 );
 
 has queue => (
