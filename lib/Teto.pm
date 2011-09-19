@@ -17,12 +17,6 @@ package Teto::Context;
 use Mouse;
 use Coro;
 
-has buffer => (
-    is  => 'rw',
-    isa => 'Teto::Buffer',
-    lazy_build => 1,
-);
-
 has feeders => (
     is  => 'rw',
     isa => 'HashRef[Teto::Feeder]',
