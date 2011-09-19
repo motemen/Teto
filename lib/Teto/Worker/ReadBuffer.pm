@@ -76,13 +76,14 @@ sub read_one_track {
         if (length $buf == 0 || $bytes_to_read == 0) {
             if ($track->is_done) {
                 close $fh;
-                $self->queue->dequeue;
+                $self->queue->dequeue; # FIXME ここで queue の中身かわってる場合がある
 
                 $self->log(debug => 'track done');
 
                 return;
             }
 
+            # TODO ここで track のステータス見る
             $track->buffer_signal->wait;
         } else {
             $buf = $self->icemeta->interleave($buf) if $self->icemeta;

@@ -4,13 +4,15 @@ use MouseX::Types::URI;
 use AnyEvent;
 use WWW::Mechanize;
 use WWW::Mechanize::AutoPager;
+use Coro;
 # use Coro::LWP; # load in teto.pl
-use Coro::Signal;
 use Try::Tiny;
 use JSON::XS;
 use HTML::TreeBuilder::XPath;
 use URI;
 use URI::Escape;
+use Tie::IxHash;
+
 use Teto::Track;
 use Teto::Track::System;
 
@@ -58,11 +60,14 @@ has autopagerize => (
     default => 1,
 );
 
-has signal => (
+has track_signal => (
     is  => 'rw',
-    isa => 'Coro::Signal',
     default => sub { Coro::Signal->new },
 );
+
+no Mouse;
+
+__PACKAGE__->meta->make_immutable;
 
 # share HTML::AutoPagerize
 sub _build_user_agent {
@@ -83,16 +88,35 @@ sub _build_user_agent {
     return $ua;
 }
 
-sub feed {
-    my $self = shift;
-    my $url = $self->url;
+use constant URL_SCRATCH => 'teto:scratch';
+
+sub all {
+    return our $All ||= do {
+        my $all = {};
+        tie %$all, Tie::IxHash::;
+        $all->{ URL_SCRATCH() } = __PACKAGE__->new(
+            url   => URL_SCRATCH,
+            title => '*scratch*',
+        );
+        $all;
+    };
+}
+
+# worker 化
+sub feed_async {
+    my ($class, $url) = @_;
 
     if (Teto::Track->is_track_url($url)) {
+        my $self = $class->all->{+URL_SCRATCH};
         $self->push_track_url($url);
-        return 1;
+        async { $self->track_signal->broadcast };
+    } else {
+        my $self = $class->all->{ URI->new($url)->canonical } ||= do {
+            my $self = $class->new(url => $url);
+            async { $self->feed_url($url) };
+            $self;
+        };
     }
-
-    return $self->feed_url($url);
 }
 
 sub feed_url {
@@ -111,23 +135,21 @@ sub feed_url {
 
     if ($self->autopagerize && (my $next_link = $self->user_agent->next_link)) {
         $self->log(info => "found next page $next_link");
-        $self->push_track(
-            Teto::Track::System->new(title => "next page: $next_link", code => sub { $self->feed_next_url })
+        my $track = Teto::Track::System->new(
+            title => "next page: $next_link",
+            code  => sub { $self->feed_next_url }
         );
+        $self->push_track($track);
     }
 
     $self->guess_title_from_res($res) unless $self->title;
     $self->guess_image_from_res($res) unless $self->image;
 
+    $self->log(debug => 'broadcast after feed_url');
+    $self->track_signal->broadcast; # -> Worker::FeedTracksToQueue
+
     return $found;
 }
-
-# TODO feed tracks delta
-after feed_url => sub {
-    my $self = shift;
-    $self->log(debug => 'broadcast after feed_url');
-    $self->signal->broadcast; # Control が受け取ってトラックを Queue に渡す
-};
 
 sub feed_next_url {
     my $self = shift;
@@ -142,6 +164,8 @@ sub push_track_url {
     $self->push_track($track);
     return $track;
 }
+
+### Scraping
 
 sub feed_by_res {
     my ($self, $res, $url) = @_;
@@ -233,14 +257,5 @@ sub guess_image_from_res {
 
     $self->image('http://cdn-ak.favicon.st-hatena.com/?url=' . uri_escape($res->base));
 }
-
-sub uri_canonical {
-    my ($self, $uri) = @_;
-    return URI->new($uri)->canonical;
-}
-
-no Mouse;
-
-__PACKAGE__->meta->make_immutable;
 
 1;

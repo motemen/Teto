@@ -124,13 +124,13 @@ sub stream {
                 });
             } else {
                 # XXX not sure this works
-                while (1) {
-                    my $bytes = $control->queue->read_buffer;
-                    while (length (my $chunk = substr $bytes, 0, 1024, '')) {
-                        $writer->write($bytes);
-                        cede;
-                    }
-                }
+                # while (1) {
+                #     my $bytes = $control->queue->read_buffer;
+                #     while (length (my $chunk = substr $bytes, 0, 1024, '')) {
+                #         $writer->write($bytes);
+                #         cede;
+                #     }
+                # }
             }
         };
     };
@@ -147,30 +147,30 @@ sub api_feeder {
         $feeder ||= Teto->feed_url($url);
         if ($feeder) {
             $control->set_feeder($feeder);
-            $control->update;
+            # $control->update;
         }
     }
 
     return $self->render_html('_feeder.mt', $feeder || $control->feeder, $control);
 }
 
-sub api_track {
-    my ($self, $env) = @_;
-    my $control = $self->build_control_for_remote_addr($env->{REMOTE_ADDR});
-    my $req = Plack::Request->new($env);
-
-    if ($req->method eq 'POST') {
-        my $index = $req->param('index');
-        my $url = $req->param('feeder');
-        if ($url && (my $feeder = Teto->feeders->{$url})) {
-            $control->set_feeder($feeder);
-        }
-        $control->index($index);
-        async { $control->update };
-    }
-
-    return $self->render_html('_feeder.mt', $control->feeder, $control);
-}
+# sub api_track {
+#     my ($self, $env) = @_;
+#     my $control = $self->build_control_for_remote_addr($env->{REMOTE_ADDR});
+#     my $req = Plack::Request->new($env);
+# 
+#     if ($req->method eq 'POST') {
+#         my $index = $req->param('index');
+#         my $url = $req->param('feeder');
+#         if ($url && (my $feeder = Teto->feeders->{$url})) {
+#             $control->set_feeder($feeder);
+#         }
+#         $control->index($index);
+#         async { $control->update };
+#     }
+# 
+#     return $self->render_html('_feeder.mt', $control->feeder, $control);
+# }
 
 sub api_skip {
     my ($self, $env) = @_;
