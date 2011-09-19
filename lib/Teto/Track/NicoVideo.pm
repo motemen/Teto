@@ -52,6 +52,7 @@ sub wait_in_queue {
         $self->log(info => 'another track is doing request; wait in queue');
         $self->log(debug => "queue: @RequestQueue");
         schedule;
+        $self->log(info => 'dequeued; my turn!');
     }
 }
 
