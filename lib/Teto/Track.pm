@@ -48,7 +48,7 @@ has image => (
 has user_agent => (
     is  => 'rw',
     isa => 'LWP::UserAgent',
-    default => sub { LWP::UserAgent->new }
+    default => sub { LWP::UserAgent->new(show_progress => 1) }
 );
 
 has error => (
@@ -108,6 +108,7 @@ sub is_done {
 sub done {
     my $self = shift;
     $self->status(TRACK_STATUS_DONE);
+    # $self->log(debug => 'broadcast buffer_signal');
     $self->buffer_signal->broadcast;
 }
 
@@ -275,6 +276,7 @@ sub play {
 sub write {
     my $self = shift;
     $self->append_buffer($_[0]);
+    # $self->log(debug => 'broadcast buffer_signal');
     $self->buffer_signal->broadcast;
 }
 

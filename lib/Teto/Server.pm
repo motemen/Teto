@@ -92,24 +92,32 @@ sub stream {
         unless ($env->{HTTP_ICY_METADATA}) {
             $control->queue->icemeta(undef);
         }
+
+        require Teto::Worker::ReadBuffer;
+        my $read_buffer = Teto::Worker::ReadBuffer->spawn(
+            queue => $control->queue,
+            ( !$env->{HTTP_ICY_METADATA} ? ( icemeta => undef ) : () ),
+        );
+
+        my $writer = $respond->([
+            200, [
+                'Content-Type' => 'audio/mp3',
+                $control->queue->icemeta ? ( 'Icy-Metaint'  => $control->queue->icemeta->interval ) : (),
+                'Icy-Name'       => 'tetocast',
+                'Icy-Url'        => $req->uri,
+                'Ice-Audio-Info' => 'ice-samplerate=44100;ice-bitrate=192000;ice-channels=2',
+            ]
+        ]);
+
         async {
             $Coro::current->desc('streamer coro');
-            my $writer = $respond->([
-                200, [
-                    'Content-Type' => 'audio/mp3',
-                    $control->queue->icemeta ? ( 'Icy-Metaint'  => $control->queue->icemeta->interval ) : (),
-                    'Icy-Name'       => 'tetocast',
-                    'Icy-Url'        => $req->uri,
-                    'Ice-Audio-Info' => 'ice-samplerate=44100;ice-bitrate=192000;ice-channels=2',
-                ]
-            ]);
+
             if (ref $writer eq 'Twiggy::Writer') {
                 $writer->{handle}->on_drain(unblock_sub {
-                    # $self->log(debug => 'on_drain');
-                    # Coro::Debug::trace();
-                    my $bytes = $control->queue->read_buffer;
+                    $self->log(debug => 'on_drain');
+                    my $bytes = $read_buffer->channel->get;
+                    $self->log(debug => 'read ' . length($bytes) . ' bytes');
                     $writer->write($bytes);
-                    # $self->log(debug => 'sent', length $bytes, 'bytes');
                 });
                 $writer->{handle}->on_error(sub {
                     my ($handle, $fatal, $msg) = @_;
