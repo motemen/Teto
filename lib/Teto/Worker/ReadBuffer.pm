@@ -16,6 +16,7 @@ has icemeta => (
 );
 
 # TODO これバイト列専用に
+# TODO 複数人対応のときにこれ複数に・icemeta をこれに持たせる
 has channel => (
     is  => 'rw',
     default => sub { Coro::Channel->new },
@@ -40,26 +41,13 @@ sub work_async {
     };
 }
 
-sub wait_for_current_track {
-    my $self = shift;
-
-    my $track;
-    until ($track = $self->queue->queue->[0]) {
-        $self->log(debug => 'wait for queue->track_signal');
-        $self->queue->track_signal->wait;
-        $self->log(debug => 'back from queue->track_signal');
-    }
-    $self->icemeta->metadata->{title} = $track->title if $self->icemeta;
-
-    return $track;
-}
-
 sub read_one_track {
     my $self = shift;
 
     $self->log(debug => 'read_one_track');
 
-    my $track = $self->wait_for_current_track;
+    my $track = $self->queue->wait_for_track;
+    $self->icemeta->metadata->{title} = $track->title if $self->icemeta;
 
     $self->log(debug => 'track: ' . $track->url);
 
@@ -78,7 +66,7 @@ sub read_one_track {
             $track->buffer_signal->broadcast;
 
             close $fh;
-            $self->queue->dequeue_track;
+            $self->queue->dequeue;
 
             return;
         }
@@ -88,19 +76,17 @@ sub read_one_track {
         if (length $buf == 0 || $bytes_to_read == 0) {
             if ($track->is_done) {
                 close $fh;
-                $self->queue->dequeue_track;
+                $self->queue->dequeue;
 
                 $self->log(debug => 'track done');
 
                 return;
             }
 
-            # $self->log(debug => 'wait for track->buffer_signal');
             $track->buffer_signal->wait;
-            # $self->log(debug => 'back from track->buffer_signal');
         } else {
             $buf = $self->icemeta->interleave($buf) if $self->icemeta;
-            $self->log(debug => 'put ' . length($buf) . ' bytes');
+            # $self->log(debug => 'put ' . length($buf) . ' bytes');
             $self->channel->put($buf);
             cede;
         }

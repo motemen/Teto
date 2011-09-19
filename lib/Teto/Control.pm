@@ -64,14 +64,9 @@ sub update {
     $self->feed_tracks_to_queue;
 }
 
-sub reset {
-    my $self = shift;
-    $self->queue->icemeta->reset_position if $self->queue->icemeta;
-}
-
 sub feed_tracks_to_queue {
     my $self = shift;
-    $self->queue->clear_queue;
+    $self->queue->clear;
 
     my @tracks = $self->feeder->tracks;
     my $num_tracks = @tracks;

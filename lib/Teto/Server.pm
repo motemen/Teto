@@ -2,6 +2,7 @@ package Teto::Server;
 use Mouse;
 use Teto;
 use Teto::Control;
+use Teto::Worker::ReadBuffer;
 use Coro;
 use Encode;
 use Router::Simple;
@@ -89,11 +90,7 @@ sub stream {
     my $control = $self->build_control_for_remote_addr($env->{REMOTE_ADDR});
     return sub {
         my $respond = shift;
-        unless ($env->{HTTP_ICY_METADATA}) {
-            $control->queue->icemeta(undef);
-        }
 
-        require Teto::Worker::ReadBuffer;
         my $read_buffer = Teto::Worker::ReadBuffer->spawn(
             queue => $control->queue,
             ( !$env->{HTTP_ICY_METADATA} ? ( icemeta => undef ) : () ),
@@ -102,7 +99,7 @@ sub stream {
         my $writer = $respond->([
             200, [
                 'Content-Type' => 'audio/mp3',
-                $control->queue->icemeta ? ( 'Icy-Metaint'  => $control->queue->icemeta->interval ) : (),
+                $read_buffer->icemeta ? ( 'Icy-Metaint'  => $read_buffer->icemeta->interval ) : (),
                 'Icy-Name'       => 'tetocast',
                 'Icy-Url'        => $req->uri,
                 'Ice-Audio-Info' => 'ice-samplerate=44100;ice-bitrate=192000;ice-channels=2',
@@ -114,16 +111,16 @@ sub stream {
 
             if (ref $writer eq 'Twiggy::Writer') {
                 $writer->{handle}->on_drain(unblock_sub {
-                    $self->log(debug => 'on_drain');
+                    # $self->log(debug => 'on_drain');
                     my $bytes = $read_buffer->channel->get;
-                    $self->log(debug => 'read ' . length($bytes) . ' bytes');
+                    # $self->log(debug => 'read ' . length($bytes) . ' bytes');
                     $writer->write($bytes);
                 });
                 $writer->{handle}->on_error(sub {
                     my ($handle, $fatal, $msg) = @_;
                     $self->log($fatal ? 'error' : 'warn', $msg);
                     $writer->close;
-                    $control->reset;
+                    # $read_buffer->icemeta->reset_position;
                 });
             } else {
                 # XXX not sure this works
@@ -199,7 +196,7 @@ sub api_delete_track {
     if ($req->method eq 'POST') {
         my $i = $req->param('i');
         if ($i > 0) {
-            splice @{ $control->queue->queue }, $i, 1;
+            splice @{ $control->queue->tracks }, $i, 1;
         }
     }
 

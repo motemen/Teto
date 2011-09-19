@@ -64,8 +64,8 @@ $(function () {
     <section id="queue" class="queue">
       <h1>Queue</h1>
       <ul>
-? for (0 .. $#{ $control->queue->queue }) {
-?   my $track = $control->queue->queue->[$_];
+? for (0 .. $#{ $control->queue->tracks }) {
+?   my $track = $control->queue->tracks->[$_];
 ?   my $current_track_url = $control->queue->current_track && $control->queue->current_track->url || '';
   <li class="track <?= $_ % 2 ? 'odd' : 'even' ?> <? if ($track->is_system) { ?>system<? } ?> <? if ($track->url eq $current_track_url) { ?>playing<? } ?>" data-track-index="<?= $_ ?>" tabindex="0">
 ?   if ($track->is_system) {

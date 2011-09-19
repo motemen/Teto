@@ -1,46 +1,27 @@
 package Teto::Queue;
 use Mouse;
-use Coro;
-use Coro::Signal;
-use Teto::Track;
-use Data::Interleave::IcecastMetadata;
 
 # isa
 # - queue of tracks
-# does
-# - supply track byte sequence
 
 with 'Teto::Role::Log';
 
-has queue => (
+has tracks => (
     is  => 'rw',
     isa => 'ArrayRef[Teto::Track]',
     default => sub { [] },
     traits  => [ 'Array' ],
     handles => {
-        enqueue_track => 'push',
-        dequeue_track => 'shift',
-        queue_size    => 'count',
-        clear_queue   => 'clear',
+        enqueue => 'push',
+        dequeue => 'shift',
+        clear   => 'clear',
     },
-);
-
-has fh => (
-    is  => 'rw',
-    isa => 'FileHandle',
-    lazy_build => 1,
 );
 
 has track_signal => (
     is  => 'rw',
     isa => 'Coro::Signal',
     default => sub { Coro::Signal->new },
-);
-
-has icemeta => (
-    is  => 'rw',
-    isa => 'Maybe[Data::Interleave::IcecastMetadata]',
-    default => sub { Data::Interleave::IcecastMetadata->new },
 );
 
 __PACKAGE__->meta->make_immutable;
@@ -51,115 +32,32 @@ sub add_track {
     my ($self, @tracks) = @_;
     foreach my $track (@tracks) {
         $self->log(info => "track added: $track");
-        $self->enqueue_track($track);
+        $self->enqueue($track);
     }
     $self->track_signal->broadcast;
 }
 
-# blocks
-sub next_track {
-    my $self = shift;
-    $self->log(debug => 'next_track');
-    $self->dequeue_track;
-
-    my $track = $self->wait_current_track;
-    $track->prepare;
-    $self->log(info => "next track: $track");
-    return $track;
-}
-
 sub current_track {
     my $self = shift;
-    return $self->queue->[0];
-}
-
-sub wait_current_track {
-    my $self = shift;
-    until ($self->current_track) {
-        $self->track_signal->wait;
-    }
-    $self->icemeta->metadata->{title} = $self->current_track->title if $self->icemeta;
-    return $self->current_track;
+    return $self->tracks->[0];
 }
 
 sub succeeding_tracks {
     my $self = shift;
-    my $n = shift || 2;
-    return grep { $_ } map { $self->queue->[$_] } (1 .. $n);
+    my $n    = shift || 2;
+    return grep { $_ } map { $self->tracks->[$_] } (1 .. $n);
 }
 
-sub read_buffer {
+sub wait_for_track {
     my $self = shift;
-    my $data = $self->_read_buffer;
-    $data = $self->icemeta->interleave($data) if $self->icemeta;
-    return $data;
-}
-
-# XXX make blocking as least as possible
-sub _read_buffer {
-    my $self = shift;
-
-    my $track = $self->wait_current_track; # blocks
-
-    unless ($self->has_fh) {
-        $self->open_fh or do {
-            $self->next_track;
-            return $self->_read_buffer;
-        }
+    
+    until ($self->current_track) {
+        $self->log(debug => 'wait for queue->track_signal');
+        $self->track_signal->wait;
+        $self->log(debug => 'back from queue->track_signal');
     }
 
-    # check negative length???
-    # TODO avoid current track's buffer got GC'ed
-    my $bytes_to_read = length($track->buffer) - tell($self->fh);
-    if ($bytes_to_read < 0) {
-        $track->add_error(q(BUG: buffer got GC'ed));
-        $self->log(error => q(track buffer got GC'ed));
-        $track->done;
-        $track->buffer_signal->broadcast;
-        $self->close_fh;
-        $self->dequeue_track;
-        return '';
-    }
-
-    read $self->fh, my ($buf), $bytes_to_read;
-
-    if ($track->is_done) {
-        $self->close_fh;
-        $self->dequeue_track;
-        return $buf || $self->_read_buffer;
-    }
-
-    if (length $buf == 0 || $bytes_to_read == 0) {
-        $track->buffer_signal->wait;
-        return $self->_read_buffer;
-    }
-
-    return $buf;
-}
-
-sub open_fh {
-    my $self = shift;
-    my $track = $self->wait_current_track;
-    # XXX blocks
-    # $track->play or do {
-    #     $self->log(warn => "playing $track failed");
-    #     $self->next_track;
-    #     return $self->open_fh;
-    # };
-    # preload
-    async {
-        $_->play for $track, $self->succeeding_tracks;
-    };
-    open $self->{fh}, '<', $track->buffer_ref or do {
-        $self->log(error => $!);
-        return undef;
-    };
-}
-
-sub close_fh {
-    my $self = shift;
-    close $self->fh or $self->log(warn => $!);
-    $self->clear_fh;
+    return $self->current_track;
 }
 
 1;
