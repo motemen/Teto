@@ -1,5 +1,7 @@
 package Teto::Control;
 use Mouse;
+use Teto::Queue;
+use Teto::Feeder;
 use Teto::Worker::FeedTracksToQueue;
 
 with 'Teto::Role::Log';
@@ -7,7 +9,7 @@ with 'Teto::Role::Log';
 has queue => (
     is  => 'rw',
     isa => 'Teto::Queue',
-    default => sub { require Teto::Queue; Teto::Queue->new },
+    default => sub { Teto::Queue->new },
 );
 
 has feeder => (
@@ -22,7 +24,6 @@ no Mouse;
 sub BUILD {
     my $self = shift;
 
-    require Teto::Feeder;
     my $feeder = (values %{ Teto::Feeder->all })[-1];
     $self->set_feeder($feeder);
 }

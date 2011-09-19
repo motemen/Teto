@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use lib 'lib';
 use Teto;
+use Teto::Feeder;
 use Coro;
 use Coro::LWP; # load as fast as possible
 use Coro::Debug;
@@ -26,7 +27,7 @@ async {
         next unless defined $line;
         chomp $line;
         next unless $line;
-        Teto->feed_url($line);
+        Teto::Feeder->feed_async($line);
     }
 };
 
@@ -40,7 +41,7 @@ $runner->set_options(
     }
 );
 
-Teto->feed_url($_) for @{ $runner->{argv} };
+Teto::Feeder->feed_async($_) for @{ $runner->{argv} };
 
 my $url_map = builder {
     mount '/css' => builder {

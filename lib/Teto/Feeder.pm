@@ -106,17 +106,21 @@ sub all {
 sub feed_async {
     my ($class, $url) = @_;
 
+    my $self;
+
     if (Teto::Track->is_track_url($url)) {
-        my $self = $class->all->{+URL_SCRATCH};
+        $self = $class->all->{+URL_SCRATCH};
         $self->push_track_url($url);
         async { $self->track_signal->broadcast };
     } else {
-        my $self = $class->all->{ URI->new($url)->canonical } ||= do {
+        $self = $class->all->{ URI->new($url)->canonical } ||= do {
             my $self = $class->new(url => $url);
             async { $self->feed_url($url) };
             $self;
         };
     }
+
+    return $self;
 }
 
 sub feed_url {

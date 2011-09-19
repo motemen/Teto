@@ -2,6 +2,7 @@ package Teto::Server;
 use Mouse;
 use Teto;
 use Teto::Control;
+use Teto::Feeder;
 use Teto::Worker::ReadBuffer;
 use Coro;
 use Encode;
@@ -144,7 +145,7 @@ sub api_feeder {
     my $url = $req->param('url') || '';
     my $feeder = Teto->feeders->{$url};
     if ($req->method eq 'POST') {
-        $feeder ||= Teto->feed_url($url);
+        $feeder ||= Teto::Feeder->feed_async($url);
         if ($feeder) {
             $control->set_feeder($feeder);
             # $control->update;

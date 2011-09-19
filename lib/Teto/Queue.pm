@@ -1,5 +1,6 @@
 package Teto::Queue;
 use Mouse;
+use Coro::Signal;
 
 # isa
 # - queue of tracks

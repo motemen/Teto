@@ -44,15 +44,6 @@ sub _build_server {
     return Teto::Server->new;
 }
 
-sub feed_url {
-    my ($self, $url) = @_;
-
-    require Teto::Feeder;
-
-    # TODO worker 化
-    Teto::Feeder->feed_async($url);
-}
-
 __PACKAGE__->meta->make_immutable;
 
 package Teto;
@@ -60,11 +51,6 @@ package Teto;
 for my $method (Teto::Context->meta->get_attribute_list) {
     no strict 'refs';
     *$method = sub { shift->context->$method };
-}
-
-sub feed_url {
-    my $self = shift;
-    $self->context->feed_url(@_);
 }
 
 1;
