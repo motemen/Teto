@@ -37,6 +37,7 @@ sub work_async {
     my $self = shift;
 
     async {
+        $Coro::current->{desc} = 'ReadBuffer';
         $self->read_one_track while 1;
     };
 }

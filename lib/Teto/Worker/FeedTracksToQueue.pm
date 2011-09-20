@@ -34,6 +34,7 @@ sub work_async {
     my $self = shift;
 
     async {
+        $Coro::current->{desc} = 'FeedTracksToQueue';
         $self->work;
     };
 }

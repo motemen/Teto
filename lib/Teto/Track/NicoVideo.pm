@@ -88,8 +88,6 @@ sub _build_user_agent {
 sub _build_media_url {
     my $self = shift;
 
-    $self->log_coro('_build_media_url');
-
     $self->wait_in_queue;
 
     $self->log(debug => 'GET ' . $self->url);
