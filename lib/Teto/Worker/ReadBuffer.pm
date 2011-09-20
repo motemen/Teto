@@ -1,6 +1,7 @@
 package Teto::Worker::ReadBuffer;
 use Mouse;
 use Coro;
+use Teto::Coro::MarkedChannel;
 use Data::Interleave::IcecastMetadata;
 
 with 'Teto::Role::Log';
@@ -15,11 +16,10 @@ has icemeta => (
     default => sub { Data::Interleave::IcecastMetadata->new },
 );
 
-# TODO これバイト列専用に
 # TODO 複数人対応のときにこれ複数に・icemeta をこれに持たせる
 has channel => (
     is  => 'rw',
-    default => sub { Coro::Channel->new },
+    default => sub { Teto::Coro::MarkedChannel->new },
 );
 
 __PACKAGE__->meta->make_immutable;
@@ -52,7 +52,11 @@ sub read_one_track {
 
     $self->log(debug => 'track: ' . $track->url);
 
-    async { $track->play }; # ここ誰かに任せるべき
+    # ここ誰かに任せるべき
+    foreach my $t ($track, $self->queue->next_tracks) {
+        async { $t->play };
+    }
+
     open my $fh, '<', $track->buffer_ref or do {
         $self->log(error => $!);
         return;
@@ -64,7 +68,6 @@ sub read_one_track {
         if ($bytes_to_read < 0) {
             $track->log(error => q(track buffer got GC'ed));
             $track->done;
-            $track->buffer_signal->broadcast;
 
             close $fh;
             $self->queue->dequeue;
@@ -81,10 +84,11 @@ sub read_one_track {
 
                 $self->log(debug => 'track done');
 
+                $self->channel->put_mark;
+
                 return;
             }
 
-            # TODO ここで track のステータス見る
             $track->buffer_signal->wait;
         } else {
             $buf = $self->icemeta->interleave($buf) if $self->icemeta;

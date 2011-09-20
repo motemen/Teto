@@ -107,8 +107,10 @@ sub stream {
             ]
         ]);
 
+        $self->log(info => 'start streaming');
+
         async {
-            $Coro::current->desc('streamer coro');
+            $Coro::current->{desc} = 'streamer coro';
 
             if (ref $writer eq 'Twiggy::Writer') {
                 $writer->{handle}->on_drain(unblock_sub {

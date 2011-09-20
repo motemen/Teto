@@ -43,7 +43,7 @@ sub current_track {
     return $self->tracks->[0];
 }
 
-sub succeeding_tracks {
+sub next_tracks {
     my $self = shift;
     my $n    = shift || 2;
     return grep { $_ } map { $self->tracks->[$_] } (1 .. $n);
