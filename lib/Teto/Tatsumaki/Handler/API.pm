@@ -23,7 +23,7 @@ sub _get_playlist {
     my ($self, $playlist) = @_;
 
     my $control = $self->build_control;
-    my $playlist = $playlist || Teto::Playlist->of_url($self->request->param('url')) || $control->playlist;
+    $playlist ||= Teto::Playlist->of_url($self->request->param('url')) || $control->playlist;
     $self->render('_playlist.html', { 
         playlist => $playlist,
         control  => $control,

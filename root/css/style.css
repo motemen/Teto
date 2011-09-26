@@ -71,7 +71,7 @@ li.track {
   li.track:hover, li.track:focus {
     background-color: #EFEFF5; }
   li.track.playing {
-    background-image: url(/image/speaker-orange.gif);
+    background-image: url(/static/image/speaker-orange.gif);
     background-repeat: no-repeat;
     background-position: 8px center; }
   li.track.load-more {

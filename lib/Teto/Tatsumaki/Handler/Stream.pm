@@ -28,13 +28,12 @@ sub get {
         Ice_Audio_Info => 'ice-samplerate=44100;ice-bitrate=192000;ice-channels=2',
     );
 
-    $self->flush; # iTunes disconnects if header does not return immediately
+    $self->flush; # iTunes seems to disconnect if header does not return immediately
 
     async {
         $Coro::current->desc('streamer coro');
 
-        if (0 && $self->writer && $self->writer->isa('Twiggy::Writer')) {
-            # XXX
+        if ($self->get_writer->isa('Twiggy::Writer')) {
             $self->writer->{handle}->on_drain(unblock_sub {
                 my $bytes = $read_buffer->channel->get;
                 $self->writer->write($bytes);
@@ -52,9 +51,8 @@ sub get {
                     last;
                 };
             }
+            $self->finish;
         }
-
-        $self->finish;
     };
 }
 
