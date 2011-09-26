@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+    <ul>
+% for my $c (@{ $_[0]->{coros} }) {
+<li><%= $c->{coro}->{desc} %>: <pre><%= $c->{backtrace} %></pre></li>
+% }
+    </ul>
+  </body>
+</html>

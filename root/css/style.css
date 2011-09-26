@@ -1,0 +1,160 @@
+h1, h2 {
+  font-family: "Lucida Grande", sans-serif; }
+
+section {
+  border: 1px solid #BBB;
+  padding: 0 1em;
+  margin-bottom: 1em; }
+  section h1, section h2 {
+    font-weight: normal; }
+  section h1 img {
+    vertical-align: middle;
+    max-height: 36px; }
+  section h1 a.url {
+    font-size: small;
+    text-decoration: none;
+    color: #999; }
+
+#container {
+  width: 1080px;
+  margin-left: auto;
+  margin-right: auto; }
+
+section#playlist {
+  width: 690px;
+  float: left; }
+
+section#queue {
+  width: 340px;
+  float: left;
+  font-size: 90%;
+  margin-right: 10px;
+  padding: 0; }
+  section#queue h1 {
+    font-size: medium;
+    padding: 0.5em;
+    margin: 0;
+    text-align: center; }
+  section#queue li {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em; }
+
+a {
+  color: #1122ff; }
+  a:hover {
+    color: #5e69ff; }
+
+body {
+  font-family: Verdana, sans-serif; }
+
+#playlist li.track {
+  min-height: 50px; }
+
+li.track {
+  font-size: 90%;
+  padding: 0.3em;
+  padding-left: 24px;
+  clear: both; }
+  li.track.even {
+    background-color: #FAFAFA; }
+  li.track.odd {
+    background-color: #FFF; }
+  li.track.system {
+    color: #999;
+    background-color: #EAEAFA;
+    min-height: 0;
+    list-style: none;
+    line-height: 1.5em;
+    vertical-align: middle; }
+    li.track.system span.title {
+      font-size: 90%; }
+  li.track:hover, li.track:focus {
+    background-color: #EFEFF5; }
+  li.track.playing {
+    background-image: url(/image/speaker-orange.gif);
+    background-repeat: no-repeat;
+    background-position: 8px center; }
+  li.track.load-more {
+    font-size: larger;
+    text-align: center;
+    list-style: none; }
+    li.track.load-more:hover {
+      background-color: #D8D9F4;
+      cursor: pointer; }
+  li.track .title.not-loaded {
+    color: #666; }
+  li.track a.url {
+    text-decoration: none;
+    color: #999; }
+  li.track img {
+    float: right;
+    max-width: 60px;
+    max-height: 45px;
+    margin: 0.2em; }
+  li.track span.meta {
+    color: #999;
+    font-size: 90%; }
+  li.track span.status {
+    color: #AAA;
+    font-size: smaller; }
+    li.track span.status:before {
+      content: "status: "; }
+  li.track span.error {
+    color: #F88;
+    font-size: smaller;
+    border: 1px solid #FCC;
+    padding: 2px 4px; }
+    li.track span.error:before {
+      content: "error: "; }
+
+ul {
+  list-style: none;
+  padding: 0; }
+  ul li {
+    margin: 0; }
+
+#select-playlist {
+  list-style: none;
+  margin: 0;
+  padding: 0; }
+  #select-playlist li {
+    max-width: 20em;
+    height: 2em;
+    overflow: hidden;
+    float: left;
+    font-size: small;
+    margin-bottom: 2px;
+    margin-right: 2px;
+    border: 1px solid #DDD;
+    cursor: pointer;
+    opacity: 0.5; }
+    #select-playlist li.selected {
+      border-color: #BBB;
+      opacity: 1; }
+    #select-playlist li:hover, #select-playlist li:focus {
+      background-color: #EFEFF5; }
+    #select-playlist li .icon-container {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      text-align: center;
+      line-height: 24px; }
+      #select-playlist li .icon-container img {
+        vertical-align: middle;
+        max-width: 16px;
+        max-height: 16px; }
+
+a.button {
+  border: 1px solid #DDD;
+  font-size: small;
+  padding: 0.2em 0.5em; }
+  a.button:hover {
+    border-color: #999; }
+
+span.button {
+  cursor: pointer; }
+
+#queue span.button {
+  color: #DDD; }
+  #queue span.button:hover {
+    color: #999; }

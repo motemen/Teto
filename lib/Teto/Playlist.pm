@@ -102,6 +102,11 @@ sub all {
     };
 }
 
+sub of_url : lvalue {
+    my ($class, $url) = @_;
+    $class->all->{ URI->new($url)->canonical };
+}
+
 # worker 化
 sub feed_async {
     my ($class, $url) = @_;
@@ -113,7 +118,7 @@ sub feed_async {
         $self->push_track_url($url);
         async { $self->track_signal->broadcast };
     } else {
-        $self = $class->all->{ URI->new($url)->canonical } ||= do {
+        $self = $class->of_url($url) ||= do {
             my $self = $class->new(url => $url);
             async { $self->feed_url($url) };
             $self;
