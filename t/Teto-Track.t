@@ -1,4 +1,5 @@
 use strict;
+use lib 'lib';
 use Test::More tests => 11;
 use Test::Deep;
 

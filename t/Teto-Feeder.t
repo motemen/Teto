@@ -1,31 +1,32 @@
 use strict;
 use utf8;
+use lib 'lib';
 use Test::More;
 use LWPx::Record::DataSection record_response_header => [ 'Content-Base' ];
 
-use_ok 'Teto::Feeder';
+use_ok 'Teto::Playlist';
 
 subtest 'Hatena Bookmark' => sub {
-    my $feeder = new_ok 'Teto::Feeder', [ url => 'http://b.hatena.ne.jp/motemen/?url=http://www.nicovideo.jp/', autopagerize => 0 ];
-    $feeder->feed;
+    my $feeder = new_ok 'Teto::Playlist', [ url => 'http://b.hatena.ne.jp/motemen/?url=http://www.nicovideo.jp/', autopagerize => 0 ];
+    $feeder->feed_url($feeder->url);
 
     is $feeder->title, q(はてなブックマーク - en.vio.us - www.nicovideo.jp), 'title';
     is $feeder->image, q(http://www.st-hatena.com/users/mo/motemen/profile.gif), 'image';
 };
 
 subtest 'SoundCloud' => sub {
-    my $feeder = new_ok 'Teto::Feeder', [ url => 'http://soundcloud.com/kkshow', autopagerize => 0 ];
-    $feeder->feed;
+    my $feeder = new_ok 'Teto::Playlist', [ url => 'http://soundcloud.com/kkshow', autopagerize => 0 ];
+    $feeder->feed_url($feeder->url);
 
     is $feeder->title, q(kkshow's sounds on SoundCloud - Create, record and share your sounds for free), 'title';
     like $feeder->image, qr(^http://i1\.soundcloud\.com/avatars-000000654375-agqsuw-large\.jpg), 'image';
 };
 
-subtest 'Nicovideo tag' => sub { TODO: {
-    my $feeder = new_ok 'Teto::Feeder', [ url => 'http://www.nicovideo.jp/tag/VOCALOID', autopagerize => 0 ];
-    $feeder->feed;
+subtest 'Nicovideo tag' => sub {
+    my $feeder = new_ok 'Teto::Playlist', [ url => 'http://www.nicovideo.jp/tag/VOCALOID', autopagerize => 0 ];
+    $feeder->feed_url($feeder->url);
     is scalar @{$feeder->tracks}, 31;
-} };
+};
 
 done_testing;
 

@@ -1,5 +1,6 @@
 use strict;
 use utf8;
+use lib 'lib';
 use Test::More;
 use Test::Requires 'Test::Fake::LWP';
 

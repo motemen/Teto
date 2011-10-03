@@ -1,4 +1,5 @@
 use strict;
+use lib 'lib';
 use Test::More;
 
 use_ok 'Data::Interleave::IcecastMetadata';

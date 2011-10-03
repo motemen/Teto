@@ -1,8 +1,9 @@
 use strict;
+use lib 'lib';
 use Test::More;
 use File::Find::Rule;
 
-my @files = File::Find::Rule->file->name('*.pm')->in('lib');
+my @files = grep !/DAAP\.pm$/, File::Find::Rule->file->name('*.pm')->in('lib');
 plan tests => scalar @files;
 
 for (@files) {

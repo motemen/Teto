@@ -1,4 +1,5 @@
 use strict;
+use lib 'lib';
 use Test::More tests => 3;
 use Test::Deep;
 use Teto::Track;
@@ -9,13 +10,13 @@ use_ok 'Teto::Queue';
 subtest basic => sub {
     my $queue = new_ok 'Teto::Queue', [ track_fh => do { my $s = ''; open my $fh, '>', \$s; $fh } ];
 
-    cmp_deeply $queue->queue, [];
+    cmp_deeply $queue->tracks, [];
 
     $queue->add_track(Teto::Track->from_url('http://www.nicovideo.jp/watch/sm12441199'));
-    cmp_deeply $queue->queue, [ isa('Teto::Track') & methods(video_id => 'sm12441199') ];
+    cmp_deeply $queue->tracks, [ isa('Teto::Track') & methods(video_id => 'sm12441199') ];
 
     async {
-        my $track = $queue->next_track;
+        my $track = $queue->wait_for_track;
         isa_ok $track, 'Teto::Track';
     };
     cede;
@@ -28,7 +29,7 @@ subtest signal => sub {
     my ($waiting, $track);
     push @coros, async {
         $waiting++;
-        $track = $queue->next_track;
+        $track = $queue->wait_for_track;
         cmp_deeply $track, isa('Teto::Track') & methods(video_id => 'sm9'), 'got added track';
     };
 

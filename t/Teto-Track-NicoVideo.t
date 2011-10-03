@@ -49,7 +49,7 @@ Link: <http://res.nimg.jp/css/common.css?110210>; charset="utf-8"; rel="styleshe
 Link: <http://res.nimg.jp/css/watch.css?110106>; charset="utf-8"; rel="stylesheet"; type="text/css"
 Link: <http://res.nimg.jp/css/watch_ichiba.css?110203>; charset="utf-8"; rel="stylesheet"; type="text/css"
 Title: 【鏡音リン】 Shirley!! 【オリジナル】 ‐ ニコニコ動画(原宿)
-X-Meta-Copyright: � niwango, Inc.
+X-Meta-Copyright: ? niwango, Inc.
 X-Meta-Description: ｜ω｀*）＜ステキよね、おんなのこってステキよね！！　　　　...
 X-Meta-Keywords: VOCALOID,鏡音リン,新涼れい,π,Ｎ（仮）,iroha(sasaki),Shirley!!,DEBUTANTE4収録楽曲リンク,かわいいリンうた,リンオリジナル曲
 X-Niconico-Authflag: 0
@@ -735,7 +735,7 @@ Link: <http://res.nimg.jp/css/watch.css?110106>; charset="utf-8"; rel="styleshee
 Link: <http://res.nimg.jp/css/watch_ichiba.css?110203>; charset="utf-8"; rel="stylesheet"; type="text/css"
 Set-Cookie: nicohistory=sm13465059%3A1298030362%3A1298030362%3Af3adc28f6d4c8c53%3A1; expires=Sun, 20-Mar-2011 11:59:22 GMT; path=/; domain=.nicovideo.jp
 Title: 【鏡音リン】 Shirley!! 【オリジナル】 ‐ ニコニコ動画(原宿)
-X-Meta-Copyright: � niwango, Inc.
+X-Meta-Copyright: ? niwango, Inc.
 X-Meta-Description: ｜ω｀*）＜ステキよね、おんなのこってステキよね！！　　　　...
 X-Meta-Keywords: VOCALOID,鏡音リン,新涼れい,π,Ｎ（仮）,iroha(sasaki),Shirley!!,DEBUTANTE4収録楽曲リンク,かわいいリンうた,リンオリジナル曲
 X-Niconico-Authflag: 3
