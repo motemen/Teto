@@ -1,38 +1,28 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use lib 'lib';
-use Teto;
-use Teto::Playlist;
-use Coro;
 use Coro::LWP; # load as fast as possible
 use Coro::Debug;
 use Plack::Runner;
-use Plack::Builder;
-use Plack::App::File;
+
+use lib 'lib';
+use Teto;
+use Teto::Playlist;
+use Teto::Tatsumaki::Application;
 
 my $runner = Plack::Runner->new(server => 'Twiggy', env => 'production');
 $runner->parse_options(-port => 1925, @ARGV);
+
+my $app    = Teto::Tatsumaki::Application->new;
+my $debug  = Coro::Debug->new_unix_server('teto.debug.sock');
 
 if ({ @{ $runner->{options} } }->{daap}) {
     require Teto::DAAP;
     Teto->context->{daap} = Teto::DAAP->new;
 }
 
-async {
-    $Coro::current->desc('stdin coro');
-    while (1) {
-        Coro::AnyEvent::readable *STDIN;
-        my $line = <STDIN>;
-        next unless defined $line;
-        chomp $line;
-        next unless $line;
-        Teto::Playlist->feed_async($line);
-    }
-};
+Teto::Playlist->feed_async($_) for @{ $runner->{argv} };
 
-my $app    = Teto->server->as_psgi;
-my $debug  = Coro::Debug->new_unix_server('teto.debug.sock');
 $runner->set_options(
     server_ready => sub {
         my $args = shift;
@@ -41,17 +31,4 @@ $runner->set_options(
     }
 );
 
-Teto::Playlist->feed_async($_) for @{ $runner->{argv} };
-
-my $url_map = builder {
-    mount '/css' => builder {
-        enable 'File::Sass', syntax => 'scss';
-        Plack::App::File->new(root => './root/css');
-    };
-    mount '/image' => builder {
-        Plack::App::File->new(root => './root/image');
-    };
-    mount '/' => $app;
-};
-
-$runner->run($url_map);
+$runner->run($app->psgi_app);
