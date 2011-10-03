@@ -25,8 +25,7 @@ requires 'Coro::AIO';
 requires 'Coro::Timer';
 requires 'Coro::Semaphore';
 
-requires 'Twiggy';
-requires 'Plack', '0.998';
+requires 'Tatsumaki';
 
 requires 'URI';
 requires 'Encode';
@@ -57,16 +56,11 @@ requires 'WWW::YouTube::Download', '0.16';
 # Feeder
 requires 'HTML::TreeBuilder::XPath';
 
-# Server
-requires 'Router::Simple';
-requires 'Text::MicroTemplate::File';
-requires 'Plack::Middleware::File::Sass';
-
 test_requires 'Test::More';
 test_requires 'Test::Deep';
 test_requires 'Test::Requires';
 test_requires 'File::Find::Rule';
-test_requires 'LWPx::Record::DataSection';
+# test_requires 'LWPx::Record::DataSection';
 
 tests 't/*.t';
 # author_tests 'xt';
