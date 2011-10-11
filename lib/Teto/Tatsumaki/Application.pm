@@ -10,7 +10,7 @@ use Path::Class;
 
 sub new {
     my $class = shift;
-    my $self = Tatsumaki::Application->new([
+    my $self = $class->SUPER::new([
         '/'          => 'Teto::Tatsumaki::Handler::Index',
         '/stream'    => 'Teto::Tatsumaki::Handler::Stream',
         '/debug'     => 'Teto::Tatsumaki::Handler::Debug',

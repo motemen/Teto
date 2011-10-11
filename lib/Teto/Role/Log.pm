@@ -17,7 +17,7 @@ sub log_extra_info { '' }
 
 sub log {
     my ($self, $level, @args) = @_;
-    my $pkg = ref $self;
+    my $pkg = ref $self || $self;
     $pkg =~ s/^Teto:://;
     if (my $extra = $self->log_extra_info) {
         $pkg .= " <$extra>";

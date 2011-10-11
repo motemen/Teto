@@ -44,27 +44,6 @@ has 'semaphore' => (
 our @RequestQueue;
 our $UserAgent;
 
-sub wait_in_queue {
-    my $self = shift;
-    push @RequestQueue, $Coro::current;
-
-    if (@RequestQueue > 1) {
-        $self->log(info => 'another track is doing request; wait in queue');
-        $self->log(debug => "queue: @RequestQueue");
-        schedule;
-        $self->log(info => 'dequeued; my turn!');
-    }
-}
-
-sub leave_from_queue {
-    my $self = shift;
-    shift @RequestQueue; # XXX must be self
-    $self->log(debug => 'release queue');
-    if (my $coro = $RequestQueue[0]) {
-        $coro->cede_to;
-    }
-}
-
 sub log_extra_info {
     my $self = shift;
     return $self->video_id;
@@ -88,7 +67,7 @@ sub _build_user_agent {
 sub _build_media_url {
     my $self = shift;
 
-    $self->wait_in_queue;
+    my $guard = $self->semaphore->guard;
 
     $self->log(debug => 'GET ' . $self->url);
     my $res = $self->user_agent->get($self->url);
@@ -96,7 +75,6 @@ sub _build_media_url {
     unless ($res->is_success) {
         $self->add_error('_build_media_url ' . $self->url . ': ' . $res->code . ' ' . $res->message);
         $self->sleep(60) if $res->code == 403;
-        $self->leave_from_queue;
         return;
     }
 
@@ -108,14 +86,13 @@ sub _build_media_url {
     unless ($media_url) {
         $self->add_error('Could not get media' . ($@ ? ": $@" : ''));
         $self->sleep($@ && $@ =~ /403/ ? 60 : 10);
-        $self->leave_from_queue;
         return;
     }
     $self->log(info => "media: $media_url");
 
-    # release after 60 secs
+    # release guard after 60 secs
     my $w; $w = AE::timer 60, 0, sub {
-        $self->leave_from_queue;
+        undef $guard;
         undef $w;
     };
 

@@ -2,7 +2,6 @@ package Teto::Worker::ReadBuffer;
 use Mouse;
 use Coro;
 use Teto::Coro::MarkedChannel;
-use Teto::Coro::ThrottledChannel;
 use Data::Interleave::IcecastMetadata;
 
 with 'Teto::Role::Log';
@@ -21,7 +20,6 @@ has icemeta => (
 has channel => (
     is  => 'rw',
     default => sub { Teto::Coro::MarkedChannel->new },
-    # default => sub { Teto::Coro::ThrottledChannel->new(bps => 192 * 1024) },
 );
 
 __PACKAGE__->meta->make_immutable;

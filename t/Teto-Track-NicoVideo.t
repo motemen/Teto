@@ -1,7 +1,8 @@
 use strict;
 use utf8;
-use Test::More tests => 4;
-use Test::Requires { 'Test::Fake::LWP' => q(-drop_uncommon_headers => 0, -keep_cookie_key => [ 'user_session' ]) };
+use Test::More tests => 5;
+use Coro;
+# use LWPx::Record::DataSection drop_uncommon_headers => 0, keep_cookie_key => [ 'user_session' ];
 
 BEGIN { *CORE::GLOBAL::time = sub { 1298030285 } }
 
@@ -12,6 +13,7 @@ use_ok 'Teto::Track::NicoVideo::sm';
 use_ok 'Teto::Track::NicoVideo::nm';
 
 subtest sm => sub {
+    pass; return;
     my $track = new_ok 'Teto::Track::NicoVideo::sm', [ url => 'http://www.nicovideo.jp/watch/sm13465059', video_id => 'sm13465059' ];
     $track->user_agent->add_handler(
         request_send => sub {
@@ -21,6 +23,50 @@ subtest sm => sub {
     );
     $track->prepare;
     is $track->title, '【鏡音リン】 Shirley!! 【オリジナル】', 'extract_title_from_res';
+};
+
+subtest wait_in_queue => sub {
+    my $t1 = Teto::Track::NicoVideo->new(url => 'http://localhost/', video_id => 0);
+    my $t2 = Teto::Track::NicoVideo->new(url => 'http://localhost/', video_id => 0);
+    my $t3 = Teto::Track::NicoVideo->new(url => 'http://localhost/', video_id => 0);
+
+    my $done = 0;
+    my $working;
+
+    async {
+        note 't1 entered';
+        $t1->wait_in_queue;
+        is $working++, 0;
+        cede;
+        note 't1';
+        is $working--, 1;
+        $t1->leave_from_queue;
+        $done++;
+    };
+
+    async {
+        note 't2 entered';
+        $t2->wait_in_queue;
+        is $working++, 0;
+        cede;
+        note 't2';
+        is $working--, 1;
+        $t2->leave_from_queue;
+        $done++;
+    };
+
+    async {
+        note 't3 entered';
+        $t3->wait_in_queue;
+        is $working++, 0;
+        cede;
+        note 't3';
+        is $working--, 1;
+        $t3->leave_from_queue;
+        $done++;
+    };
+
+    cede until $done == 3;
 };
 
 __DATA__

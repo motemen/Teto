@@ -81,7 +81,7 @@ sub _build_user_agent {
                 $ua->autopager->load_siteinfo;
                 $AutoPager = $ua->autopager->{autopager};
             } catch {
-                $self->log(warn => $_);
+                $self->log(warning => $_);
             };
         }
     }
