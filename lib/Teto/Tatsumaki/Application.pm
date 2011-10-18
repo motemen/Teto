@@ -7,6 +7,7 @@ use Teto::Tatsumaki::Handler::Stream;
 use Teto::Tatsumaki::Handler::Debug;
 use Teto::Tatsumaki::Handler::API;
 use Path::Class;
+use File::ShareDir qw(dist_dir);
 
 sub new {
     my $class = shift;
@@ -16,8 +17,8 @@ sub new {
         '/debug'     => 'Teto::Tatsumaki::Handler::Debug',
         '/api/(\w+)' => 'Teto::Tatsumaki::Handler::API',
     ]);
-    $self->template_path(file(__FILE__)->dir->parent->parent->parent->subdir('root').q());
-    $self->static_path  (file(__FILE__)->dir->parent->parent->parent->subdir('root').q());
+    $self->template_path(dir(dist_dir('Teto')).q());
+    $self->static_path  (dir(dist_dir('Teto')).q());
     return $self;
 }
 

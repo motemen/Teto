@@ -5,7 +5,9 @@ use Coro::LWP; # load as fast as possible
 use Coro::Debug;
 use Plack::Runner;
 
-use lib 'lib';
+use File::Spec;
+use FindBin;
+use lib File::Spec->catdir( $FindBin::RealBin, 'lib' );
 use Teto;
 use Teto::Playlist;
 use Teto::Tatsumaki::Application;
