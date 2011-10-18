@@ -71,6 +71,8 @@ requires_external_bin 'ffmpeg';
 # Track::NicoVideo::nm
 requires_external_bin 'swfextract';
 
+install_script 'teto.pl';
+
 auto_include;
 # auto_install;
 
