@@ -9,3 +9,5 @@ Makefile.old
 .cache
 extlib/
 .sass-cache/
+MYMETA.yml
+MYMETA.json
