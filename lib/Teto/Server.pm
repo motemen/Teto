@@ -10,6 +10,7 @@ use Router::Simple;
 use Plack::Request;
 use Text::MicroTemplate::File;
 use Data::Interleave::IcecastMetadata;
+use File::ShareDir qw(dist_dir);
 
 with 'Teto::Role::Log';
 
@@ -23,7 +24,7 @@ has mt => (
     is  => 'rw',
     isa => 'Text::MicroTemplate::File',
     default => sub {
-        Text::MicroTemplate::File->new(include_path => 'root');
+        Text::MicroTemplate::File->new(include_path => dist_dir('Teto'));
     },
 );
 
