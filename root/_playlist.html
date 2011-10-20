@@ -1,7 +1,11 @@
 % my $playlist = $_[0]{playlist};
 % my $control  = $_[0]{control};
 
-      <h1><% if ($playlist->image) { %><img src="<%= $playlist->image %>"> <% } %><a href="<%= $playlist->url %>" class="title"><%= $playlist->title || $playlist->url %></a> <a href="<%= $playlist->url %>" class="url"><%= eval { $playlist->url->host . $playlist->url->path_query } || '' %></a></h1>
+      <h1><% if ($playlist->image) { %><img src="<%= $playlist->image %>"> <% } %><a href="<%= $playlist->url %>" class="title"><%= $playlist->title || $playlist->url %></a> <a href="<%= $playlist->url %>" class="url"><%= eval { $playlist->url->host . $playlist->url->path_query } || '' %></a>
+      <button onclick="$.post('/api/play', { playlist: '<%= $playlist->url %>' }).success(function () { location.reload() })">Play</button>
+      </h1>
+
+
       <div class="playlist">
         <ol>
 %       for (0 .. $#{ $playlist->tracks }) {
