@@ -17,3 +17,14 @@
 ^[^/]+\.yaml$
 ^[^/]+\.pl$
 ^\.shipit$
+^\.git/
+^cover_db/
+\.sw[pon]$
+^\.cache/
+^\.sass-cache/
+^\.prove/
+^extlib/
+^Teto-\d+\.\d+/
+^sketch/
+^local/
+^teto\.debug\.sock$

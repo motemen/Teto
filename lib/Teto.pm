@@ -2,7 +2,7 @@ package Teto;
 use strict;
 use warnings;
 
-our $VERSION = '0.3';
+our $VERSION = '0.31';
 
 sub context {
     our $Context ||= Teto::Context->new;

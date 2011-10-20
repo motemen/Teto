@@ -11,3 +11,7 @@ extlib/
 .sass-cache/
 MYMETA.yml
 MYMETA.json
+.*.sw[pon]
+local/
+.prove
+.sw[pon]

@@ -1,4 +1,10 @@
 Revision history for Perl extension Teto
 
+0.31    Thu Oct 20 20:46:51 2011 +0900
+        - installation support (thanks to nitro_idiot)
+
+0.3	Tue Oct 11 21:35:36 2011 +0900
+        - use Tatsumaki
+
 0.01    Sat Jun 26 23:31:49 2010
         - original version
