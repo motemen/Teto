@@ -8,6 +8,9 @@ use Teto::Tatsumaki::Handler::Debug;
 use Teto::Tatsumaki::Handler::API;
 use Path::Class;
 use File::ShareDir qw(dist_dir);
+use FindBin;
+
+my $root = eval { dist_dir('Teto') } || dir($FindBin::Bin)->subdir('root').q();
 
 sub new {
     my $class = shift;
@@ -17,8 +20,8 @@ sub new {
         '/debug'     => 'Teto::Tatsumaki::Handler::Debug',
         '/api/(\w+)' => 'Teto::Tatsumaki::Handler::API',
     ]);
-    $self->template_path(dir(dist_dir('Teto')).q());
-    $self->static_path  (dir(dist_dir('Teto')).q());
+    $self->template_path($root);
+    $self->static_path  ($root);
     return $self;
 }
 
