@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
+use Coro;
 use Coro::LWP; # load as fast as possible
 use Coro::Debug;
 use Plack::Runner;
@@ -24,6 +25,12 @@ if ({ @{ $runner->{options} } }->{daap}) {
 }
 
 Teto::Playlist->feed_async($_) for @{ $runner->{argv} };
+
+if (my $playlist = [ values %{ Teto::Playlist->all } ]->[-1]) {
+    $playlist->track_signal->wait(sub {
+        async { $playlist->tracks->[0]->play };
+    });
+}
 
 $runner->set_options(
     server_ready => sub {
