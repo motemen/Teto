@@ -28,8 +28,8 @@ Teto::Playlist->feed_async($_) for @{ $runner->{argv} };
 $runner->set_options(
     server_ready => sub {
         my $args = shift;
-        Teto->server->log(notice => "Streaming at http://$args->{host}:$args->{port}/stream");
-        Teto->server->log(debug  => "Connect to debug coro by 'socat readline teto.debug.sock'");
+        Teto->context->log(notice => "Streaming at http://$args->{host}:$args->{port}/stream");
+        Teto->context->log(debug  => "Connect to debug coro by 'socat readline teto.debug.sock'");
     }
 );
 

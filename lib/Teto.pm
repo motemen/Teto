@@ -26,22 +26,12 @@ has playlists => (
     },
 );
 
-has server => (
-    is  => 'rw',
-    isa => 'Teto::Server',
-    lazy_build => 1,
-);
+with 'Teto::Role::Log';
 
 sub _build_buffer {
     my $self = shift;
     require Teto::Buffer;
     return Teto::Buffer->new;
-}
-
-sub _build_server {
-    my $self = shift;
-    require Teto::Server;
-    return Teto::Server->new;
 }
 
 __PACKAGE__->meta->make_immutable;
