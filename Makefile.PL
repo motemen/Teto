@@ -33,6 +33,7 @@ requires 'Try::Tiny';
 requires 'JSON::XS';
 requires 'Scalar::Util';
 requires 'POSIX';
+requires 'File::ShareDir';
 
 # Track
 requires 'LWP::UserAgent';
@@ -70,6 +71,9 @@ requires_external_bin 'ffmpeg';
 
 # Track::NicoVideo::nm
 requires_external_bin 'swfextract';
+
+install_script 'teto.pl';
+install_share 'root';
 
 auto_include;
 # auto_install;
